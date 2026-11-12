@@ -1355,7 +1355,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
           <label class="ratio-pair__cell"><span>Mobile</span><select id="f-ratio-m" data-ratio="m">${ratioOptions(r.ratio.m)}</select></label>
           <label class="ratio-pair__cell"><span>Desktop</span><select id="f-ratio-d" data-ratio="d">${ratioOptions(ratioKey(r, "desktop"))}</select></label>
         </div>
-        ${r.ratio.split ? `<p class="b-help">Different ratios, so each tile needs two files: one for mobile, one for desktop.</p>` : ""}
+        <p class="b-help">${r.ratio.split ? "Different ratios, so each tile needs two files: one for mobile, one for desktop." : "Same ratio on both devices, so one file covers both."}</p>
       </div>
       <div class="step">
         ${exportGuideHTML(r)}
@@ -2712,9 +2712,9 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       return;
     }
     if (el.dataset?.ratio) {
-      // Desktop follows mobile until it's set to something else; matching ratios share one file.
+      // Mobile and desktop are set independently; matching ratios share one file.
       const r = cur();
-      if (el.dataset.ratio === "m" && !r.ratio.split) r.ratio.d = el.value;
+      if (!r.ratio.split) r.ratio.d = r.ratio.m;
       r.ratio[el.dataset.ratio] = el.value;
       r.ratio.split = r.ratio.d !== r.ratio.m;
       changed();
