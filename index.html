@@ -799,6 +799,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .upl__empty-ico .i { width: 18px; height: 18px; }
 .upl--empty .upl__meta { align-items: flex-start; }
 
+.ctx-line--inline button { font-size: inherit; text-decoration: underline; text-underline-offset: 2px; }
+
 /* − value + stepper (header spacing) */
 .stepper { display: flex; align-items: center; justify-content: space-between; height: 36px; border: 1px solid var(--line-strong); border-radius: 8px; background: #f1f1f1; padding: 2px; }
 .stepper b { flex: 1; text-align: center; font-size: 12.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em; }
@@ -2202,7 +2204,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
         <div class="shoot">
           <button type="button" class="btn" data-act="add-slide" ${r.slides.length >= 12 ? "disabled" : ""}>Add tile</button>
         </div>
-        ${usesArt(r) ? `<div class="ctx-line"><span>Image shape and sizes are set in Images.</span><button type="button" data-act="view" data-val="designer">Open Images</button></div>` : ""}
+        ${usesArt(r) ? `<div class="ctx-line ctx-line--inline"><span>Set image shapes and sizes in <button type="button" data-act="view" data-val="designer">Images</button></span></div>` : ""}
       </div>
 
       <div class="step">
