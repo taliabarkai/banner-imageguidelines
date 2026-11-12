@@ -455,7 +455,6 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .floatbar-col { display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; max-width: 100%; }
 .floatbar-col > * { pointer-events: auto; }
 .export-chip { background: #1d1d1f; color: #fff; border-radius: 999px; padding: 6px 14px; font-size: 12.5px; font-weight: 500; font-variant-numeric: tabular-nums; box-shadow: 0 4px 14px rgba(0,0,0,0.18); white-space: nowrap; }
-.b-head-pill { margin-left: auto; }
 .b-note { padding: 10px 16px 12px; border-bottom: 1px solid var(--line); font-size: 12.5px; color: #5f5f5f; display: flex; flex-wrap: wrap; gap: 4px 6px; }
 .b-note button { border: 0; background: none; padding: 0; color: var(--accent); cursor: pointer; font-size: 12.5px; text-decoration: underline; text-underline-offset: 2px; }
 .step { --ctl-w: 202px; padding: 16px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 12px; }
@@ -606,7 +605,6 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .menu__note code { font-family: var(--font-mono); background: #f1f1f1; border-radius: 4px; padding: 0 4px; color: var(--ink); }
 .scope-note { font-size: 12px; color: var(--muted); background: #fafafa; border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; display: flex; flex-direction: column; gap: 6px; }
 .scope-note b { color: var(--ink); font-weight: 600; }
-.brand-chip { display: inline-block; font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; background: var(--primary); color: #fff; border-radius: 5px; padding: 0 6px; text-transform: uppercase; vertical-align: 1px; }
 .page { font-family: var(--font-family-main-regular, var(--font-ui)); color: var(--colors-text, #1d1b19); background: var(--colors-background, #fff); }
 .sf-shell { background: var(--colors-background); color: var(--colors-text); box-shadow: var(--shadow-sm); position: relative; z-index: 2; }
 .sf-top { background: var(--layout-announcements-bar-background); color: var(--layout-announcements-bar-text); font-family: var(--typography-rules-text1-font-family, inherit); font-size: var(--typography-rules-text1-font-size); line-height: var(--typography-rules-text1-line-height, normal); font-weight: var(--typography-rules-text1-font-weight, normal); letter-spacing: var(--typography-rules-text1-letter-spacing, normal); text-transform: var(--typography-rules-text1-text-transform, none); }
@@ -1340,7 +1338,6 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       <div class="column__head column__head--edit">
         <button type="button" class="fb-btn" data-act="back" aria-label="Back to images" title="Back to images">${ICON.back}</button>
         <span class="column__title"><b>${esc(ui.sel)}</b><span>Section ${sectionNo(ui.sel)} · Images</span></span>
-        <span class="brand-chip b-head-pill">${ui.theme}</span>
       </div>`;
     if (r.kind || !usesArt(r)) return `${head}<div class="step"><p class="b-help">${r.kind ? "This section has no images to make." : "Every slide is Text only, so there are no images to make."} Its settings are in Site configuration.</p><div class="ctx-line"><span></span><button type="button" data-act="view" data-val="config">Open Site configuration</button></div></div>`;
     const { art } = imageNeeds(r);
@@ -1363,7 +1360,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
         ${r.ratio.split ? `<p class="b-help">Different ratios, so each card needs two files: one for mobile, one for desktop.</p>` : ""}
       </div>
       <div class="step">
-        <div class="step__title"><span>Images</span><span class="step__aside">for <span class="brand-chip">${ui.theme}</span></span></div>
+        <div class="step__title"><span>Images</span></div>
         <div class="img-slots">${art.map(([sl, i]) => `<div><div class="img-slot__label">Slide ${i + 1}<span>${esc(titleAt(r, i).trim() || KIND_OPTS.find(([v]) => v === sl.kind)?.[1] || "")}</span></div>${uploadSlots(r, sl, i)}</div>`).join("")}</div>
         ${textOnly ? `<p class="b-help">${textOnly} Text only slide${textOnly === 1 ? "" : "s"} need${textOnly === 1 ? "s" : ""} no image.</p>` : ""}
         <p class="b-help">Drop an image on a slot or a card in the preview. Images are cropped to the shape, like on the site, and saved in this browser only.</p>
@@ -1378,7 +1375,6 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       <div class="column__head column__head--edit">
         <button type="button" class="fb-btn" data-act="back" aria-label="Back to sections" title="Back to sections">${ICON.back}</button>
         <span class="column__title"><b>${esc(ui.sel)}</b><span>Section ${sectionNo(ui.sel)} · ${r.kind === "topline" ? "Topline component" : r.kind === "products" ? "Product carousel" : "Billboard banner"}</span></span>
-        <span class="brand-chip b-head-pill">${ui.theme}</span>
       </div>
       ${fallback}
       ${r.kind === "topline" ? "" : `<div class="b-note"><span>Layout is shared by every brand. Copy is per brand.</span><button type="button" data-act="dup-brand">Different layout for ${esc(brandName())}?</button></div>`}
@@ -1981,7 +1977,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       </div>
 
       <div class="step">
-        <div class="step__title"><span class="step__num">2</span><span>Slides</span><span class="step__aside">${r.slides.length} · text for <span class="brand-chip">${ui.theme}</span></span></div>
+        <div class="step__title"><span class="step__num">2</span><span>Slides</span><span class="step__aside">${r.slides.length}</span></div>
         <ul class="slides-list">${r.slides.map((sl, i) => slideRow(r, sl, i)).join("")}</ul>
         <div class="shoot">
           <button type="button" class="btn" data-act="add-slide" ${r.slides.length >= 12 ? "disabled" : ""}>Add slide</button>
