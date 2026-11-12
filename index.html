@@ -2184,6 +2184,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
           <option value="carousel" ${layoutValue === "carousel" ? "selected" : ""}>Carousel</option>
           <optgroup label="Ready-made layouts">${Object.entries(LAYOUTS).map(([k, l]) => `<option value="preset:${k}">${l.label}</option>`).join("")}</optgroup>
         </select>
+        <div class="field"><label for="f-tile-count">Number of tiles</label><select id="f-tile-count" aria-label="Number of tiles">${Array.from({ length: 12 }, (_, k) => k + 1).map((n) => `<option value="${n}" ${n === r.slides.length ? "selected" : ""}>${n}</option>`).join("")}</select></div>
         ${car ? "" : `<div class="field"><span class="field__label">Width</span>${seg("margin", [["false", "Full width"], ["true", "Page margin"]], String(!!r.margin), "Banner width")}</div>`}
         <div class="dtable">
           <span></span><span class="dtable__h">Mobile</span><span class="dtable__h">Desktop</span>
@@ -3039,6 +3040,22 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   document.addEventListener("focusout", (e) => { if (e.target.id === "tplRename") finishRename(true); });
   document.addEventListener("change", (e) => {
     const el = e.target;
+    if (el.id === "f-tile-count" && cur()) {
+      // Add tiles at the end (same kind as the last one) or remove from the end.
+      const r = cur();
+      const n = Math.max(1, Math.min(12, Number(el.value) || 1));
+      while (r.slides.length < n) {
+        const title = `Tile ${r.slides.length + 1}`;
+        Object.values(r.copy || {}).forEach((c) => { c.titles = [...(c.titles || []), title]; });
+        r.slides.push({ kind: r.slides.at(-1)?.kind || "image", title });
+      }
+      while (r.slides.length > n) {
+        Object.values(r.copy || {}).forEach((c) => { if (Array.isArray(c.titles)) c.titles.splice(r.slides.length - 1, 1); });
+        r.slides.pop();
+      }
+      changed();
+      return;
+    }
     if (el.dataset?.hex) { el.value = String(el.dataset.hex.split(".").reduce((o, k) => o?.[k], cur()) || "").toUpperCase(); return; } // show the saved color after editing
     if (el.id === "f-layout-pick") {
       const r = cur();
