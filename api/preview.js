@@ -4,7 +4,7 @@
 // POST /api/preview?id=ID&ref=REF      -> upload one image (body = image bytes)
 // POST /api/preview?id=ID              -> save the layout (body = JSON) and drop unused images
 import * as blob from "@vercel/blob";
-import { makeStore, InputError } from "./_store.js";
+import { makeStore, InputError, findToken } from "./_store.js";
 
 const store = makeStore(blob);
 const json = (body, status = 200) => Response.json(body, { status, headers: { "cache-control": "no-store" } });
@@ -14,7 +14,7 @@ export async function GET(request) {
   const q = new URL(request.url).searchParams;
   if (q.has("ping")) {
     // Which Blob connection settings this deployment has (names only, never values).
-    const env = { token: Boolean(process.env.BLOB_READ_WRITE_TOKEN), storeId: Boolean(process.env.BLOB_STORE_ID), oidc: Boolean(process.env.VERCEL_OIDC_TOKEN || request.headers.get("x-vercel-oidc-token")) };
+    const env = { token: Boolean(findToken()), storeId: Boolean(process.env.BLOB_STORE_ID), oidc: Boolean(process.env.VERCEL_OIDC_TOKEN || request.headers.get("x-vercel-oidc-token")) };
     return json({ ready: env.token || (env.storeId && env.oidc), ...env });
   }
   try {

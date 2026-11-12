@@ -27,13 +27,20 @@ export const checkRef = (ref) => {
   return ref;
 };
 
+// The store's read-write token: BLOB_READ_WRITE_TOKEN, or the same token under a custom prefix
+// (Vercel lets you rename it when connecting a store).
+export const findToken = () => process.env.BLOB_READ_WRITE_TOKEN
+  || Object.entries(process.env).find(([k, v]) => /READ_WRITE_TOKEN$/.test(k) && String(v).startsWith("vercel_blob_rw_"))?.[1]
+  || null;
+
 export function makeStore(blob) {
+  const auth = () => { const token = findToken(); return token ? { token } : {}; };
   // Works with a public or a private store: the access type is found on the first write.
   let access = process.env.BLOB_ACCESS || null;
   const other = (a) => (a === "public" ? "private" : "public");
 
   const put = async (path, body, contentType) => {
-    const opts = (a) => ({ access: a, contentType, addRandomSuffix: false, allowOverwrite: true, cacheControlMaxAge: 60 });
+    const opts = (a) => ({ ...auth(), access: a, contentType, addRandomSuffix: false, allowOverwrite: true, cacheControlMaxAge: 60 });
     if (access) return blob.put(path, body, opts(access));
     try {
       const res = await blob.put(path, body, opts("public"));
@@ -49,7 +56,7 @@ export function makeStore(blob) {
   const read = async (path) => {
     for (const a of access ? [access, other(access)] : ["public", "private"]) {
       try {
-        const res = await blob.get(path, { access: a, useCache: false });
+        const res = await blob.get(path, { ...auth(), access: a, useCache: false });
         if (res === null) return null;
         if (res.statusCode === 200) { access = a; return res; }
       } catch (err) { /* try the other access type */ }
@@ -61,7 +68,7 @@ export function makeStore(blob) {
     const out = [];
     let cursor;
     do {
-      const page = await blob.list({ prefix, cursor, limit: 1000 });
+      const page = await blob.list({ ...auth(), prefix, cursor, limit: 1000 });
       out.push(...page.blobs);
       cursor = page.hasMore ? page.cursor : undefined;
     } while (cursor);
@@ -88,7 +95,7 @@ export function makeStore(blob) {
       // Drop images from earlier previews that this one no longer uses.
       const keep = new Set([statePath(id), ...images.map((r) => imgPath(id, r))]);
       const stale = (await listAll(dir(id))).filter((b) => !keep.has(b.pathname)).map((b) => b.url);
-      if (stale.length) await blob.del(stale);
+      if (stale.length) await blob.del(stale, auth());
     },
 
     async getState(id) {
@@ -118,7 +125,7 @@ export function makeStore(blob) {
       }
       let removed = 0;
       for (const g of groups.values()) {
-        if (g.newest < cutoff) { await blob.del(g.urls); removed += 1; }
+        if (g.newest < cutoff) { await blob.del(g.urls, auth()); removed += 1; }
       }
       return { previews: groups.size, removed };
     },
