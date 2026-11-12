@@ -747,6 +747,24 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .topbar__right .theme-pick .menu { left: auto; right: 0; transform: none; }
 .topbar__right { gap: 10px; }
 
+/* ---------- View rail: always-on icons for Site configuration, Designer and Specs ---------- */
+.app-body { flex: 1; min-height: 0; display: flex; }
+.app-body > .workspace { flex: 1; min-width: 0; }
+.vrail { flex: none; width: 56px; background: var(--surface); border-right: 1px solid var(--line); display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 0; position: relative; z-index: 26; }
+.vrail__btn { position: relative; width: 40px; height: 40px; border: 1px solid transparent; border-radius: 10px; background: transparent; color: var(--muted); cursor: pointer; display: grid; place-items: center; }
+.vrail__btn .i { width: 20px; height: 20px; }
+.vrail__btn:hover { background: var(--hover); color: var(--ink); }
+.vrail__btn[aria-pressed="true"] { background: var(--accent-soft); border-color: #9bbcf0; color: var(--accent); }
+.vrail__tip { position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%); background: #1d1d1f; color: #fff; font-size: 12.5px; font-weight: 500; white-space: nowrap; padding: 6px 10px; border-radius: 8px; pointer-events: none; opacity: 0; transition: opacity .12s; z-index: 90; }
+.vrail__btn:hover .vrail__tip, .vrail__btn:focus-visible .vrail__tip { opacity: 1; }
+.workspace.no-col { grid-template-columns: minmax(0, 1fr); }
+.no-col .col-toggle { left: 0; }
+.rail { display: none !important; }
+.app.presenting .vrail { display: none; }
+.col-info { padding: 8px 16px; border-top: 1px solid var(--line); font-size: 12px; color: var(--subtle); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.col-info b { color: var(--muted); font-weight: 500; }
+@media (max-width: 900px) { .vrail { width: 48px; } .col-info { display: block; } }
+
 /* ---------- Sidebar: clean, bordered fields with labels above (Site configuration + Designer) ---------- */
 .column .step { padding: 20px 16px; gap: 14px; }
 .column .step__title { font-size: 15px; font-weight: 600; gap: 8px; }
@@ -774,13 +792,15 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     <div class="topbar__left">
       <div class="brand">
         <span class="brand__mark" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="14" height="5" rx="1"/><rect x="3" y="11" width="6" height="5" rx="1"/><rect x="11" y="11" width="6" height="5" rx="1"/></svg></span>
-        <span class="brand__text"><span class="brand__name">Homepage Site Dressing</span><span class="view-info" id="viewInfo"></span></span>
+        <span class="brand__text"><span class="brand__name">Homepage Site Dressing</span></span>
       </div>
     </div>
-    <div class="top-center" id="topCenter"><div id="viewPick"></div></div>
+    <div class="top-center" id="topCenter"><div id="viewPick" hidden></div></div>
     <div class="topbar__right"><span id="topRight"></span><div class="theme-pick" id="themePick"></div></div>
   </header>
 
+  <div class="app-body">
+  <nav class="vrail" id="vrail" aria-label="Views"></nav>
   <div class="workspace" id="workspace">
     <button type="button" class="col-toggle" id="colToggle" data-act="column"></button>
     <nav class="rail" id="rail" aria-label="Panels" hidden></nav>
@@ -790,6 +810,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       <div class="stagearea" id="stage"></div>
       <button type="button" class="present-exit" data-act="present-exit" title="Exit full-screen preview (Esc)">Exit preview</button>
     </main>
+  </div>
   </div>
 
   <div class="guide specs-page" id="specs" hidden></div>
@@ -1275,7 +1296,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   const renderTop = () => {
     const specs = ui.view === "specs";
     $("#topRight").innerHTML = `<span class="save-state" id="saveState"></span>`;
-    $("#viewPick").innerHTML = `<div class="view-seg" role="group" aria-label="View">${[["config", "Site configuration"], ["designer", "Designer"], ["specs", "Specs"]].map(([k, l]) => `<button type="button" data-act="view" data-val="${k}" aria-pressed="${ui.view === k}">${l}</button>`).join("")}</div>`;
+    // Views are switched from the icon rail on the left (renderRail).
     document.querySelector(".app").classList.toggle("is-specs", specs);
     $("#canvas").hidden = specs || ui.tab !== "editor";
     $("#guide").hidden = specs || ui.tab !== "guide";
@@ -1290,11 +1311,16 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       </div>` : ""}`;
   };
 
+  const VIEWS = [
+    ["config", "Site configuration", '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 5.5h7M15 5.5h1M4 10h2M10 10h6M4 14.5h7M15 14.5h1"/><circle cx="13" cy="5.5" r="1.8"/><circle cx="8" cy="10" r="1.8"/><circle cx="13" cy="14.5" r="1.8"/></svg>'],
+    ["designer", "Designer", '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="4" width="14" height="12" rx="2"/><circle cx="7.5" cy="8.2" r="1.4"/><path d="m3.5 14 4-3.8 3 2.8 2.2-2 3.8 3.4"/></svg>'],
+    ["specs", "Specs", '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M5.5 3h6.5l3 3v10.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 .5-.5Z"/><path d="M12 3v3h3M7.5 10h5M7.5 13h5"/></svg>'],
+  ];
   const renderRail = () => {
+    $("#vrail").innerHTML = VIEWS.map(([k, label, icon]) => `<button type="button" class="vrail__btn" data-act="view" data-val="${k}" aria-pressed="${ui.view === k}" aria-label="${label}">${icon}<span class="vrail__tip" role="tooltip">${label}</span></button>`).join("");
     const rail = $("#rail");
-    rail.hidden = ui.column;
-    document.querySelector(".app").classList.toggle("rail-on", !ui.column);
-    if (!ui.column) {
+    rail.hidden = true;
+    if (false) {
       const btn = (tab, icon, tip) => `<button type="button" class="rail__btn" data-act="rail-open" data-val="${tab}" aria-pressed="${ui.tab === tab}" aria-label="Open ${tip}">${icon}<span class="rail__tip" role="tooltip">${tip}</span></button>`;
       rail.innerHTML = btn("editor", ICON.layers, "Sections") + btn("guide", ICON.guide, "Guide");
     }
@@ -1450,7 +1476,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const designer = ui.view === "designer";
     const inner = ui.tab === "guide" ? guideNav : editing ? (designer ? designerEditorHTML() : editorHTML()) : designer ? designerListHTML() : listHTML();
     const guide = "";
-    col.innerHTML = `<div class="col-main">${inner}</div><div class="col-bottom">${guide}${tabs}</div>`;
+    const info = ui.tab === "editor" ? `<div class="col-info view-info" id="viewInfo">${ui.viewInfo || ""}</div>` : "";
+    col.innerHTML = `<div class="col-main">${inner}</div><div class="col-bottom">${guide}${info}${tabs}</div>`;
     const chip = $("#exportChip");
     const chipText = ui.tab === "editor" && editing && designer ? exportChipText(cur()) : "";
     chip.hidden = !chipText;
@@ -2581,7 +2608,10 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       ui.hl = null;
       choose(t.dataset.name, true);
     } else if (act === "view") {
-      if (ui.view === t.dataset.val) return;
+      if (ui.view === t.dataset.val) {
+        if (ui.view !== "specs") { ui.column = !ui.column || ui.tab !== "editor"; ui.tab = "editor"; renderAll(); }
+        return;
+      }
       ui.view = t.dataset.val; ui.menu = null; ui.tab = "editor"; ui.column = true; ui.copied = ""; ui.fallback = "";
       try { localStorage.setItem("bb-view", ui.view); } catch (err) { /* storage unavailable */ }
       renderAll();
