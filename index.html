@@ -774,8 +774,9 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .img-card__text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .img-card--simple .img-card__name { font-size: 13.5px; }
 .img-card--simple .img-card__count { font-weight: 500; font-size: 12px; }
-.img-card--simple .pen { position: relative; opacity: 0; transition: opacity .1s; }
-.img-card--simple:hover .pen, .img-card--simple:focus-within .pen { opacity: 1; }
+.img-card__go { color: var(--muted); opacity: 0; transform: translateX(-3px); transition: opacity .12s, transform .12s; display: grid; place-items: center; }
+.img-card__go .i { width: 18px; height: 18px; }
+.img-card--simple:hover .img-card__go, .img-card--simple:focus-visible .img-card__go { opacity: 1; transform: none; }
 
 /* Sidebar breathing room: 24px insets throughout */
 .app .column .step { padding: 24px; gap: 16px; }
@@ -792,6 +793,9 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .upl--empty { cursor: pointer; transition: background .12s, border-color .12s; }
 .upl--empty:hover { background: #f1f1f1; border-color: #9e9e9e; }
 .upl--empty:focus-within { border-color: var(--accent); }
+/* Centre the "Upload … image" text across the whole row (the right padding balances the thumbnail). */
+.upl--empty { grid-template-columns: auto minmax(0, 1fr); }
+.upl--empty .upl__meta { text-align: center; align-items: center; padding-right: calc(52px + 8px); }
 
 /* − value + stepper (header spacing) */
 .stepper { display: flex; align-items: center; justify-content: space-between; height: 36px; border: 1px solid var(--line-strong); border-radius: 8px; background: #f1f1f1; padding: 2px; }
@@ -1489,7 +1493,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       const { needed, have } = imageNeeds(r);
       return `<li class="img-card img-card--simple" data-act="select" data-name="${esc(o.name)}" tabindex="0">
         <span class="img-card__text"><span class="img-card__name">${esc(o.name)}</span><span class="img-card__count ${needed && have >= needed ? "is-done" : ""}">${have} of ${needed} image${needed === 1 ? "" : "s"} uploaded</span></span>
-        <button type="button" class="pen" data-act="edit" data-name="${esc(o.name)}" aria-label="Edit ${esc(o.name)}">${ICON.pencil}<span class="row-tip" role="tooltip">Edit section</span></button>
+        <span class="img-card__go" aria-hidden="true"><svg class="i" viewBox="0 0 20 20"><path d="m8 5 5 5-5 5"/></svg></span>
       </li>`;
     }).join("");
     return `
