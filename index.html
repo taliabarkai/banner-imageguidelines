@@ -840,7 +840,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       </section>
 
       <section class="card" id="sizes">
-        <h2>How image sizes are worked out</h2>
+        <h2>Image sizes</h2>
         <ul class="guide-list">
           <li>Images are exported at least 1000px wide. Small tiles (4 or more in a row on desktop) can be 800px, which is the smallest any image gets.</li>
           <li>A full-width banner with 1 tile on desktop is always 2880px wide for desktop.</li>
@@ -1500,7 +1500,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const tabs = `<nav class="col-tabs" aria-label="View">${[["editor", "Editor"], ["guide", "Guide"]].map(([k, l]) => `<button type="button" class="tab" data-act="tab" data-val="${k}" aria-pressed="${ui.tab === k}">${ICON[k]}${l}</button>`).join("")}</nav>`;
     const guideNav = `
       <div class="column__head"><span class="column__title-row">${ICON.guide}<span class="column__title"><b>Guide</b><span>How it works</span></span></span></div>
-      <ul class="guide-nav">${[["order", "Homepage order"], ["sizes", "How image sizes are worked out"], ["rules", "Three rules"]].map(([id, l]) => `<li><button type="button" data-act="guide-jump" data-val="${id}">${l}</button></li>`).join("")}</ul>`;
+      <ul class="guide-nav">${[["order", "Homepage order"], ["sizes", "Image sizes"], ["rules", "Three rules"]].map(([id, l]) => `<li><button type="button" data-act="guide-jump" data-val="${id}">${l}</button></li>`).join("")}</ul>`;
     const designer = ui.view === "designer";
     const inner = ui.tab === "guide" ? guideNav : editing ? (designer ? designerEditorHTML() : editorHTML()) : designer ? designerListHTML() : listHTML();
     const guide = "";
