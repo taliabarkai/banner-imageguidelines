@@ -759,6 +759,15 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .row-tip { position: absolute; bottom: calc(100% + 6px); right: 0; background: #1d1d1f; color: #fff; font-size: 12px; font-weight: 500; white-space: nowrap; padding: 5px 9px; border-radius: 7px; pointer-events: none; opacity: 0; transition: opacity .12s; z-index: 30; }
 .eye:hover .row-tip, .pen:hover .row-tip, .eye:focus-visible .row-tip, .pen:focus-visible .row-tip { opacity: 1; }
 
+/* Toolbar (undo/redo, template, device views) sits in the center of the top bar */
+.app .top-center, .app.has-col .top-center, .app.rail-on .top-center { transform: none; min-width: 0; justify-content: center; }
+.floatbar--top { box-shadow: none; border: 1px solid var(--line); padding: 3px; border-radius: 10px; flex-wrap: nowrap; }
+.floatbar--top .fb-btn { width: 30px; height: 30px; }
+.floatbar--top .tpl-btn, .floatbar--top .tpl-more { height: 30px; }
+.app.is-specs .top-center, .app.is-guide .top-center { visibility: hidden; }
+.canvas .floatbar-wrap { padding-bottom: 10px; }
+@media (max-width: 1150px) { .topbar { grid-template-columns: auto minmax(0, 1fr) auto; } .floatbar--top .mode-seg { display: none; } }
+
 /* Open section header: title, then the show/hide eye on the right */
 .column__head--edit { padding-right: 10px; }
 .column__head .head-eye { opacity: 1; position: relative; margin-left: auto; flex: none; }
@@ -830,7 +839,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
         <span class="brand__text"><span class="brand__name">Homepage Site Dressing</span></span>
       </div>
     </div>
-    <div class="top-center" id="topCenter"><div id="viewPick" hidden></div></div>
+    <div class="top-center" id="topCenter"><div id="viewPick" hidden></div><div class="floatbar floatbar--top" id="floatbar" role="toolbar" aria-label="Template and preview"></div></div>
     <div class="topbar__right"><span id="topRight"></span><div class="theme-pick" id="themePick"></div></div>
   </header>
 
@@ -841,7 +850,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     <nav class="rail" id="rail" aria-label="Panels" hidden></nav>
     <aside class="column" id="column" aria-label="Sections"></aside>
     <main class="canvas" id="canvas" aria-label="Preview">
-      <div class="floatbar-wrap"><div class="floatbar-col"><div class="floatbar" id="floatbar" role="toolbar" aria-label="Template and preview"></div><div class="export-chip" id="exportChip" hidden></div></div></div>
+      <div class="floatbar-wrap"><div class="floatbar-col"><div class="export-chip" id="exportChip" hidden></div></div></div>
       <div class="stagearea" id="stage"></div>
       <button type="button" class="present-exit" data-act="present-exit" title="Exit full-screen preview (Esc)">Exit preview</button>
     </main>
