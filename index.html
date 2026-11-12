@@ -694,6 +694,12 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .app.presenting .sec::after, .app.presenting .sec__tag { display: none; }
 .app.presenting .present-exit { display: block; position: fixed; bottom: 16px; right: 16px; z-index: 80; border: 0; border-radius: 999px; padding: 8px 14px; background: rgba(29,29,31,0.88); color: #fff; font-weight: 600; font-size: 12.5px; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.2); }
 .app.presenting .present-exit:hover { background: #1d1d1f; }
+
+/* Empty image tiles show the upload icon, like the upload slots (hidden in full-screen preview). */
+.pic__art { position: relative; }
+.pic__empty { position: absolute; inset: 0; display: grid; place-items: center; color: #ffffff; pointer-events: none; }
+.pic__empty .i { width: calc(24px * var(--ui)); height: calc(24px * var(--ui)); stroke-width: 1.8; }
+.app.presenting .pic__empty { display: none; }
 </style>
 
 <div class="app">
@@ -1534,7 +1540,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const src = imgSrc(imgRef(r, slide, d));
     const editing = !ui.present && ui.view === "designer" && ui.sel && cfg[ui.sel] === r;
     const drop = editing ? ` data-act="tile-upload" data-drop data-i="${i}" data-dev="${imgKey(r, d)}" title="Drop an image here or click to upload"` : "";
-    const picture = `<div class="pic ${src ? "has-img" : ""}"${drop}><div class="pic__art" style="aspect-ratio:${sz.key.replace(":", " / ")}">${src ? `<img class="pic__img" src="${esc(src)}" alt="" loading="lazy">` : ""}</div>${pins}${play}${overlay}</div>`;
+    const picture = `<div class="pic ${src ? "has-img" : ""}"${drop}><div class="pic__art" style="aspect-ratio:${sz.key.replace(":", " / ")}">${src ? `<img class="pic__img" src="${esc(src)}" alt="" loading="lazy">` : `<span class="pic__empty">${ICON.upload}</span>`}</div>${pins}${play}${overlay}</div>`;
     const s = block ? side(p) : null;
     const band = () => `<div class="tile__band" style="justify-content:${align(p)}">${block}</div>`;
     const bandSide = () => `<div class="tile__band tile__band--side" style="align-items:${align(p)}">${block}</div>`;
