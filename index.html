@@ -703,11 +703,6 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 /* Double-click preview text to edit it in place. */
 .app:not(.presenting) .sec [data-edit] { cursor: text; }
 .app:not(.presenting) .sec [data-edit]:hover { outline: 1px dashed rgba(0, 91, 211, 0.6); outline-offset: 2px; }
-.sec .sec__tag--tools { pointer-events: auto; display: flex; align-items: center; gap: calc(6px * var(--ui)); padding-right: calc(4px * var(--ui)); opacity: 1; cursor: default; }
-.sec__tag-sep { width: 1px; align-self: stretch; margin: calc(2px * var(--ui)) 0; background: rgba(255,255,255,0.45); }
-.sec__ratio { appearance: none; -webkit-appearance: none; border: 0; margin: 0; height: auto; width: auto; font: inherit; font-weight: 600; color: #ffffff; background-color: transparent; border-radius: calc(4px * var(--ui)); padding: 0 calc(16px * var(--ui)) 0 calc(4px * var(--ui)); cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23ffffff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right calc(4px * var(--ui)) center; background-size: calc(9px * var(--ui)) calc(5px * var(--ui)); }
-.sec__ratio:hover, .sec__ratio:focus-visible { background-color: rgba(255,255,255,0.18); outline: none; }
-.sec__ratio option, .sec__ratio optgroup { color: #303030; background: #ffffff; }
 .sec [data-edit][contenteditable] { outline: 2px solid #005bd3; outline-offset: 2px; cursor: text; user-select: text; -webkit-user-select: text; }
 @media (max-width: 900px) { .app.presenting .canvas { height: auto; min-height: 0; border-top: 0; } }
 
@@ -729,7 +724,12 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .pic[data-crop].is-panning { cursor: grabbing; }
 .pic__img { will-change: transform; }
 .crop-ctl { position: absolute; z-index: 4; right: calc(8px * var(--ui)); bottom: calc(8px * var(--ui)); display: flex; gap: calc(2px * var(--ui)); padding: calc(3px * var(--ui)); border-radius: calc(9px * var(--ui)); background: rgba(255,255,255,0.95); box-shadow: 0 2px 10px rgba(0,0,0,0.18); opacity: 0; transition: opacity .12s; font-family: var(--font-ui); }
-.pic[data-crop]:hover .crop-ctl, .crop-ctl:focus-within, .pic.is-panning .crop-ctl { opacity: 1; }
+.pic[data-crop]:hover .crop-ctl, .pic[data-act="tile-upload"]:hover .crop-ctl, .crop-ctl:focus-within, .pic.is-panning .crop-ctl { opacity: 1; }
+.crop-ctl { align-items: center; cursor: default; }
+.crop-ctl__ratio { appearance: none; -webkit-appearance: none; border: 0; margin: 0 calc(2px * var(--ui)); width: auto; height: calc(26px * var(--ui)); padding: 0 calc(18px * var(--ui)) 0 calc(8px * var(--ui)); border-radius: calc(6px * var(--ui)); background-color: #f1f1f1; color: #1d1d1f; font-family: var(--font-ui); font-size: calc(13px * var(--ui)); font-weight: 600; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23616161' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right calc(6px * var(--ui)) center; background-size: calc(9px * var(--ui)) calc(5px * var(--ui)); }
+.crop-ctl__ratio:hover { background-color: #e6e6e6; }
+.crop-ctl .crop-ctl__icon { display: grid; place-items: center; padding: 0; }
+.crop-ctl__icon .i { width: calc(16px * var(--ui)); height: calc(16px * var(--ui)); }
 .crop-ctl button { border: 0; background: transparent; color: #1d1d1f; cursor: pointer; min-width: calc(26px * var(--ui)); height: calc(26px * var(--ui)); padding: 0 calc(6px * var(--ui)); border-radius: calc(6px * var(--ui)); font-size: calc(13px * var(--ui)); font-weight: 600; line-height: 1; }
 .crop-ctl button:hover:not(:disabled) { background: #ececec; }
 .crop-ctl button:disabled { opacity: 0.35; cursor: default; }
@@ -1586,11 +1586,14 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const drop = !editing ? "" : src
       ? ` data-drop data-crop ${slot} title="Drag to reposition"`
       : ` data-act="tile-upload" data-drop ${slot} title="Drop an image here or click to upload"`;
-    const cropCtl = editing && src ? `<div class="crop-ctl">
-        <button type="button" data-act="crop-zoom" data-step="-1" ${slot} aria-label="Zoom out" ${cropOf(ref).z <= 1 ? "disabled" : ""}>−</button>
-        <button type="button" data-act="crop-zoom" data-step="1" ${slot} aria-label="Zoom in" ${cropOf(ref).z >= 3 ? "disabled" : ""}>+</button>
-        <button type="button" data-act="crop-reset" ${slot}>Reset</button>
-      </div>` : "";
+    const devName = d === "mobile" ? "Mobile" : "Desktop";
+    const ratioPick = `<select class="crop-ctl__ratio" data-ratio="${d === "mobile" ? "m" : "d"}" aria-label="${devName} image aspect ratio" title="${devName} image aspect ratio">${ratioOptions(ratioKey(r, d))}</select>`;
+    const cropCtl = !editing ? "" : src ? `<div class="crop-ctl">
+        <button type="button" data-act="crop-zoom" data-step="-1" ${slot} aria-label="Zoom out" title="Zoom out" ${cropOf(ref).z <= 1 ? "disabled" : ""}>−</button>
+        <button type="button" data-act="crop-zoom" data-step="1" ${slot} aria-label="Zoom in" title="Zoom in" ${cropOf(ref).z >= 3 ? "disabled" : ""}>+</button>
+        ${ratioPick}
+        <button type="button" class="crop-ctl__icon" data-act="tile-upload" ${slot} aria-label="Replace image" title="Replace image">${ICON.replace}</button>
+      </div>` : `<div class="crop-ctl">${ratioPick}</div>`;
     const picture = `<div class="pic ${src ? "has-img" : ""}"${drop}><div class="pic__art" style="aspect-ratio:${sz.key.replace(":", " / ")}">${src ? `<img class="pic__img" src="${esc(src)}" alt="" loading="lazy" draggable="false" style="${cropCSS(ref)}">` : `<span class="pic__empty">${ICON.upload}</span>`}</div>${pins}${play}${overlay}${cropCtl}</div>`;
     const s = block ? side(p) : null;
     const band = () => `<div class="tile__band" style="justify-content:${align(p)}">${block}</div>`;
@@ -1630,14 +1633,9 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       trackStyle = `grid-template-columns:repeat(${geo.used}, ${geo.slideW}px);gap:${g}px;justify-content:center;padding:0 ${sidePad}px;`;
     }
     const dotsHTML = dots ? `<div class="dots ${dots.startsWith("inline") ? "dots--inline" : ""}" style="${dots.startsWith("inline") ? `padding-inline:${d === "mobile" ? 6 : 12}px` : ""}">${Array.from({ length: (geo.maxPos || 0) + 1 }, (_, k) => `<button type="button" data-act="dot" data-id="${r.id}" data-k="${k}" class="${k === pos ? "is-on" : ""}" aria-label="Go to position ${k + 1}"></button>`).join("")}</div>` : "";
-    // The selected section's blue tag also shows its image ratio on this device; click it to change.
-    const devName = d === "mobile" ? "Mobile" : "Desktop";
-    const tools = !ui.present && name === ui.sel && usesArt(r)
-      ? `<span class="sec__tag sec__tag--tools">${n} · ${esc(name)}<span class="sec__tag-sep" aria-hidden="true"></span><select class="sec__ratio" data-ratio="${d === "mobile" ? "m" : "d"}" aria-label="${devName} image aspect ratio" title="Change the ${devName.toLowerCase()} image aspect ratio">${ratioOptions(ratioKey(r, d))}</select></span>`
-      : "";
     // Top and bottom match the sides: page margin plus any outer padding.
     return `<div class="sec${sel}" data-name="${esc(name)}" style="${sidePad ? `padding-block:${sidePad}px` : ""}">
-      ${tools || tag}${header}
+      ${tag}${header}
       ${dots === "block-start" ? dotsHTML : ""}
       <div class="stage-wrap">
         ${dots === "inline-start" ? dotsHTML : ""}
@@ -2517,7 +2515,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   };
 
   document.addEventListener("click", async (e) => {
-    if (e.target.closest?.("[contenteditable], .sec__tag--tools")) return;
+    if (e.target.closest?.("[contenteditable], .crop-ctl select")) return;
     const editHit = !ui.present && e.target.closest?.(".sec [data-edit]");
     if (editHit && editHit.closest(".sec[data-name]")?.dataset.name === ui.sel) { closeMenus(); startEdit(editHit, e.clientX, e.clientY); return; }
     const t = e.target.closest("[data-act]");
