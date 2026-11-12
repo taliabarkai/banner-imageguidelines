@@ -447,7 +447,6 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .upl__thumb .i { width: 20px; height: 20px; }
 .upl__meta { min-width: 0; display: flex; flex-direction: column; gap: 2px; font-size: 11.5px; color: var(--subtle); }
 .upl__meta b { color: var(--ink); font-weight: 600; font-size: 12px; }
-.upl__ok { color: #29845a; }
 .upl__warn { color: var(--warn); }
 .upl__acts { display: flex; gap: 8px; }
 .upl__acts button, .upl__acts label { border: 0; background: none; padding: 0; color: var(--accent); cursor: pointer; font-size: 11.5px; }
@@ -1739,11 +1738,10 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     let meta;
     if (busy) meta = `<b>${label}</b><span>Uploading…</span>`;
     else if (ref) {
-      const { out } = imgCheck(r, ref, dev);
-      meta = `<b>${label}</b><span>${ref.w} × ${ref.h}</span>${out.map(([k, t]) => `<span class="${k === "ok" ? "upl__ok" : "upl__warn"}">${esc(t)}</span>`).join("")}
+      meta = `<b>${label}</b><span>${ref.w} × ${ref.h}</span>
         ${canUpload() ? `<span class="upl__acts"><label>Replace${input}</label><button type="button" class="rm" data-act="img-remove" data-i="${i}" data-dev="${dev}">Remove</button></span>` : ""}`;
     } else {
-      const need = imgCheck(r, { w: 1, h: 1 }, dev).need;
+      const need = imgNeed(r, dev);
       meta = `<b>${label}</b><span>${canUpload() ? "Drop an image or click to upload" : "No image yet"}</span><span>Export ${need.ew} × ${need.eh} (${need.key})</span>`;
     }
     if (msg) meta += `<span class="upl__warn">${esc(msg)}</span>`;
@@ -1830,16 +1828,13 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const thumb = !art
       ? `<span class="slide-thumb slide-thumb--none">Text</span>`
       : `<label class="slide-thumb" data-drop data-i="${i}" data-dev="m" title="${ref ? "Replace image" : "Upload image"}">${src ? `<img src="${esc(src)}" alt="">` : ICON.upload}${input}</label>`;
-    const warn = ref ? imgCheck(r, ref, "m").out.filter(([k]) => k === "warn").map(([, t]) => t)[0] : "";
-    const dref = art && r.ratio.split ? s.imgs?.[ui.theme]?.d : null;
-    const dwarn = dref ? imgCheck(r, dref, "d").out.filter(([k]) => k === "warn").map(([, t]) => `Desktop: ${t}`)[0] : "";
     const msg = ui.imgMsg && ui.imgMsg.key.startsWith(`${i}-`) ? ui.imgMsg.text : "";
     return `<li class="slide-row">
       ${thumb}
       ${sel(`slides.${i}.kind`, KIND_OPTS, s.kind, `Slide ${i + 1} type`)}
       <input type="text" id="f-copy-title-${i}" data-copy="title" data-i="${i}" value="${esc(titleAt(r, i))}" placeholder="Card text" aria-label="Slide ${i + 1} text for ${esc(brandName())}">
       <button type="button" class="x-btn" data-act="del-slide" data-i="${i}" ${r.slides.length === 1 ? "disabled" : ""} aria-label="Remove slide ${i + 1}">✕</button>
-      ${[msg, warn, dwarn].filter(Boolean).map((t) => `<span class="slide-warn">${esc(t)}</span>`).join("")}
+      ${msg ? `<span class="slide-warn">${esc(msg)}</span>` : ""}
     </li>`;
   };
 
@@ -2177,17 +2172,10 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     changed();
   };
   // Shape and resolution checks against what this slide needs.
-  const imgCheck = (r, ref, dev) => {
+  // The export size an upload slot is for.
+  const imgNeed = (r, dev) => {
     const devices = r.ratio.split ? [dev === "d" ? "desktop" : "mobile"] : ["mobile", "desktop"].filter((d) => visibleOn(r, d));
-    const need = devices.map((d) => sizesFor(r, d)).reduce((a, b) => (b.ew > a.ew ? b : a));
-    const ratio = ref.w / ref.h;
-    const shapeOff = Math.abs(ratio - need.ratio) / need.ratio > 0.02;
-    const small = ref.w < need.ew * 0.98;
-    const out = [];
-    if (shapeOff) out.push(["warn", `Shape is ${(ratio >= 1 ? ratio : 1 / ratio).toFixed(2)}:1 ${ratio >= 1 ? "wide" : "tall"}, but the slide is ${need.key}. It will be cropped.`]);
-    if (small) out.push(["warn", `Only ${ref.w}px wide. Export at ${need.ew} × ${need.eh} or it may look blurry.`]);
-    if (!out.length) out.push(["ok", "Right shape and size."]);
-    return { need, out };
+    return devices.map((d) => sizesFor(r, d)).reduce((a, b) => (b.ew > a.ew ? b : a));
   };
 
   // ---------- Saving (db) ----------
