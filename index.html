@@ -700,6 +700,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .pic__empty { position: absolute; inset: 0; display: grid; place-items: center; color: #ffffff; pointer-events: none; }
 .pic__empty .i { width: calc(24px * var(--ui)); height: calc(24px * var(--ui)); stroke-width: 1.8; }
 .app.presenting .pic__empty { display: none; }
+.strip:has(> .track--carousel) { touch-action: pan-y; cursor: grab; }
 /* Double-click preview text to edit it in place. */
 .app:not(.presenting) .sec [data-edit] { cursor: text; }
 .app:not(.presenting) .sec [data-edit]:hover { outline: 1px dashed rgba(0, 91, 211, 0.6); outline-offset: 2px; }
@@ -1413,6 +1414,18 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
         ? `<ul class="img-list">${cards}</ul>`
         : `<p class="img-sum">No sections with images yet. Turn sections on in Site configuration.</p>`}`;
   };
+  const bgHexField = (r) => `<div class="field"><label for="f-text-bg-hex">Background for Text only tiles</label><div class="color-field"><input type="color" data-path="text.bg" value="${esc(r.text.bg)}" aria-label="Pick a background color"><input type="text" class="mono hex-input" id="f-text-bg-hex" data-hex="text.bg" value="${esc(String(r.text.bg).toUpperCase())}" maxlength="7" spellcheck="false" autocomplete="off"></div></div>`;
+  // Colors in Designer: text color (on images and Text only tiles) and the Text only background.
+  const colorsStep = (r) => {
+    const textOnly = r.slides.some((sl) => sl.kind === "text");
+    const showText = textMode(r) === "on" || textOnly;
+    if (!showText && !textOnly) return "";
+    return `<div class="step">
+        <div class="step__title"><span>Colors</span></div>
+        ${showText ? `<div class="field"><span class="field__label">Text color</span>${seg("text.color", [["dark", "Dark"], ["light", "Light"]], r.text.color, "Text color")}</div>` : ""}
+        ${textOnly ? bgHexField(r) : ""}
+      </div>`;
+  };
   const designerEditorHTML = () => {
     const r = cur();
     const head = `
@@ -1420,7 +1433,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
         <button type="button" class="fb-btn" data-act="back" aria-label="Back to images" title="Back to images">${ICON.back}</button>
         <span class="column__title"><b>${esc(ui.sel)}</b><span>Section ${sectionNo(ui.sel)} · Images</span></span>
       </div>`;
-    if (r.kind || !usesArt(r)) return `${head}<div class="step"><p class="b-help">${r.kind ? "This section has no images to make." : "Every tile is Text only, so there are no images to make."} Its settings are in Site configuration.</p><div class="ctx-line"><span></span><button type="button" data-act="view" data-val="config">Open Site configuration</button></div></div>`;
+    if (r.kind || !usesArt(r)) return `${head}<div class="step"><p class="b-help">${r.kind ? "This section has no images to make." : "Every tile is Text only, so there are no images to make."} Its settings are in Site configuration.</p><div class="ctx-line"><span></span><button type="button" data-act="view" data-val="config">Open Site configuration</button></div></div>${r.kind ? "" : colorsStep(r)}`;
     const { art } = imageNeeds(r);
     const anyImages = art.some(([sl]) => Object.values(sl.imgs?.[ui.theme] || {}).some(Boolean));
     const textOnly = r.slides.length - art.length;
@@ -1440,6 +1453,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
         </div>
         <p class="b-help">${r.ratio.split ? "Different ratios, so each tile needs two files: one for mobile, one for desktop." : "Same ratio on both devices, so one file covers both."}</p>
       </div>
+      ${colorsStep(r)}
       <div class="step">
         ${exportGuideHTML(r)}
         <div class="ctx-line"><span>${esc(layoutLine(r))}</span><button type="button" data-act="view" data-val="config">Change layout</button></div>
@@ -1748,7 +1762,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       const d = screenW < 768 ? "mobile" : "desktop";
       ui.deskFullW = Math.max(768, screenW);
       ui.mobFullW = Math.max(320, screenW);
-      stage.innerHTML = `<div class="present-page" style="width:${layoutW(d)}px">${pageHTML(d, 1, 1)}</div>`;
+      stage.innerHTML = `<div class="present-page" data-device="${d}" style="width:${layoutW(d)}px">${pageHTML(d, 1, 1)}</div>`;
       return;
     }
     const both = ui.device === "both";
@@ -2058,10 +2072,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
           <option value="carousel" ${layoutValue === "carousel" ? "selected" : ""}>Carousel</option>
           <optgroup label="Ready-made layouts">${Object.entries(LAYOUTS).map(([k, l]) => `<option value="preset:${k}">${l.label}</option>`).join("")}</optgroup>
         </select>
-        <p class="b-help">${LAYOUT_HELP[r.display]}</p>
-        ${car
-          ? `<p class="b-help">Carousels always sit inside the page margin (${PAGE_MARGIN.mobile}px on mobile, ${PAGE_MARGIN.desktop}px on desktop), with the same padding above and below.</p>`
-          : `<div class="field"><span class="field__label">Width</span>${seg("margin", [["false", "Full width"], ["true", "Page margin"]], String(!!r.margin), "Banner width")}</div>`}
+        ${car ? "" : `<div class="field"><span class="field__label">Width</span>${seg("margin", [["false", "Full width"], ["true", "Page margin"]], String(!!r.margin), "Banner width")}</div>`}
         <div class="dtable">
           <span></span><span class="dtable__h">Mobile</span><span class="dtable__h">Desktop</span>
           ${dRow(car ? "In view" : "Per row", "", (k) => sel(`${k}.cols`, colOpts(r[k].cols), r[k].cols, `${dev(k)} ${car ? "in view" : "per row"}`, "num"))}
@@ -2098,7 +2109,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
           <div class="subhead">Style</div>
           <div class="field"><label for="f-text-headVariant">Typography</label>${sel("text.headVariant", typeOpts(), tv(r, "head"), "Tile text typography")}</div>
           <div class="two"><div class="field"><label for="f-text-btnStyle">Button</label>${sel("text.btnStyle", BTN_OPTS, r.text.btnStyle, "Button style")}</div>${r.text.btnStyle !== "none" ? copyTxt("btn", copyOf(r).btn, "Button label", "Shop now", true) : "<span></span>"}</div>` : ""}
-        ${r.slides.some((sl) => sl.kind === "text") ? `<div class="field"><label for="f-text-bg-hex">Background for Text only tiles</label><div class="color-field"><input type="color" data-path="text.bg" value="${esc(r.text.bg)}" aria-label="Pick a background color"><input type="text" class="mono hex-input" id="f-text-bg-hex" data-hex="text.bg" value="${esc(String(r.text.bg).toUpperCase())}" maxlength="7" spellcheck="false" autocomplete="off"></div></div>` : ""}
+        ${r.slides.some((sl) => sl.kind === "text") ? `${mode !== "on" ? `<div class="field"><span class="field__label">Text color on Text only tiles</span>${seg("text.color", [["dark", "Dark"], ["light", "Light"]], r.text.color, "Text color")}</div>` : ""}${bgHexField(r)}` : ""}
       </div>
 
       <div class="step">
@@ -2546,6 +2557,80 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     ui.pos[id] = p; ui.last[id] = Date.now();
     applyPos(id);
   };
+  // Swipe carousels: drag sideways with a mouse, finger or pen, or scroll sideways on a trackpad.
+  let swallowClick = false;
+  document.addEventListener("pointerdown", (e) => {
+    const track = e.target.closest?.(".track--carousel");
+    if (!track || e.button !== 0) return;
+    // Dragging an uploaded image in the selected section repositions it instead.
+    if (e.target.closest(".pic[data-crop], .crop-ctl, [contenteditable], select, button, .arrow")) return;
+    const id = track.dataset.track;
+    const r = byId(id);
+    if (!r) return;
+    const dev = track.closest("[data-device]")?.dataset.device || "desktop";
+    const geo = geometry(r, dev, layoutW(dev));
+    const max = geo.maxPos || 0;
+    if (!max) return;
+    const unit = geo.slideW + geo.g;
+    const scale = track.getBoundingClientRect().width / (track.offsetWidth || 1) || 1;
+    const startPos = Math.min(ui.pos[id] || 0, max);
+    const x0 = e.clientX, y0 = e.clientY;
+    let dx = 0, active = false;
+    const move = (ev) => {
+      const mx = (ev.clientX - x0) / scale;
+      if (!active) {
+        if (Math.abs(ev.clientX - x0) < 6 || Math.abs(ev.clientX - x0) < Math.abs(ev.clientY - y0)) return;
+        active = true;
+        track.style.transition = "none";
+        document.body.style.userSelect = "none";
+      }
+      dx = mx;
+      let off = -startPos * unit + dx;
+      const minOff = -max * unit;
+      if (off > 0) off /= 3; // a little give at the ends
+      if (off < minOff) off = minOff + (off - minOff) / 3;
+      track.style.transform = `translateX(${off}px)`;
+    };
+    const up = () => {
+      document.removeEventListener("pointermove", move);
+      document.removeEventListener("pointerup", up);
+      document.removeEventListener("pointercancel", up);
+      if (!active) return;
+      track.style.transition = "";
+      document.body.style.userSelect = "";
+      let steps = Math.round(-dx / unit);
+      if (!steps && Math.abs(dx) > unit * 0.15) steps = dx < 0 ? 1 : -1;
+      ui.pos[id] = Math.max(0, Math.min(max, startPos + steps));
+      ui.last[id] = Date.now();
+      applyPos(id);
+      swallowClick = true;
+      setTimeout(() => { swallowClick = false; }, 0);
+    };
+    document.addEventListener("pointermove", move);
+    document.addEventListener("pointerup", up);
+    document.addEventListener("pointercancel", up);
+  });
+  // A swipe shouldn't also count as a click (which would select the section or open the file picker).
+  document.addEventListener("click", (e) => { if (swallowClick) { swallowClick = false; e.stopPropagation(); e.preventDefault(); } }, true);
+  let wheelAcc = 0, wheelAt = 0;
+  document.addEventListener("wheel", (e) => {
+    const track = e.target.closest?.(".strip")?.querySelector(".track--carousel");
+    if (!track || Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+    const id = track.dataset.track;
+    const r = byId(id);
+    if (!r) return;
+    e.preventDefault();
+    const dev = track.closest("[data-device]")?.dataset.device || "desktop";
+    const now = Date.now();
+    wheelAcc += e.deltaX;
+    if (Math.abs(wheelAcc) > 40 && now - wheelAt > 350) {
+      const max = geometry(r, dev, layoutW(dev)).maxPos || 0;
+      const p = Math.max(0, Math.min(max, Math.min(ui.pos[id] || 0, max) + (wheelAcc > 0 ? 1 : -1)));
+      ui.pos[id] = p; ui.last[id] = now; applyPos(id);
+      wheelAt = now; wheelAcc = 0;
+    }
+  }, { passive: false });
+
   const choose = (name, reveal = false) => {
     ui.sel = name; ui.copied = ""; ui.fallback = ""; ui.picking = false; ui.column = true; ui.panel = "sections"; ui.choosing = false;
     renderAll();
