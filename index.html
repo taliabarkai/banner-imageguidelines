@@ -751,6 +751,14 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .topbar__right .theme-pick .menu { left: auto; right: 0; transform: none; }
 .topbar__right { gap: 10px; }
 
+/* ---------- Section list: eye shows on shown sections, everything else on hover; dark tooltips ---------- */
+.rows .row .row__tools { opacity: 1; }
+.rows .row .row__tools .eye, .rows .row .row__tools .pen { opacity: 0; position: relative; transition: opacity .1s; }
+.rows .row:not(.is-off) .row__tools .eye { opacity: 1; }
+.rows .row:hover .row__tools .eye, .rows .row:hover .row__tools .pen, .rows .row:focus-within .row__tools .eye, .rows .row:focus-within .row__tools .pen { opacity: 1; }
+.row-tip { position: absolute; bottom: calc(100% + 6px); right: 0; background: #1d1d1f; color: #fff; font-size: 12px; font-weight: 500; white-space: nowrap; padding: 5px 9px; border-radius: 7px; pointer-events: none; opacity: 0; transition: opacity .12s; z-index: 30; }
+.eye:hover .row-tip, .pen:hover .row-tip, .eye:focus-visible .row-tip, .pen:focus-visible .row-tip { opacity: 1; }
+
 /* ---------- View rail: always-on icons for Site configuration, Designer and Specs ---------- */
 .app-body { flex: 1; min-height: 0; display: flex; }
 .app-body > .workspace { flex: 1; min-width: 0; }
@@ -1368,12 +1376,12 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const rows = ORDER.map((s) => {
       const c = cfg[s.name];
       const icon = isTopline(s.name) ? ICON.header : isProducts(s.name) ? ICON.products : ICON.banner;
-      return `<li class="row ${c.on ? "" : "is-off"}" data-act="select" data-name="${esc(s.name)}" tabindex="0" title="Section ${sectionNo(s.name)} · ${c.on ? esc(summary(s.name)) : "Hidden"}">
+      return `<li class="row ${c.on ? "" : "is-off"}" data-act="select" data-name="${esc(s.name)}" tabindex="0">
         ${icon}
         <span class="row__name">${esc(s.name)}</span>
         <span class="row__tools">
-          <button type="button" class="eye" data-act="toggle" data-name="${esc(s.name)}" aria-pressed="${c.on}" aria-label="${c.on ? "Hide" : "Show"} ${esc(s.name)}" title="${c.on ? "Hide" : "Show"}">${c.on ? ICON.eye : ICON.eyeOff}</button>
-          <button type="button" class="pen" data-act="edit" data-name="${esc(s.name)}" aria-label="Edit ${esc(s.name)}" title="Edit settings">${ICON.pencil}</button>
+          <button type="button" class="eye" data-act="toggle" data-name="${esc(s.name)}" aria-pressed="${c.on}" aria-label="${c.on ? "Hide" : "Show"} ${esc(s.name)}">${c.on ? ICON.eye : ICON.eyeOff}<span class="row-tip" role="tooltip">${c.on ? "Hide section" : "Show section"}</span></button>
+          <button type="button" class="pen" data-act="edit" data-name="${esc(s.name)}" aria-label="Edit ${esc(s.name)}">${ICON.pencil}<span class="row-tip" role="tooltip">Edit section</span></button>
         </span>
       </li>`;
     }).join("");
