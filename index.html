@@ -557,16 +557,6 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .cards-head button { border: 0; background: none; color: var(--accent); cursor: pointer; padding: 0; font-size: 12px; }
 
 /* ---------- Export / import dialog ---------- */
-.modal-backdrop { position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.35); display: grid; place-items: center; padding: 16px; }
-.modal { width: min(560px, 100%); max-height: calc(100% - 32px); overflow: auto; background: var(--surface); border-radius: 14px; box-shadow: 0 20px 60px rgba(0,0,0,0.25); display: flex; flex-direction: column; }
-.modal__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
-.modal__head h2 { font-size: 15px; font-weight: 600; }
-.modal__body { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
-.modal__body p { color: var(--muted); font-size: 12.5px; }
-.modal__body textarea { width: 100%; min-height: 180px; font-family: var(--font-mono); font-size: 11px; border: 1px solid var(--line-strong); border-radius: 8px; padding: 10px; resize: vertical; color: var(--ink); background: #fafafa; }
-.modal__foot { display: flex; gap: 8px; justify-content: flex-end; align-items: center; padding: 12px 16px; border-top: 1px solid var(--line); background: #fafafa; flex-wrap: wrap; }
-.modal__error { color: var(--critical); font-size: 12.5px; margin-right: auto; }
-.modal__ok { color: #29845a; font-size: 12.5px; margin-right: auto; }
 
 /* ---------- Rail tooltips + add-section list ---------- */
 .rail__btn { position: relative; }
@@ -658,7 +648,6 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     </main>
   </div>
 
-  <div id="modal"></div>
   <div class="guide" id="guide" hidden>
     <div class="guide__inner">
       <div class="guide__intro">
@@ -1135,8 +1124,6 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     rename: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 16h3l8.5-8.5-3-3L4 13z"/></svg>',
     copy: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><rect x="7" y="7" width="9.5" height="9.5" rx="1.5"/><path d="M13 7V4.5A1 1 0 0 0 12 3.5H4.5a1 1 0 0 0-1 1V12a1 1 0 0 0 1 1H7"/></svg>',
     trash: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 5.5h13M8 5.5V4h4v1.5M5 5.5l.8 11h8.4l.8-11"/></svg>',
-    exportIcon: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 13V3.5M6.5 7 10 3.5 13.5 7"/><path d="M4 12.5v3A1.5 1.5 0 0 0 5.5 17h9a1.5 1.5 0 0 0 1.5-1.5v-3"/></svg>',
-    importIcon: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3.5V13M6.5 9.5 10 13l3.5-3.5"/><path d="M4 12.5v3A1.5 1.5 0 0 0 5.5 17h9a1.5 1.5 0 0 0 1.5-1.5v-3"/></svg>',
     close: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5 5 15"/></svg>',
     listEdit: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 5.5h8M3.5 10h8M3.5 14.5h5"/><path d="m11.5 15.5 1.5.4 4-4-1.9-1.9-4 4z"/></svg>',
     pencil: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 16h3l8.5-8.5-3-3L4 13z"/><path d="m11 6 3 3"/></svg>',
@@ -1331,56 +1318,6 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     browser: ["", "Saved on this computer"], off: ["is-saving", "Not saved: this browser blocks storage"], readonly: ["is-off", "View only"], error: ["is-saving", "Couldn't save"],
   })[ui.save] || ["is-off", ""];
 
-  const exportJSON = () => {
-    syncActive();
-    const t = tpl();
-    return JSON.stringify({ type: "banner-builder-template", version: 1, name: t.name, page: t.page, cfg: t.cfg }, null, 2);
-  };
-  const renderModal = () => {
-    const el = $("#modal");
-    if (!ui.modal) { el.innerHTML = ""; return; }
-    const canDownload = !window.claude?.use;
-    const body = ui.modal === "export"
-      ? `<div class="modal__body">
-          <p>This is "${esc(tpl().name)}": its sections, settings and every brand's copy. Send it to a colleague. They choose Import template and paste it, or open the file.</p>
-          <textarea id="exportText" readonly aria-label="Template code">${esc(exportJSON())}</textarea>
-        </div>
-        <div class="modal__foot">
-          ${ui.modalMsg ? `<span class="modal__ok">${esc(ui.modalMsg)}</span>` : ""}
-          ${canDownload ? `<button type="button" class="btn" data-act="download-tpl">Download file</button>` : ""}
-          <button type="button" class="btn btn--primary" data-act="copy-tpl">Copy</button>
-        </div>`
-      : `<div class="modal__body">
-          <p>Paste a template someone exported, or choose the file they sent. It's added as a new template, so nothing you have is replaced.</p>
-          <textarea id="importText" placeholder="Paste the template code here" aria-label="Template code to import"></textarea>
-          <input type="file" id="importFile" accept=".json,application/json" aria-label="Template file">
-        </div>
-        <div class="modal__foot">
-          ${ui.modalMsg ? `<span class="modal__error">${esc(ui.modalMsg)}</span>` : ""}
-          <button type="button" class="btn" data-act="modal-close">Cancel</button>
-          <button type="button" class="btn btn--primary" data-act="do-import">Import</button>
-        </div>`;
-    el.innerHTML = `<div class="modal-backdrop" data-act="modal-backdrop">
-      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-        <div class="modal__head"><h2 id="modalTitle">${ui.modal === "export" ? "Export template" : "Import template"}</h2><button type="button" class="fb-btn" data-act="modal-close" aria-label="Close">${ICON.close}</button></div>
-        ${body}
-      </div>
-    </div>`;
-    (el.querySelector("#importText") || el.querySelector("[data-act=copy-tpl]"))?.focus();
-  };
-  const importTemplate = (text) => {
-    let data;
-    try { data = JSON.parse(text); } catch (err) { return "That isn't template code. Paste exactly what Export template gave you."; }
-    if (!data || data.type !== "banner-builder-template") return "That isn't a Banner Builder template.";
-    syncActive();
-    const t = cleanTemplate({ ...data, name: `${data.name || "Imported"} (imported)`, createdAt: Date.now() }, newTemplate("x").id);
-    Object.values(t.cfg).forEach((c) => { if (c && typeof c === "object") c.id = newId(); });
-    templates.push(t);
-    loadTemplate(t.id);
-    scheduleSave(t);
-    return null;
-  };
-
   const renderSave = () => {
     const el = $("#saveState");
     if (!el) return;
@@ -1405,8 +1342,6 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const moreMenu = ui.menu === "more" ? `<div class="menu" role="menu" style="left:auto;right:0">
         <button type="button" class="menu__item" role="menuitem" data-act="rename-tpl">${ICON.rename}Rename</button>
         <button type="button" class="menu__item" role="menuitem" data-act="dup-tpl">${ICON.copy}Duplicate</button>
-        <button type="button" class="menu__item" role="menuitem" data-act="export-tpl">${ICON.exportIcon}Export template</button>
-        <button type="button" class="menu__item" role="menuitem" data-act="import-tpl">${ICON.importIcon}Import template</button>
         <div class="menu__sep"></div>
         ${templates.length > 1 ? `<button type="button" class="menu__item menu__item--danger" role="menuitem" data-act="del-tpl">${ICON.trash}${ui.confirmDelete ? `Click again to delete "${esc(t.name)}"` : "Delete template"}</button>` : ""}
         <button type="button" class="menu__item menu__item--danger" role="menuitem" data-act="reset-all">${ICON.reset}${ui.confirmReset ? "Click again to delete every template" : "Reset all templates"}</button>
@@ -2448,7 +2383,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 
   document.addEventListener("click", async (e) => {
     const t = e.target.closest("[data-act]");
-    if (!e.target.closest(".tpl, .theme-pick, .modal")) closeMenus();
+    if (!e.target.closest(".tpl, .theme-pick")) closeMenus();
     if (!t) {
       const secEl = e.target.closest(".sec[data-name]");
       if (secEl) { ui.hl = null; choose(secEl.dataset.name); return; }
@@ -2535,27 +2470,6 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       ui.menu = null;
       scheduleSave(nt);
       renderAll();
-    } else if (act === "export-tpl") {
-      ui.menu = null; ui.modal = "export"; ui.modalMsg = ""; renderFloat(); renderModal();
-    } else if (act === "import-tpl") {
-      ui.menu = null; ui.modal = "import"; ui.modalMsg = ""; renderFloat(); renderModal();
-    } else if (act === "modal-close" || (act === "modal-backdrop" && e.target === t)) {
-      ui.modal = null; renderModal();
-    } else if (act === "copy-tpl") {
-      const text = $("#exportText").value;
-      try { await navigator.clipboard.writeText(text); ui.modalMsg = "Copied"; renderModal(); }
-      catch (err) { const ta = $("#exportText"); ta.focus(); ta.select(); }
-    } else if (act === "download-tpl") {
-      const blob = new Blob([$("#exportText").value], { type: "application/json" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `${tpl().name.replace(/[^\w-]+/g, "-").replace(/^-|-$/g, "") || "template"}.json`;
-      a.click();
-      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-    } else if (act === "do-import") {
-      const err = importTemplate($("#importText").value.trim());
-      if (err) { ui.modalMsg = err; renderModal(); return; }
-      ui.modal = null; renderModal(); renderAll();
     } else if (act === "rename-tpl") {
       ui.menu = null; ui.renaming = true; renderFloat();
     } else if (act === "reset-all") {
@@ -2690,7 +2604,6 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       return;
     }
     if (e.key === "Escape") {
-      if (ui.modal) { ui.modal = null; renderModal(); return; }
       if (ui.menu) { closeMenus(); return; }
 
       if (ui.sel) { ui.sel = null; renderAll(); return; }
@@ -2741,10 +2654,6 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       const file = el.files[0];
       el.value = "";
       uploadImage(file, Number(el.dataset.i), el.dataset.dev);
-      return;
-    }
-    if (el.id === "importFile" && el.files?.[0]) {
-      el.files[0].text().then((text) => { $("#importText").value = text; });
       return;
     }
     if (el.dataset?.add) {
