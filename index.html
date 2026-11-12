@@ -821,8 +821,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   <div class="guide" id="guide" hidden>
     <div class="guide__inner">
       <div class="guide__intro">
-        <h1>How it works</h1>
-        <p>Turn on the homepage sections you need, set each one's layout in Site configuration, then open Designer for the image sizes. Specs collects everything to send on. Your work is saved in this browser only.</p>
+        <h1>Guide</h1>
+        <p>Turn on the homepage sections you need and set each one's layout in Sections, then make the images in Images. Specs collects everything to send on. Your work is saved in this browser only.</p>
       </div>
 
       <section class="card" id="order">
@@ -1317,8 +1317,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   };
 
   const VIEWS = [
-    ["config", "Site configuration", '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 5.5h7M15 5.5h1M4 10h2M10 10h6M4 14.5h7M15 14.5h1"/><circle cx="13" cy="5.5" r="1.8"/><circle cx="8" cy="10" r="1.8"/><circle cx="13" cy="14.5" r="1.8"/></svg>'],
-    ["designer", "Designer", '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="4" width="14" height="12" rx="2"/><circle cx="7.5" cy="8.2" r="1.4"/><path d="m3.5 14 4-3.8 3 2.8 2.2-2 3.8 3.4"/></svg>'],
+    ["config", "Sections", ICON.layers],
+    ["designer", "Images", '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="4" width="14" height="12" rx="2"/><circle cx="7.5" cy="8.2" r="1.4"/><path d="m3.5 14 4-3.8 3 2.8 2.2-2 3.8 3.4"/></svg>'],
     ["specs", "Specs", '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M5.5 3h6.5l3 3v10.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 .5-.5Z"/><path d="M12 3v3h3M7.5 10h5M7.5 13h5"/></svg>'],
   ];
   const renderRail = () => {
@@ -1414,11 +1414,11 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     }).join("");
     return `
       <div class="column__head">
-        <span class="column__title-row">${ICON.image}<span class="column__title"><b>Images</b></span></span>
+        <span class="column__title-row">${ICON.image}<span class="column__title"><b>Images</b><span>${esc(tpl().name)}</span></span></span>
       </div>
       ${withImages.length
         ? `<ul class="img-list">${cards}</ul>`
-        : `<p class="img-sum">No sections with images yet. Turn sections on in Site configuration.</p>`}`;
+        : `<p class="img-sum">No sections with images yet. Turn sections on in Sections.</p>`}`;
   };
   const bgHexField = (r) => `<div class="field"><label for="f-text-bg-hex">Background for Text only tiles</label><div class="color-field"><input type="color" data-path="text.bg" value="${esc(r.text.bg)}" aria-label="Pick a background color"><input type="text" class="mono hex-input" id="f-text-bg-hex" data-hex="text.bg" value="${esc(String(r.text.bg).toUpperCase())}" maxlength="7" spellcheck="false" autocomplete="off"></div></div>`;
   // Colors in Designer: text color (on images and Text only tiles) and the Text only background.
@@ -1439,7 +1439,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
         <button type="button" class="fb-btn" data-act="back" aria-label="Back to images" title="Back to images">${ICON.back}</button>
         <span class="column__title"><b>${esc(ui.sel)}</b><span>Section ${sectionNo(ui.sel)} · Images</span></span>
       </div>`;
-    if (r.kind || !usesArt(r)) return `${head}<div class="step"><p class="b-help">${r.kind ? "This section has no images to make." : "Every tile is Text only, so there are no images to make."} Its settings are in Site configuration.</p><div class="ctx-line"><span></span><button type="button" data-act="view" data-val="config">Open Site configuration</button></div></div>${r.kind ? "" : colorsStep(r)}`;
+    if (r.kind || !usesArt(r)) return `${head}<div class="step"><p class="b-help">${r.kind ? "This section has no images to make." : "Every tile is Text only, so there are no images to make."} Its settings are in Sections.</p><div class="ctx-line"><span></span><button type="button" data-act="view" data-val="config">Open Sections</button></div></div>${r.kind ? "" : colorsStep(r)}`;
     const { art } = imageNeeds(r);
     const anyImages = art.some(([sl]) => Object.values(sl.imgs?.[ui.theme] || {}).some(Boolean));
     const textOnly = r.slides.length - art.length;
@@ -1750,7 +1750,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
         return { n: 0, html: `<div style="padding:${mobile ? 16 : 40}px">
           <div class="store-empty" style="padding:${mobile ? "56px 20px" : "140px 40px"};font-size:${mobile ? 13 : 17}px">
             <b style="font-size:${mobile ? 20 : 34}px">Your homepage is blank</b>
-            <span>1. Turn on the sections you need with the eye in the Sections list.<br>2. Set each one's layout in Site configuration.<br>3. Open Designer for the image sizes.</span>
+            <span>1. In Sections, turn on the sections you need with the eye.<br>2. Click a section to set its layout.<br>3. Open Images for the image sizes.</span>
           </div></div>` };
       }
       // Sections sit flush against each other; spacing comes from each banner's own outer padding setting.
@@ -2095,7 +2095,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
         <div class="shoot">
           <button type="button" class="btn" data-act="add-slide" ${r.slides.length >= 12 ? "disabled" : ""}>Add tile</button>
         </div>
-        ${usesArt(r) ? `<div class="ctx-line"><span>Image shape and sizes are set in Designer view.</span><button type="button" data-act="view" data-val="designer">Open</button></div>` : ""}
+        ${usesArt(r) ? `<div class="ctx-line"><span>Image shape and sizes are set in Images.</span><button type="button" data-act="view" data-val="designer">Open Images</button></div>` : ""}
       </div>
 
       <div class="step">
@@ -2199,7 +2199,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       ${ui.fallback ? `<label class="field"><span class="field__label">Your browser blocked copying. Select this text and copy it.</span><textarea class="brief-fallback" id="briefText" readonly>${esc(ui.fallback)}</textarea></label>` : ""}
       ${blocks.length
         ? blocks.map((b) => `<section class="card specs-sec"><h2>${esc(b[0])}</h2><div class="specs-list">${specsListHTML(b.slice(1))}</div></section>`).join("")
-        : `<section class="card"><p>No sections are turned on yet. Turn sections on in Site configuration to see their specs here.</p></section>`}
+        : `<section class="card"><p>No sections are turned on yet. Turn sections on in Sections to see their specs here.</p></section>`}
     </div>`;
     if (ui.fallback) { const t = $("#briefText"); t?.focus(); t?.select(); }
   };
