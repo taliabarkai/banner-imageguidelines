@@ -1,10 +1,4 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-</head>
-<body>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>
 <title>Homepage Site Dressing</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2071,8 +2065,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 
   // ---------- Reference tables ----------
   const renderOrderTable = () => {
-    $("#orderTable").innerHTML = `<thead><tr><th>#</th><th>Section</th><th>What it is</th></tr></thead><tbody>${ORDER.map((s, i) => `
-      <tr><td class="num">${i + 1}</td><td><b>${esc(s.name)}</b></td><td>${s.products ? "Product carousel with a fixed layout. No images to make." : esc(s.note)}</td></tr>`).join("")}</tbody>`;
+    $("#orderTable").innerHTML = `<thead><tr><th>#</th><th>Section</th></tr></thead><tbody>${ORDER.map((s, i) => `
+      <tr><td class="num">${i + 1}</td><td><b>${esc(s.name)}</b></td></tr>`).join("")}</tbody>`;
   };
   // ---------- Specs view ----------
   const specsListHTML = (lines) => {
@@ -2915,5 +2909,4 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 })();
 </script>
 
-</body>
-</html>
+</body></html>
