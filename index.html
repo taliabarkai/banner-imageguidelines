@@ -768,13 +768,14 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .canvas .floatbar-wrap { padding-bottom: 10px; }
 @media (max-width: 1150px) { .topbar { grid-template-columns: auto minmax(0, 1fr) auto; } .floatbar--top .mode-seg { display: none; } }
 
-/* Images list: same rows as Sections, just the name and how many images are in */
-.img-rows { padding: 12px 8px; }
-.img-row { grid-template-columns: 18px minmax(0, 1fr) auto; }
-.img-row__shape { width: 18px; height: 18px; display: grid; place-items: center; }
-.img-row__shape span { display: block; background: none; border: 1.5px solid var(--muted); border-radius: 2px; box-sizing: border-box; }
-.img-row__count { font-size: 12px; font-weight: 600; color: var(--subtle); padding-right: 10px; font-variant-numeric: tabular-nums; }
-.img-row__count.is-done { color: #29845a; }
+/* Images list: bordered cards with the section name, how many images are in, and Edit on hover */
+.img-list { padding: 12px 8px; gap: 8px; }
+.img-card--simple { grid-template-columns: minmax(0, 1fr) auto; padding: 12px 10px 12px 14px; }
+.img-card__text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.img-card--simple .img-card__name { font-size: 13.5px; }
+.img-card--simple .img-card__count { font-weight: 500; font-size: 12px; }
+.img-card--simple .pen { position: relative; opacity: 0; transition: opacity .1s; }
+.img-card--simple:hover .pen, .img-card--simple:focus-within .pen { opacity: 1; }
 
 /* − value + stepper (header spacing) */
 .stepper { display: flex; align-items: center; justify-content: space-between; height: 36px; border: 1px solid var(--line-strong); border-radius: 8px; background: #f1f1f1; padding: 2px; }
@@ -1469,12 +1470,10 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const withImages = shown.filter((o) => !cfg[o.name].kind && usesArt(cfg[o.name]));
     const cards = withImages.map((o) => {
       const r = cfg[o.name];
-      const { m } = exportSummary(r);
       const { needed, have } = imageNeeds(r);
-      return `<li class="row img-row" data-act="select" data-name="${esc(o.name)}" tabindex="0">
-        <span class="img-row__shape" aria-hidden="true">${ratioBox(m.key, 16)}</span>
-        <span class="row__name">${esc(o.name)}</span>
-        <span class="img-row__count ${needed && have >= needed ? "is-done" : ""}" title="${have} of ${needed} image${needed === 1 ? "" : "s"} uploaded">${have}/${needed}</span>
+      return `<li class="img-card img-card--simple" data-act="select" data-name="${esc(o.name)}" tabindex="0">
+        <span class="img-card__text"><span class="img-card__name">${esc(o.name)}</span><span class="img-card__count ${needed && have >= needed ? "is-done" : ""}">${have} of ${needed} image${needed === 1 ? "" : "s"} uploaded</span></span>
+        <button type="button" class="pen" data-act="edit" data-name="${esc(o.name)}" aria-label="Edit ${esc(o.name)}">${ICON.pencil}<span class="row-tip" role="tooltip">Edit section</span></button>
       </li>`;
     }).join("");
     return `
@@ -1482,7 +1481,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
         <span class="column__title-row">${ICON.image}<span class="column__title"><b>Images</b><span>${esc(tpl().name)}</span></span></span>
       </div>
       ${withImages.length
-        ? `<ul class="rows img-rows">${cards}</ul>`
+        ? `<ul class="img-list">${cards}</ul>`
         : `<p class="img-sum">No sections with images yet. Turn sections on in Sections.</p>`}`;
   };
   const bgHexField = (r) => `<div class="field"><label for="f-text-bg-hex">Background for Text only tiles</label><div class="color-field"><input type="color" data-path="text.bg" value="${esc(r.text.bg)}" aria-label="Pick a background color"><input type="text" class="mono hex-input" id="f-text-bg-hex" data-hex="text.bg" value="${esc(String(r.text.bg).toUpperCase())}" maxlength="7" spellcheck="false" autocomplete="off"></div></div>`;
