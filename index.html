@@ -493,7 +493,6 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .img-card__count { font-size: 11.5px; font-weight: 600; color: var(--subtle); white-space: nowrap; }
 .img-card__count.is-done { color: #29845a; }
 .img-sum { padding: 4px 16px 0; font-size: 12.5px; color: var(--subtle); }
-.img-none { padding: 4px 16px 12px; font-size: 12px; color: var(--subtle); }
 .ctx-line { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; font-size: 12px; color: var(--subtle); }
 .ctx-line button { border: 0; background: none; padding: 0; color: var(--accent); cursor: pointer; font-size: 12px; white-space: nowrap; }
 .step .upl-row { padding-left: 0; }
@@ -1336,9 +1335,6 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   const designerListHTML = () => {
     const shown = ORDER.filter((o) => cfg[o.name].on);
     const withImages = shown.filter((o) => !cfg[o.name].kind && usesArt(cfg[o.name]));
-    const without = shown.filter((o) => !withImages.includes(o));
-    const total = withImages.reduce((n, o) => n + imageNeeds(cfg[o.name]).needed, 0);
-    const done = withImages.reduce((n, o) => n + imageNeeds(cfg[o.name]).have, 0);
     const cards = withImages.map((o) => {
       const r = cfg[o.name];
       const { m, d, split } = exportSummary(r);
@@ -1352,12 +1348,11 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     }).join("");
     return `
       <div class="column__head">
-        <span class="column__title-row">${ICON.upload}<span class="column__title"><b>Images to make</b><span>${esc(tpl().name)} · ${esc(brandName())}</span></span></span>
+        <span class="column__title-row">${ICON.upload}<span class="column__title"><b>Images</b></span></span>
       </div>
       ${withImages.length
-        ? `<p class="img-sum">${total} image${total === 1 ? "" : "s"} across ${withImages.length} section${withImages.length === 1 ? "" : "s"} · ${done} uploaded</p><ul class="img-list">${cards}</ul>`
-        : `<p class="img-sum">No sections with images yet. Turn sections on in Site configuration.</p>`}
-      ${without.length ? `<p class="img-none">No images needed: ${without.map((o) => esc(o.name)).join(", ")}</p>` : ""}`;
+        ? `<ul class="img-list">${cards}</ul>`
+        : `<p class="img-sum">No sections with images yet. Turn sections on in Site configuration.</p>`}`;
   };
   const designerEditorHTML = () => {
     const r = cur();
