@@ -1295,7 +1295,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   };
 
   const renderTop = () => {
-    const specs = ui.view === "specs";
+    const specs = ui.view === "specs" && ui.tab !== "guide";
     $("#topRight").innerHTML = `<span class="save-state" id="saveState"></span>`;
     // Views are switched from the icon rail on the left (renderRail).
     document.querySelector(".app").classList.toggle("is-specs", specs);
@@ -1318,7 +1318,9 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     ["specs", "Specs", '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M5.5 3h6.5l3 3v10.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 .5-.5Z"/><path d="M12 3v3h3M7.5 10h5M7.5 13h5"/></svg>'],
   ];
   const renderRail = () => {
-    $("#vrail").innerHTML = VIEWS.map(([k, label, icon]) => `<button type="button" class="vrail__btn" data-act="view" data-val="${k}" aria-pressed="${ui.view === k}" aria-label="${label}">${icon}<span class="vrail__tip" role="tooltip">${label}</span></button>`).join("");
+    const guideOn = ui.tab === "guide";
+    $("#vrail").innerHTML = VIEWS.map(([k, label, icon]) => `<button type="button" class="vrail__btn" data-act="view" data-val="${k}" aria-pressed="${!guideOn && ui.view === k}" aria-label="${label}">${icon}<span class="vrail__tip" role="tooltip">${label}</span></button>`).join("")
+      + `<button type="button" class="vrail__btn" data-act="rail-open" data-val="guide" aria-pressed="${guideOn}" aria-label="Guide">${ICON.guide}<span class="vrail__tip" role="tooltip">Guide</span></button>`;
     const rail = $("#rail");
     rail.hidden = true;
     if (false) {
@@ -1491,7 +1493,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const inner = ui.tab === "guide" ? guideNav : editing ? (designer ? designerEditorHTML() : editorHTML()) : designer ? designerListHTML() : listHTML();
     const guide = "";
     const info = ui.tab === "editor" ? `<div class="col-info view-info" id="viewInfo">${ui.viewInfo || ""}</div>` : "";
-    col.innerHTML = `<div class="col-main">${inner}</div><div class="col-bottom">${guide}${info}${tabs}</div>`;
+    col.innerHTML = `<div class="col-main">${inner}</div><div class="col-bottom">${guide}${info}</div>`;
     const chip = $("#exportChip");
     const chipText = ui.tab === "editor" && editing && designer ? exportChipText(cur()) : "";
     chip.hidden = !chipText;
@@ -2694,7 +2696,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       choose(t.dataset.name, true);
     } else if (act === "view") {
       if (ui.view === t.dataset.val) {
-        if (ui.view !== "specs") { ui.column = !ui.column || ui.tab !== "editor"; ui.tab = "editor"; renderAll(); }
+        if (ui.tab !== "editor") { ui.tab = "editor"; ui.column = true; renderAll(); }
+        else if (ui.view !== "specs") { ui.column = !ui.column; renderAll(); }
         return;
       }
       ui.view = t.dataset.val; ui.menu = null; ui.tab = "editor"; ui.column = true; ui.copied = ""; ui.fallback = "";
@@ -2714,7 +2717,9 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     } else if (act === "tab") {
       ui.tab = t.dataset.val; ui.sel = null; ui.column = true; renderAll();
     } else if (act === "rail-open") {
-      ui.tab = t.dataset.val; ui.column = true; renderAll();
+      if (ui.tab === t.dataset.val) ui.column = !ui.column;
+      else { ui.tab = t.dataset.val; ui.column = true; }
+      renderAll();
     } else if (act === "guide-jump") {
       const target = document.getElementById(t.dataset.val);
       const g = $("#guide");
