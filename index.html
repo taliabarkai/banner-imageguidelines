@@ -700,6 +700,10 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .pic__empty { position: absolute; inset: 0; display: grid; place-items: center; color: #ffffff; pointer-events: none; }
 .pic__empty .i { width: calc(24px * var(--ui)); height: calc(24px * var(--ui)); stroke-width: 1.8; }
 .app.presenting .pic__empty { display: none; }
+/* Double-click preview text to edit it in place. */
+.app:not(.presenting) .sec [data-edit] { cursor: text; }
+.app:not(.presenting) .sec [data-edit]:hover { outline: 1px dashed rgba(0, 91, 211, 0.6); outline-offset: 2px; }
+.sec [data-edit][contenteditable] { outline: 2px solid #005bd3; outline-offset: 2px; cursor: text; user-select: text; -webkit-user-select: text; }
 @media (max-width: 900px) { .app.presenting .canvas { height: auto; min-height: 0; border-top: 0; } }
 
 /* Tooltips directly below the preview buttons */
@@ -724,6 +728,17 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .crop-ctl button { border: 0; background: transparent; color: #1d1d1f; cursor: pointer; min-width: calc(26px * var(--ui)); height: calc(26px * var(--ui)); padding: 0 calc(6px * var(--ui)); border-radius: calc(6px * var(--ui)); font-size: calc(13px * var(--ui)); font-weight: 600; line-height: 1; }
 .crop-ctl button:hover:not(:disabled) { background: #ececec; }
 .crop-ctl button:disabled { opacity: 0.35; cursor: default; }
+/* Top bar: title + view size on the left, view switch in the center, theme on the right. */
+.brand { border-right: 0; padding-right: 0; margin-right: 0; height: auto; min-width: 0; }
+.brand__text { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
+.brand__name { white-space: nowrap; }
+.brand .view-info { font-size: 11.5px; font-weight: 400; overflow: hidden; text-overflow: ellipsis; }
+.topbar__left { min-width: 0; }
+.top-center .view-seg { margin-left: 0; }
+.theme-btn .k { font-family: inherit; font-size: inherit; font-weight: 600; background: none; color: var(--ink); padding: 0; border-radius: 0; letter-spacing: 0.02em; }
+.theme-btn { gap: 6px; }
+.topbar__right .theme-pick .menu { left: auto; right: 0; transform: none; }
+.topbar__right { gap: 10px; }
 </style>
 
 <div class="app">
@@ -731,12 +746,11 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     <div class="topbar__left">
       <div class="brand">
         <span class="brand__mark" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="14" height="5" rx="1"/><rect x="3" y="11" width="6" height="5" rx="1"/><rect x="11" y="11" width="6" height="5" rx="1"/></svg></span>
-        <span>Homepage Site Dressing</span>
+        <span class="brand__text"><span class="brand__name">Homepage Site Dressing</span><span class="view-info" id="viewInfo"></span></span>
       </div>
-      <div id="viewPick"></div>
     </div>
-    <div class="top-center" id="topCenter"><div class="theme-pick" id="themePick"></div></div>
-    <div class="topbar__right" id="topRight"></div>
+    <div class="top-center" id="topCenter"><div id="viewPick"></div></div>
+    <div class="topbar__right"><span id="topRight"></span><div class="theme-pick" id="themePick"></div></div>
   </header>
 
   <div class="workspace" id="workspace">
@@ -1232,7 +1246,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 
   const renderTop = () => {
     const specs = ui.view === "specs";
-    $("#topRight").innerHTML = `<span class="view-info" id="viewInfo">${ui.viewInfo || ""}</span><span class="save-state" id="saveState"></span>`;
+    $("#topRight").innerHTML = `<span class="save-state" id="saveState"></span>`;
     $("#viewPick").innerHTML = `<div class="view-seg" role="group" aria-label="View">${[["config", "Site configuration"], ["designer", "Designer"], ["specs", "Specs"]].map(([k, l]) => `<button type="button" data-act="view" data-val="${k}" aria-pressed="${ui.view === k}">${l}</button>`).join("")}</div>`;
     document.querySelector(".app").classList.toggle("is-specs", specs);
     $("#canvas").hidden = specs || ui.tab !== "editor";
@@ -1240,8 +1254,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     $("#specs").hidden = !specs;
     if (specs) renderSpecs();
     const vi = $("#viewInfo");
-    if (vi) vi.hidden = specs || ui.tab !== "editor";
-    $("#themePick").innerHTML = `<button type="button" class="theme-btn" data-act="menu" data-val="theme" aria-haspopup="menu" aria-expanded="${ui.menu === "theme"}" title="Preview another brand">Theme: <span class="k">${ui.theme.toUpperCase()}</span>${esc(brandName())}${ICON.caret}</button>
+    if (vi) { vi.innerHTML = ui.viewInfo || ""; vi.hidden = specs || ui.tab !== "editor"; }
+    $("#themePick").innerHTML = `<button type="button" class="theme-btn" data-act="menu" data-val="theme" aria-haspopup="menu" aria-expanded="${ui.menu === "theme"}" title="Preview another brand (${esc(brandName())})">Theme: <span class="k">${ui.theme.toUpperCase()}</span>${ICON.caret}</button>
       ${ui.menu === "theme" ? `<div class="menu" role="menu">
         <span class="menu__label">Preview as</span>
         ${BRAND_KEYS.map((k) => `<button type="button" class="menu__item" role="menuitem" data-act="theme" data-val="${k}"><span class="check">${k === ui.theme ? "✓" : ""}</span>${esc(brandName(k))}<span class="k">${k}</span></button>`).join("")}
@@ -1495,8 +1509,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 
   const sectionHeader = (d, title, align = "start", cta = "", arrowsId = null, variant = "text3", inset = PAGE_MARGIN[d]) => `
     <div class="sec__header" style="--hgap:${d === "mobile" ? 12 : 20}px;padding-inline:${inset}px">
-      <span class="sec__header-title" style="${typeCSS(variant)}text-align:${cta || arrowsId ? "left" : ({ start: "left", center: "center", end: "right" })[align]}">${esc(title)}</span>
-      ${cta ? `<span class="sec__header-cta" style="${typeCSS("links1")}">${esc(cta)}</span>` : ""}
+      <span class="sec__header-title" data-edit="htext" style="${typeCSS(variant)}text-align:${cta || arrowsId ? "left" : ({ start: "left", center: "center", end: "right" })[align]}">${esc(title)}</span>
+      ${cta ? `<span class="sec__header-cta" data-edit="hcta" style="${typeCSS("links1")}">${esc(cta)}</span>` : ""}
       ${arrowsId ? `<span class="sec__header-arrows"><button type="button" class="arrow arrow-inline" data-act="prev" data-id="${arrowsId}" aria-label="Previous">‹</button><button type="button" class="arrow arrow-inline" data-act="next" data-id="${arrowsId}" aria-label="Next">›</button></span>` : ""}
     </div>`;
 
@@ -1542,8 +1556,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const color = overlay && r.text.color === "light" ? "#ffffff" : "var(--colors-text)";
     const ta = overlay ? ["left", "center", "right"][cell(p).col] : ({ "flex-start": "left", "center": "center", "flex-end": "right" })[align(p)];
     return `<div class="copy" style="color:${color};text-align:${ta};--btn-align:${ta === "left" ? "flex-start" : ta === "right" ? "flex-end" : "center"}">
-      ${title ? `<div class="copy__head" style="${typeCSS(tv(r, "head"))}">${esc(title)}</div>` : ""}
-      ${btn ? `<span class="copy__btn tbtn" style="align-self:var(--btn-align);margin-top:0.5em;${btnCSS(r.text.btnStyle)}">${esc(btn)}</span>` : ""}
+      ${title ? `<div class="copy__head" data-edit="title" data-i="${i}" style="${typeCSS(tv(r, "head"))}">${esc(title)}</div>` : ""}
+      ${btn ? `<span class="copy__btn tbtn" data-edit="btn" style="align-self:var(--btn-align);margin-top:0.5em;${btnCSS(r.text.btnStyle)}">${esc(btn)}</span>` : ""}
     </div>`;
   };
 
@@ -2493,6 +2507,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   };
 
   document.addEventListener("click", async (e) => {
+    if (e.target.closest?.("[contenteditable]")) return;
     const t = e.target.closest("[data-act]");
     if (!e.target.closest(".tpl, .theme-pick")) closeMenus();
     if (!t) {
@@ -2721,7 +2736,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       if (ui.sel) { ui.sel = null; renderAll(); return; }
       if (ui.choosing && page.size) { ui.choosing = false; renderAll(); return; }
     }
-    const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName);
+    const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) || e.target.isContentEditable;
     if (!typing && (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "z") { e.preventDefault(); e.shiftKey ? redo() : undo(); return; }
     if (!typing && e.ctrlKey && e.key.toLowerCase() === "y") { e.preventDefault(); redo(); return; }
     const card = e.target.closest?.(".crow");
@@ -2823,10 +2838,64 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     commitSoon();
   });
 
+  // Double-click a title, button or header link in the preview to edit it in place.
+  const copyKey = (r, key) => (key === "htext" && r.kind === "products" ? "heading" : key);
+  const setCopyText = (r, key, i, val) => {
+    const c = ownCopy(r);
+    if (key === "title") { c.titles = c.titles || r.slides.map((x) => x.title || ""); c.titles[i] = val; }
+    else c[key] = val;
+    const field = document.querySelector(`.column [data-copy="${key}"]${key === "title" ? `[data-i="${i}"]` : ""}`);
+    if (field && field !== document.activeElement) field.value = val;
+  };
+  const editInPlace = (el, r, key, i) => {
+    const orig = el.textContent;
+    el.setAttribute("contenteditable", "plaintext-only");
+    if (el.contentEditable !== "plaintext-only") el.setAttribute("contenteditable", "true");
+    el.spellcheck = false;
+    el.focus();
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    let done = false;
+    const finish = (keep) => {
+      if (done) return;
+      done = true;
+      if (!keep) setCopyText(r, key, i, orig);
+      commit();
+      renderAll();
+    };
+    el.addEventListener("input", () => { setCopyText(r, key, i, el.textContent.replace(/\s+/g, " ")); });
+    el.addEventListener("keydown", (e) => {
+      e.stopPropagation();
+      if (e.key === "Enter") { e.preventDefault(); finish(true); }
+      if (e.key === "Escape") { e.preventDefault(); finish(false); }
+    });
+    el.addEventListener("blur", () => finish(true));
+  };
+  document.addEventListener("dblclick", (e) => {
+    if (ui.present) return;
+    const hit = document.elementFromPoint(e.clientX, e.clientY)?.closest?.(".sec [data-edit]");
+    if (!hit || hit.isContentEditable) return;
+    const name = hit.closest(".sec[data-name]")?.dataset.name;
+    const r = name && cfg[name];
+    if (!r) return;
+    e.preventDefault();
+    const key = copyKey(r, hit.dataset.edit);
+    const i = hit.dataset.i != null ? Number(hit.dataset.i) : null;
+    if (ui.sel !== name) { ui.hl = null; choose(name); }
+    // The preview may have re-rendered: find the same text again, preferring the one under the pointer.
+    const q = `.sec[data-name="${CSS.escape(name)}"] [data-edit="${hit.dataset.edit}"]${i != null ? `[data-i="${i}"]` : ""}`;
+    const found = [...document.querySelectorAll(q)];
+    const el = found.find((n) => { const b = n.getBoundingClientRect(); return e.clientX >= b.left && e.clientX <= b.right && e.clientY >= b.top && e.clientY <= b.bottom; }) || found[0];
+    if (el) editInPlace(el, r, key, i);
+  });
+
   // Drag an uploaded image to reposition it in its tile.
   document.addEventListener("pointerdown", (e) => {
     const pic = e.target.closest?.(".pic[data-crop]");
-    if (!pic || e.button !== 0 || e.target.closest(".crop-ctl")) return;
+    if (!pic || e.button !== 0 || e.target.closest(".crop-ctl, [data-edit]")) return;
     const ref = cur()?.slides[Number(pic.dataset.i)]?.imgs?.[ui.theme]?.[pic.dataset.dev];
     const img = pic.querySelector(".pic__img");
     if (!ref || !img) return;
