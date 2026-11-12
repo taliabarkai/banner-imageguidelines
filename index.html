@@ -1380,7 +1380,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
         <span class="row__name">${esc(s.name)}</span>
         <span class="row__tools">
           <button type="button" class="eye" data-act="toggle" data-name="${esc(s.name)}" aria-pressed="${c.on}" aria-label="${c.on ? "Hide" : "Show"} ${esc(s.name)}">${c.on ? ICON.eye : ICON.eyeOff}<span class="row-tip" role="tooltip">${c.on ? "Hide section" : "Show section"}</span></button>
-          <button type="button" class="pen" data-act="edit" data-name="${esc(s.name)}" aria-label="Edit ${esc(s.name)}">${ICON.pencil}<span class="row-tip" role="tooltip">Edit section</span></button>
+          ${c.on ? `<button type="button" class="pen" data-act="edit" data-name="${esc(s.name)}" aria-label="Edit ${esc(s.name)}">${ICON.pencil}<span class="row-tip" role="tooltip">Edit section</span></button>` : `<span class="pen" aria-hidden="true"></span>`}
         </span>
       </li>`;
     }).join("");
