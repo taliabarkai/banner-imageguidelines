@@ -1330,8 +1330,10 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     return `${head}
       ${r.on ? "" : `<div class="sect">${offBanner()}</div>`}
       <div class="step">
-        ${exportGuideHTML(r)}
-        <div class="ctx-line"><span>${esc(layoutLine(r))}</span><button type="button" data-act="view" data-val="config">Change layout</button></div>
+        <div class="step__title"><span class="step__num">1</span><span>Images</span></div>
+        <div class="img-slots">${art.map(([sl, i]) => `<div><div class="img-slot__label">Tile ${i + 1}<span>${esc(titleAt(r, i).trim() || KIND_OPTS.find(([v]) => v === sl.kind)?.[1] || "")}</span></div>${uploadSlots(r, sl, i)}</div>`).join("")}</div>
+        ${textOnly ? `<p class="b-help">${textOnly} Text only tile${textOnly === 1 ? "" : "s"} need${textOnly === 1 ? "s" : ""} no image.</p>` : ""}
+        ${anyImages ? `<div class="shoot"><button type="button" class="shoot__clear" data-act="clear-images">Clear images</button></div>` : ""}
       </div>
       <div class="step">
         <div class="step__title"><span class="step__num">2</span><span>Aspect ratio</span></div>
@@ -1339,13 +1341,11 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
           <label class="ratio-pair__cell"><span>Mobile</span><select id="f-ratio-m" data-ratio="m">${ratioOptions(r.ratio.m)}</select></label>
           <label class="ratio-pair__cell"><span>Desktop</span><select id="f-ratio-d" data-ratio="d">${ratioOptions(ratioKey(r, "desktop"))}</select></label>
         </div>
-        ${r.ratio.split ? `<p class="b-help">Different ratios, so each card needs two files: one for mobile, one for desktop.</p>` : ""}
+        ${r.ratio.split ? `<p class="b-help">Different ratios, so each tile needs two files: one for mobile, one for desktop.</p>` : ""}
       </div>
       <div class="step">
-        <div class="step__title"><span class="step__num">3</span><span>Images</span></div>
-        <div class="img-slots">${art.map(([sl, i]) => `<div><div class="img-slot__label">Tile ${i + 1}<span>${esc(titleAt(r, i).trim() || KIND_OPTS.find(([v]) => v === sl.kind)?.[1] || "")}</span></div>${uploadSlots(r, sl, i)}</div>`).join("")}</div>
-        ${textOnly ? `<p class="b-help">${textOnly} Text only tile${textOnly === 1 ? "" : "s"} need${textOnly === 1 ? "s" : ""} no image.</p>` : ""}
-        ${anyImages ? `<div class="shoot"><button type="button" class="shoot__clear" data-act="clear-images">Clear images</button></div>` : ""}
+        ${exportGuideHTML(r)}
+        <div class="ctx-line"><span>${esc(layoutLine(r))}</span><button type="button" data-act="view" data-val="config">Change layout</button></div>
       </div>`;
   };
 
@@ -2021,7 +2021,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     if (textMode(r) === "on" && m.geo.slideW < 140) warns.push(`Tiles are ${Math.round(m.geo.slideW)} px wide on mobile, so text on the image will be cramped. Try "Below image".`);
     if (r.slides.some((x) => x.kind === "video")) warns.push("Video tiles need a mobile and a desktop video URL. The image is the poster.");
     return `<div class="export-guide">
-      <div class="step__title"><span class="step__num">1</span><span>Export your images at</span><button type="button" class="step__btn" data-act="copy-size">${ui.sizeCopied ? "Copied" : "Copy size"}</button></div>
+      <div class="step__title"><span class="step__num">3</span><span>Export your images at</span><button type="button" class="step__btn" data-act="copy-size">${ui.sizeCopied ? "Copied" : "Copy size"}</button></div>
       ${split ? card("Mobile", m, files) + card("Desktop", d, files) : card("One image for mobile and desktop", m, files)}
       ${warns.map((t) => `<p class="warn">${esc(t)}</p>`).join("")}
     </div>`;
