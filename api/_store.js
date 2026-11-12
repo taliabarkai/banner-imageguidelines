@@ -33,8 +33,22 @@ export const findToken = () => process.env.BLOB_READ_WRITE_TOKEN
   || Object.entries(process.env).find(([k, v]) => /READ_WRITE_TOKEN$/.test(k) && String(v).startsWith("vercel_blob_rw_"))?.[1]
   || null;
 
-export function makeStore(blob) {
-  const auth = () => { const token = findToken(); return token ? { token } : {}; };
+// Newer stores connect with a store id instead of a token (e.g. PHONEPREVIEWS_STORE_ID) and sign in
+// with the deployment's OIDC token. Any env name ending in STORE_ID counts.
+export const findStoreId = () => process.env.BLOB_STORE_ID
+  || Object.entries(process.env).find(([k, v]) => /STORE_ID$/.test(k) && /^store_/i.test(String(v)))?.[1]
+  || Object.entries(process.env).find(([k, v]) => /STORE_ID$/.test(k) && String(v).trim())?.[1]
+  || null;
+
+// oidcToken: the per-request OIDC token (the x-vercel-oidc-token header), when Vercel sends one.
+export function makeStore(blob, { oidcToken } = {}) {
+  const auth = () => {
+    const token = findToken();
+    if (token) return { token };
+    const storeId = findStoreId();
+    if (storeId) return { storeId, ...(oidcToken ? { oidcToken } : {}) };
+    return {};
+  };
   // Works with a public or a private store: the access type is found on the first write.
   let access = process.env.BLOB_ACCESS || null;
   const other = (a) => (a === "public" ? "private" : "public");

@@ -734,7 +734,9 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .color-field .hex-input { flex: 1; min-width: 0; height: 100%; border: 0 !important; background: transparent !important; padding: 0 !important; font-family: var(--font-mono); font-size: 12.5px; text-transform: uppercase; outline: none; }
 .color-field:focus-within { background-color: var(--surface) !important; border-color: var(--accent) !important; }
 .crop-ctl__ratio:hover { background-color: #e6e6e6; }
-.crop-ctl .crop-ctl__icon { display: grid; place-items: center; padding: 0; }
+.crop-ctl .crop-ctl__icon { display: grid; place-items: center; padding: 0; position: relative; }
+.ctl-tip { position: absolute; bottom: calc(100% + 8px * var(--ui)); right: 0; background: #1d1d1f; color: #fff; font-family: var(--font-ui); font-size: calc(12px * var(--ui)); font-weight: 500; line-height: 1.2; white-space: nowrap; padding: calc(5px * var(--ui)) calc(9px * var(--ui)); border-radius: calc(7px * var(--ui)); pointer-events: none; opacity: 0; transition: opacity .12s; }
+.crop-ctl__icon:hover .ctl-tip, .crop-ctl__icon:focus-visible .ctl-tip { opacity: 1; }
 .crop-ctl__icon .i { width: calc(16px * var(--ui)); height: calc(16px * var(--ui)); }
 .crop-ctl button { border: 0; background: transparent; color: #1d1d1f; cursor: pointer; min-width: calc(26px * var(--ui)); height: calc(26px * var(--ui)); padding: 0 calc(6px * var(--ui)); border-radius: calc(6px * var(--ui)); font-size: calc(13px * var(--ui)); font-weight: 600; line-height: 1; }
 .crop-ctl button:hover:not(:disabled) { background: #ececec; }
@@ -1764,7 +1766,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
         <button type="button" data-act="crop-zoom" data-step="-1" ${slot} aria-label="Zoom out" title="Zoom out" ${cropOf(ref).z <= 1 ? "disabled" : ""}>−</button>
         <button type="button" data-act="crop-zoom" data-step="1" ${slot} aria-label="Zoom in" title="Zoom in" ${cropOf(ref).z >= 3 ? "disabled" : ""}>+</button>
         ${ratioPick}
-        <button type="button" class="crop-ctl__icon" data-act="tile-upload" ${slot} aria-label="Replace image" title="Replace image">${ICON.replace}</button>
+        <button type="button" class="crop-ctl__icon" data-act="tile-upload" ${slot} aria-label="Replace image">${ICON.replace}<span class="ctl-tip" role="tooltip">Replace image</span></button>
       </div>` : `<div class="crop-ctl">${ratioPick}</div>`;
     const picture = `<div class="pic ${src ? "has-img" : ""}"${drop}><div class="pic__art" style="aspect-ratio:${sz.key.replace(":", " / ")}">${src ? `<img class="pic__img" src="${esc(src)}" alt="" loading="lazy" draggable="false" style="${cropCSS(ref)}">` : `<span class="pic__empty">${ICON.upload}</span>`}</div>${pins}${play}${overlay}${cropCtl}</div>`;
     const s = block ? side(p) : null;
@@ -2763,6 +2765,18 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 
   document.addEventListener("click", async (e) => {
     if (e.target.closest?.("[contenteditable], .crop-ctl select")) return;
+    // Clicking an image (or an empty image tile) in the preview opens that section in Images.
+    const picHit = !ui.present && ui.view !== "designer" && e.target.closest?.(".sec .pic:not(.pic--text)");
+    if (picHit && !e.target.closest(".crop-ctl, [data-edit]")) {
+      const name = picHit.closest(".sec[data-name]")?.dataset.name;
+      if (name && cfg[name] && !cfg[name].kind) {
+        ui.view = "designer"; ui.tab = "editor"; ui.hl = null;
+        try { localStorage.setItem("bb-view", ui.view); } catch (err) { /* storage unavailable */ }
+        closeMenus();
+        choose(name);
+        return;
+      }
+    }
     const editHit = !ui.present && e.target.closest?.(".sec [data-edit]");
     if (editHit && editHit.closest(".sec[data-name]")?.dataset.name === ui.sel) { closeMenus(); startEdit(editHit, e.clientX, e.clientY); return; }
     const t = e.target.closest("[data-act]");
@@ -3238,7 +3252,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       pic.removeEventListener("pointerup", up);
       pic.removeEventListener("pointercancel", up);
       pic.classList.remove("is-panning");
-      if (moved) changed();
+      if (moved) { changed(); swallowClick = true; setTimeout(() => { swallowClick = false; }, 0); }
     };
     pic.addEventListener("pointermove", move);
     pic.addEventListener("pointerup", up);

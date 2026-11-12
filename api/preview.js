@@ -4,9 +4,9 @@
 // POST /api/preview?id=ID&ref=REF      -> upload one image (body = image bytes)
 // POST /api/preview?id=ID              -> save the layout (body = JSON) and drop unused images
 import * as blob from "@vercel/blob";
-import { makeStore, InputError, findToken } from "./_store.js";
+import { makeStore, InputError, findToken, findStoreId } from "./_store.js";
 
-const store = makeStore(blob);
+const storeFor = (request) => makeStore(blob, { oidcToken: request.headers.get("x-vercel-oidc-token") || undefined });
 const json = (body, status = 200) => Response.json(body, { status, headers: { "cache-control": "no-store" } });
 const fail = (err) => (err instanceof InputError ? json({ error: err.message }, 400) : json({ error: "server error" }, 500));
 
@@ -14,9 +14,10 @@ export async function GET(request) {
   const q = new URL(request.url).searchParams;
   if (q.has("ping")) {
     // Which Blob connection settings this deployment has (names only, never values).
-    const env = { token: Boolean(findToken()), storeId: Boolean(process.env.BLOB_STORE_ID), oidc: Boolean(process.env.VERCEL_OIDC_TOKEN || request.headers.get("x-vercel-oidc-token")) };
+    const env = { token: Boolean(findToken()), storeId: Boolean(findStoreId()), oidc: Boolean(process.env.VERCEL_OIDC_TOKEN || request.headers.get("x-vercel-oidc-token")) };
     return json({ ready: env.token || (env.storeId && env.oidc), ...env });
   }
+  const store = storeFor(request);
   try {
     if (q.has("img")) {
       const img = await store.getImage(q.get("id"), q.get("img"));
@@ -33,6 +34,7 @@ export async function GET(request) {
 
 export async function POST(request) {
   const q = new URL(request.url).searchParams;
+  const store = storeFor(request);
   try {
     if (q.has("ref")) {
       await store.saveImage(q.get("id"), q.get("ref"), request.headers.get("content-type"), new Uint8Array(await request.arrayBuffer()));
