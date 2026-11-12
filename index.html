@@ -2265,7 +2265,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     if (textMode(r) === "on" && m.geo.slideW < 140) warns.push(`Tiles are ${Math.round(m.geo.slideW)} px wide on mobile, so text on the image will be cramped. Try "Below image".`);
     if (r.slides.some((x) => x.kind === "video")) warns.push("Video tiles need a mobile and a desktop video URL. The image is the poster.");
     return `<div class="export-guide">
-      <div class="step__title"><span>Export your images at</span><button type="button" class="step__btn" data-act="copy-size">${ui.sizeCopied ? "Copied" : "Copy size"}</button></div>
+      <div class="step__title"><span>Export your images at</span><button type="button" class="step__btn" data-act="copy-size">${ui.sizeCopied ? "Copied" : split ? "Copy sizes" : "Copy size"}</button></div>
       ${split ? card("Mobile", m, files) + card("Desktop", d, files) : card("One image for mobile and desktop", m, files)}
       ${warns.map((t) => `<p class="warn">${esc(t)}</p>`).join("")}
     </div>`;
