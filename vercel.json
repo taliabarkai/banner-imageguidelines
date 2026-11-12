@@ -1,5 +1,9 @@
 {
   "rewrites": [
-    { "source": "/:brand(tgr|oal|lal|ib|mnn)", "destination": "/index.html" }
+    { "source": "/:brand(tgr|oal|lal|ib|mnn)", "destination": "/index.html" },
+    { "source": "/p/:id", "destination": "/index.html" }
+  ],
+  "crons": [
+    { "path": "/api/cleanup", "schedule": "0 4 * * *" }
   ]
 }

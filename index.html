@@ -759,6 +759,30 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .row-tip { position: absolute; bottom: calc(100% + 6px); right: 0; background: #1d1d1f; color: #fff; font-size: 12px; font-weight: 500; white-space: nowrap; padding: 5px 9px; border-radius: 7px; pointer-events: none; opacity: 0; transition: opacity .12s; z-index: 30; }
 .eye:hover .row-tip, .pen:hover .row-tip, .eye:focus-visible .row-tip, .pen:focus-visible .row-tip { opacity: 1; }
 
+/* Open section header: title, then the show/hide eye on the right */
+.column__head--edit { padding-right: 10px; }
+.column__head .head-eye { opacity: 1; position: relative; margin-left: auto; flex: none; }
+.column__head .head-eye .row-tip { top: calc(100% + 6px); bottom: auto; }
+
+/* ---------- Preview on phone ---------- */
+.phone-modal { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.35); display: grid; place-items: center; padding: 16px; }
+.phone-modal__card { width: min(380px, 100%); background: var(--surface); border-radius: 14px; box-shadow: 0 20px 60px rgba(0,0,0,0.25); padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 14px; }
+.phone-modal__head { display: flex; align-items: center; justify-content: space-between; }
+.phone-modal__head b { font-size: 15px; font-weight: 600; }
+.phone-modal__qr { display: grid; place-items: center; }
+.phone-modal__qr img { width: 220px; height: 220px; image-rendering: pixelated; }
+.phone-modal__status { font-size: 13px; color: var(--muted); text-align: center; }
+.phone-modal__status--err { color: var(--critical); }
+.phone-modal__bar { height: 6px; border-radius: 999px; background: #eee; overflow: hidden; }
+.phone-modal__bar i { display: block; height: 100%; background: var(--accent); transition: width .2s; }
+.phone-modal__link { display: flex; gap: 8px; }
+.phone-modal__link input { flex: 1; min-width: 0; height: 36px; border: 1px solid var(--line-strong); border-radius: 8px; padding: 0 10px; font-size: 12.5px; color: var(--muted); }
+.phone-modal__note { font-size: 12px; color: var(--subtle); text-align: center; }
+.phone-modal__acts { display: flex; justify-content: center; }
+.app.phone-view .present-exit { display: none !important; }
+.phone-missing { height: 100vh; height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 24px; text-align: center; font-family: var(--font-ui); color: var(--muted); }
+.phone-missing b { color: var(--ink); font-size: 18px; }
+
 /* ---------- View rail: always-on icons for Site configuration, Designer and Specs ---------- */
 .app-body { flex: 1; min-height: 0; display: flex; }
 .app-body > .workspace { flex: 1; min-width: 0; }
@@ -1323,6 +1347,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       </div>` : ""}`;
   };
 
+  let phoneOK = false;
+  const PHONE_ICON = '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><rect x="5.5" y="2.5" width="9" height="15" rx="2"/><path d="M9 15h2"/><path d="M8 6.5h1.5V8H8zM10.5 6.5H12V8h-1.5zM8 9.5h1.5V11H8zM10.8 10.2h.9v.9h-.9z"/></svg>';
   const VIEWS = [
     ["config", "Sections", ICON.layers],
     ["designer", "Images", '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="4" width="14" height="12" rx="2"/><circle cx="7.5" cy="8.2" r="1.4"/><path d="m3.5 14 4-3.8 3 2.8 2.2-2 3.8 3.4"/></svg>'],
@@ -1439,19 +1465,24 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
         ${textOnly ? bgHexField(r) : ""}
       </div>`;
   };
+  // Show/hide eye in an open section's header, same as the list: open eye when shown, crossed out when hidden.
+  const headEye = (name) => {
+    const on = !!cfg[name]?.on;
+    return `<button type="button" class="eye head-eye" data-act="toggle" data-name="${esc(name)}" aria-pressed="${on}" aria-label="${on ? "Hide" : "Show"} ${esc(name)}">${on ? ICON.eye : ICON.eyeOff}<span class="row-tip" role="tooltip">${on ? "Hide section" : "Show section"}</span></button>`;
+  };
   const designerEditorHTML = () => {
     const r = cur();
     const head = `
       <div class="column__head column__head--edit">
         <button type="button" class="fb-btn" data-act="back" aria-label="Back to images" title="Back to images">${ICON.back}</button>
-        <span class="column__title"><b>${esc(ui.sel)}</b><span>Section ${sectionNo(ui.sel)} · Images</span></span>
+        <span class="column__title"><b>${esc(ui.sel)}</b></span>
+        ${headEye(ui.sel)}
       </div>`;
     if (r.kind || !usesArt(r)) return `${head}<div class="step"><p class="b-help">${r.kind ? "This section has no images to make." : "Every tile is Text only, so there are no images to make."} Its settings are in Sections.</p><div class="ctx-line"><span></span><button type="button" data-act="view" data-val="config">Open Sections</button></div></div>${r.kind ? "" : colorsStep(r)}`;
     const { art } = imageNeeds(r);
     const anyImages = art.some(([sl]) => Object.values(sl.imgs?.[ui.theme] || {}).some(Boolean));
     const textOnly = r.slides.length - art.length;
     return `${head}
-      ${r.on ? "" : `<div class="sect">${offBanner()}</div>`}
       <div class="step">
         <div class="step__title"><span>Images</span></div>
         <div class="img-slots">${art.map(([sl, i]) => `<div><div class="img-slot__label">Tile ${i + 1}<span>${esc(titleAt(r, i).trim() || KIND_OPTS.find(([v]) => v === sl.kind)?.[1] || "")}</span></div>${uploadSlots(r, sl, i)}</div>`).join("")}</div>
@@ -1478,11 +1509,12 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     return `
       <div class="column__head column__head--edit">
         <button type="button" class="fb-btn" data-act="back" aria-label="Back to sections" title="Back to sections">${ICON.back}</button>
-        <span class="column__title"><b>${esc(ui.sel)}</b><span>Section ${sectionNo(ui.sel)}</span></span>
+        <span class="column__title"><b>${esc(ui.sel)}</b></span>
+        ${headEye(ui.sel)}
       </div>
       ${r.kind === "products" ? specsSection(r) : ""}
       ${r.kind === "topline" ? toplineInspector(r) : r.kind === "products" ? productsInspector(r) : bannerInspector(r)}
-      ${r.on && r.kind === "products" ? `<div class="sect"><button type="button" class="btn" data-act="toggle" data-name="${esc(ui.sel)}" style="align-self:flex-start">Hide this section</button></div>` : ""}`;
+`;
   };
 
   const renderColumn = () => {
@@ -1563,6 +1595,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       <span class="fb-sep"></span>
       ${[["mobile", "Mobile view"], ["desktop", "Desktop view"], ["both", "Mobile & desktop view"]].map(([k, l]) => `<button type="button" class="fb-btn" data-act="device" data-val="${k}" aria-pressed="${ui.device === k}" aria-label="${l}">${ICON[k]}<span class="fb-tip" role="tooltip">${l}</span></button>`).join("")}
       <button type="button" class="fb-btn" data-act="present" aria-label="Full-screen view">${ICON.expand}<span class="fb-tip" role="tooltip">Full-screen view</span></button>
+      ${phoneOK ? `<button type="button" class="fb-btn" data-act="phone-preview" aria-label="Preview on phone">${PHONE_ICON}<span class="fb-tip" role="tooltip">Preview on phone</span></button>` : ""}
       ${ui.device === "mobile" ? `<span class="fb-sep"></span><span class="mode-seg" role="group" aria-label="Mobile preview mode">
         <button type="button" data-act="mobile-mode" data-val="frame" aria-pressed="${ui.mobileMode === "frame"}" title="Fixed-size phone, page scrolls inside it">Device frame</button>
         <button type="button" data-act="mobile-mode" data-val="full" aria-pressed="${ui.mobileMode === "full"}" title="Whole page at phone width, no frame">Full height</button>
@@ -2017,7 +2050,6 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 
   const productsInspector = (c) => `
     <div class="sect">
-      ${c.on ? "" : offBanner()}
       ${copyTxt("heading", copyOf(c).heading, `Heading (required) · copy for ${brandName()}`, "Best Sellers")}
       <p class="hint">Shown in ${variantLabel("headline2")}, the storefront's fixed style for this carousel.</p>
       <div class="field"><span class="field__label">Carousel type</span>${seg("type", [["category", "Category"], ["manual", "Manual"]], c.type, "Carousel type")}</div>
@@ -2075,7 +2107,6 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const mode = textMode(r);
     const layoutValue = r.display;
     return `
-      ${r.on ? "" : `<div class="sect">${offBanner()}</div>`}
 
       <div class="step">
         <div class="step__title"><span>Layout</span></div>
@@ -2131,7 +2162,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
         <div class="field"><label for="f-header-variant">Title typography</label>${sel("header.variant", typeOpts(), tv(r, "header"), "Title typography")}</div>
       </div>
 
-      ${r.on ? `<div class="step"><button type="button" class="btn" data-act="toggle" data-name="${esc(ui.sel)}" style="align-self:flex-start">Hide this section</button></div>` : ""}`;
+`;
   };
 
   // ---------- Pinned export guide (bottom of the sidebar) ----------
@@ -2842,6 +2873,14 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       if (sl?.imgs?.[ui.theme]) { delete sl.imgs[ui.theme][t.dataset.dev]; ui.imgMsg = null; changed(); }
     } else if (act === "present") {
       ui.present = true; ui.menu = null; renderAll();
+    } else if (act === "phone-preview") {
+      publishPhone();
+    } else if (act === "phone-close") {
+      if (ui.phone?.state !== "working") { ui.phone = null; renderPhone(); }
+    } else if (act === "phone-copy") {
+      try { await navigator.clipboard.writeText(ui.phone.url); ui.phone.copied = true; }
+      catch (err) { $("#phoneModal input")?.select(); }
+      renderPhone();
     } else if (act === "present-exit") {
       ui.present = false; renderAll();
     } else if (act === "mobile-mode") {
@@ -2897,7 +2936,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       return;
     }
     if (e.key === "Escape") {
-      if (ui.present) { ui.present = false; renderAll(); return; }
+      if (ui.phone && ui.phone.state !== "working") { ui.phone = null; renderPhone(); return; }
+      if (ui.present) { if (previewId) return; ui.present = false; renderAll(); return; }
       if (ui.menu) { closeMenus(); return; }
 
       if (ui.sel) { ui.sel = null; renderAll(); return; }
@@ -3133,6 +3173,122 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     if (file) uploadImage(file, Number(slot.dataset.i), slot.dataset.dev);
   });
 
+  // ---------- Preview on phone (hosted site only) ----------
+  // The layout and shrunken copies of its images go to the site's Vercel Blob storage under a random id
+  // kept in this browser (one per brand), so a new preview replaces the last one. Previews older than
+  // 7 days are deleted by a daily job. Opening /p/<id> shows that homepage full screen.
+  const PREVIEW_PATH = /^\/p\/([a-z0-9]{24})\/?$/;
+  const previewId = window.self === window.top ? ((location.pathname.match(PREVIEW_PATH) || [])[1] || null) : null;
+  const QR_SRC = "https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js";
+  const checkPhone = async () => {
+    if (window.self !== window.top || previewId || !/^https?:$/.test(location.protocol)) return;
+    try {
+      const res = await fetch("/api/preview?ping=1", { cache: "no-store" });
+      const j = res.ok && /json/.test(res.headers.get("content-type") || "") ? await res.json() : null;
+      phoneOK = Boolean(j?.ready);
+    } catch (err) { phoneOK = false; }
+    if (phoneOK) renderFloat();
+  };
+  const phoneId = () => {
+    const key = `bb-phone-${ui.theme}`;
+    let id = null;
+    try { id = localStorage.getItem(key); } catch (err) { /* storage unavailable */ }
+    if (!/^[a-z0-9]{24}$/.test(id || "")) {
+      id = Array.from(crypto.getRandomValues(new Uint8Array(12)), (b) => b.toString(16).padStart(2, "0")).join("");
+      try { localStorage.setItem(key, id); } catch (err) { /* storage unavailable */ }
+    }
+    return id;
+  };
+  const shrinkImage = async (file) => {
+    const bmp = await createImageBitmap(file);
+    const k = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
+    const c = document.createElement("canvas");
+    c.width = Math.max(1, Math.round(bmp.width * k));
+    c.height = Math.max(1, Math.round(bmp.height * k));
+    const x = c.getContext("2d");
+    x.fillStyle = "#ffffff";
+    x.fillRect(0, 0, c.width, c.height);
+    x.drawImage(bmp, 0, 0, c.width, c.height);
+    bmp.close?.();
+    return new Promise((ok, no) => c.toBlob((b) => (b ? ok(b) : no(new Error("encode"))), "image/jpeg", 0.82));
+  };
+  const loadQR = () => (window.qrcode ? Promise.resolve() : new Promise((ok, no) => {
+    const sc = document.createElement("script");
+    sc.src = QR_SRC; sc.onload = ok; sc.onerror = no;
+    document.head.appendChild(sc);
+  }));
+  const renderPhone = () => {
+    let el = $("#phoneModal");
+    if (!ui.phone) { el?.remove(); return; }
+    if (!el) { el = document.createElement("div"); el.id = "phoneModal"; el.className = "phone-modal"; document.body.appendChild(el); }
+    const p = ui.phone;
+    const body = p.state === "working"
+      ? `<p class="phone-modal__status">${p.total ? `Uploading images ${p.done} of ${p.total}…` : "Saving the layout…"}</p><div class="phone-modal__bar"><i style="width:${p.total ? Math.round((p.done / p.total) * 100) : 100}%"></i></div>`
+      : p.state === "error"
+      ? `<p class="phone-modal__status phone-modal__status--err">${esc(p.msg || "Something went wrong. Try again.")}</p><div class="phone-modal__acts"><button type="button" class="btn btn--primary" data-act="phone-preview">Try again</button></div>`
+      : `<div class="phone-modal__qr">${p.qr ? `<img src="${p.qr}" alt="QR code for the phone preview" width="220" height="220">` : ""}</div>
+         <p class="phone-modal__status">Scan with your phone's camera to open this homepage.</p>
+         <div class="phone-modal__link"><input type="text" readonly value="${esc(p.url)}" aria-label="Preview link"><button type="button" class="btn" data-act="phone-copy">${p.copied ? "Copied" : "Copy link"}</button></div>
+         <p class="phone-modal__note">Works for 7 days. Making a new preview replaces this one.</p>`;
+    el.innerHTML = `<div class="phone-modal__card" role="dialog" aria-modal="true" aria-label="Preview on phone">
+        <div class="phone-modal__head"><b>Preview on phone</b><button type="button" class="fb-btn" data-act="phone-close" aria-label="Close">${ICON.close}</button></div>
+        ${body}
+      </div>`;
+  };
+  const publishPhone = async () => {
+    if (ui.phone?.state === "working") return;
+    syncActive();
+    const t = tpl();
+    const id = phoneId();
+    const refs = new Set();
+    t.page.forEach((name) => (cfg[name]?.slides || []).forEach((sl) => Object.values(sl.imgs?.[ui.theme] || {}).forEach((ref) => { if (ref?.id) refs.add(ref.id); })));
+    ui.phone = { state: "working", done: 0, total: refs.size };
+    renderPhone();
+    try {
+      const sent = [];
+      for (const rid of refs) {
+        const file = await idbGet(rid).catch(() => null);
+        if (file) {
+          const small = await shrinkImage(file);
+          const res = await fetch(`/api/preview?id=${id}&ref=${encodeURIComponent(rid)}`, { method: "POST", headers: { "content-type": "image/jpeg" }, body: small });
+          if (!res.ok) throw new Error("upload");
+          sent.push(rid);
+        }
+        ui.phone.done += 1;
+        renderPhone();
+      }
+      const state = { v: 1, theme: ui.theme, name: t.name, page: t.page, cfg: t.cfg, images: sent };
+      const res = await fetch(`/api/preview?id=${id}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(state) });
+      if (!res.ok) throw new Error("save");
+      const url = `${location.origin}/p/${id}`;
+      let qr = "";
+      try { await loadQR(); const q = window.qrcode(0, "M"); q.addData(url); q.make(); qr = q.createDataURL(6, 2); } catch (err) { /* the link still works */ }
+      ui.phone = { state: "ready", url, qr };
+    } catch (err) {
+      ui.phone = { state: "error", msg: "The preview couldn't be uploaded. Check your connection and try again." };
+    }
+    renderPhone();
+  };
+  // Opened from a phone preview link: show that homepage full screen, nothing else.
+  const bootPreview = async () => {
+    document.querySelector(".app").classList.add("phone-view");
+    try {
+      const res = await fetch(`/api/preview?id=${previewId}`, { cache: "no-store" });
+      if (!res.ok) throw new Error(String(res.status));
+      const st = await res.json();
+      templates = [cleanTemplate({ name: st.name, page: st.page, cfg: st.cfg })];
+      loadTemplate(templates[0].id);
+      if (BRAND_KEYS.includes(st.theme)) ui.theme = st.theme;
+      (st.images || []).forEach((rid) => { localUrls[rid] = `/api/preview?id=${previewId}&img=${encodeURIComponent(rid)}`; });
+      document.title = `${st.name || "Homepage"} · ${brandName()}`;
+      ui.present = true; ui.device = "mobile";
+      renderAll();
+    } catch (err) {
+      document.querySelector(".app").hidden = true;
+      document.body.insertAdjacentHTML("beforeend", `<div class="phone-missing"><b>This preview has expired</b><span>Previews last 7 days. Make a new one from Homepage Site Dressing.</span></div>`);
+    }
+  };
+
   // Autoplay in the preview
   const reduce = matchMedia("(prefers-reduced-motion: reduce)");
   setInterval(() => {
@@ -3168,8 +3324,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   $("#workspace").appendChild($("#guide"));
   $("#workspace").appendChild($("#specs"));
   renderOrderTable();
-  renderAll();
-  initDb();
+  if (previewId) bootPreview();
+  else { renderAll(); initDb(); checkPhone(); }
 })();
 </script>
 </body>
