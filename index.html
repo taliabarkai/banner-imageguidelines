@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 </head>
 <body>
-<title>Banner Builder</title>
+<title>Homepage Site Dressing</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=Roboto:wght@300;400;500;700&family=Lato:wght@300;400;700&family=Poppins:wght@300;400;600;700&family=Assistant:wght@300;400;600;700&family=Akatab:wght@400;600;700&family=Bebas+Neue&display=swap">
@@ -457,8 +457,6 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .floatbar-col { display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; max-width: 100%; }
 .floatbar-col > * { pointer-events: auto; }
 .export-chip { background: #1d1d1f; color: #fff; border-radius: 999px; padding: 6px 14px; font-size: 12.5px; font-weight: 500; font-variant-numeric: tabular-nums; box-shadow: 0 4px 14px rgba(0,0,0,0.18); white-space: nowrap; }
-.b-note { padding: 10px 16px 12px; border-bottom: 1px solid var(--line); font-size: 12.5px; color: #5f5f5f; display: flex; flex-wrap: wrap; gap: 4px 6px; }
-.b-note button { border: 0; background: none; padding: 0; color: var(--accent); cursor: pointer; font-size: 12.5px; text-decoration: underline; text-underline-offset: 2px; }
 .step { --ctl-w: 202px; padding: 16px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 12px; }
 .step .two { display: flex; flex-direction: column; gap: 12px; }
 .step__title { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; }
@@ -661,8 +659,6 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .subhead { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--subtle); padding-top: 10px; margin-top: 2px; border-top: 1px solid var(--line); }
 .step .seg + .subhead { border-top: 0; padding-top: 4px; }
 .b-help, .step .b-help { font-size: 12px; color: var(--subtle); line-height: 1.45; }
-.b-note { background: #fafafa; font-size: 12px; color: var(--subtle); }
-.b-note button { font-size: 12px; }
 .ctx-line { font-size: 12px; }
 /* Designer: export sizes sit directly in the step, not in a box inside a box */
 .step .export-guide { background: none; border: 0; padding: 0; max-height: none; overflow: visible; gap: 10px; }
@@ -671,6 +667,33 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .ratio-pair__cell { display: flex; flex-direction: column; gap: 6px; }
 .img-slots { gap: 14px; }
 .img-slot__label { font-size: 13px; }
+
+/* ---------- Specs view ---------- */
+.app.is-specs .column, .app.is-specs .rail, .app.is-specs .col-toggle { display: none !important; }
+.app.is-specs .workspace { grid-template-columns: minmax(0, 1fr); }
+.specs-inner { max-width: 760px; }
+.specs-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; }
+.specs-head h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
+.specs-head p { color: var(--subtle); font-size: 13px; }
+.specs-actions { display: flex; align-items: center; gap: 10px; }
+.specs-sec h2 { font-size: 15px; }
+.specs-list ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.specs-list > ul { padding-left: 16px; }
+.specs-list li { font-size: 13.5px; color: var(--ink); }
+.specs-list li > ul { margin-top: 4px; }
+.specs-k { color: var(--muted); }
+.guide-list { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; color: var(--muted); font-size: 13.5px; max-width: 72ch; }
+.guide-list b { color: var(--ink); font-weight: 600; }
+/* ---------- Full-screen preview ---------- */
+.present-exit { display: none; }
+.app.presenting .topbar, .app.presenting .column, .app.presenting .rail, .app.presenting .col-toggle, .app.presenting .floatbar-wrap { display: none !important; }
+.app.presenting .workspace { grid-template-columns: minmax(0, 1fr); }
+.app.presenting .canvas { padding: 0; background: #ffffff; }
+.app.presenting .stagearea { gap: 0; }
+.app.presenting .sec { cursor: default; }
+.app.presenting .sec::after, .app.presenting .sec__tag { display: none; }
+.app.presenting .present-exit { display: block; position: fixed; bottom: 16px; right: 16px; z-index: 80; border: 0; border-radius: 999px; padding: 8px 14px; background: rgba(29,29,31,0.88); color: #fff; font-weight: 600; font-size: 12.5px; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.2); }
+.app.presenting .present-exit:hover { background: #1d1d1f; }
 </style>
 
 <div class="app">
@@ -678,7 +701,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     <div class="topbar__left">
       <div class="brand">
         <span class="brand__mark" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="14" height="5" rx="1"/><rect x="3" y="11" width="6" height="5" rx="1"/><rect x="11" y="11" width="6" height="5" rx="1"/></svg></span>
-        <span>Banner Builder</span>
+        <span>Homepage Site Dressing</span>
       </div>
       <div id="viewPick"></div>
     </div>
@@ -693,109 +716,43 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     <main class="canvas" id="canvas" aria-label="Preview">
       <div class="floatbar-wrap"><div class="floatbar-col"><div class="floatbar" id="floatbar" role="toolbar" aria-label="Template and preview"></div><div class="export-chip" id="exportChip" hidden></div></div></div>
       <div class="stagearea" id="stage"></div>
+      <button type="button" class="present-exit" data-act="present-exit" title="Exit full-screen preview (Esc)">Exit preview</button>
     </main>
   </div>
 
+  <div class="guide specs-page" id="specs" hidden></div>
   <div class="guide" id="guide" hidden>
     <div class="guide__inner">
       <div class="guide__intro">
-        <h1>How homepage banners work</h1>
-        <p>The 9 homepage banners, from Highlights Bar to Bottom Banner, are all the same Billboard component. The Topline sits above them, and two product carousels sit between them. The order is fixed and the same on every brand. Everything here comes from the Billboard editor in Site Experience Manager and the storefront homepage code. Size recommendations are marked as recommendations.</p>
+        <h1>How it works</h1>
+        <p>Turn on the homepage sections you need, set each one's layout in Site configuration, then open Designer for the image sizes. Specs collects everything to send on. Your work is saved in this browser only.</p>
       </div>
 
       <section class="card" id="order">
         <h2>Homepage order</h2>
-        <p>Sections always render in this order. You can't move them. If a section has no live variant, it's skipped and the next section moves up. The Topline is the first section under the header, then Highlights Bar, then Hero Banner. The strip above the logo is the header's own announcement bar, not a section.</p>
+        <p>Sections always appear in this order on every brand. You can't move them, only turn them on or off.</p>
         <div class="tablewrap"><table id="orderTable"></table></div>
       </section>
 
       <section class="card" id="sizes">
-        <h2>Image size cheat sheet</h2>
-        <p>The image sets the slide's shape. There's no height setting, so the shape you export is the shape shoppers see. Width depends on how many slides share the row. Export at about 2× the display width on mobile and 1.5× on desktop so images stay sharp on high-density screens (our recommendation, not a system rule). Gaps are the editor defaults: XS (8px) on mobile and MD (16px) on desktop.</p>
-        <div class="tablewrap"><table id="cheat"></table></div>
-      </section>
-
-      <section class="card" id="anatomy">
-        <h2>How a banner is built</h2>
-        <p>Every homepage banner has the same three levels. Banner settings apply to the whole block. Slide settings apply to one tile.</p>
-        <div class="anatomy">
-          <div class="anat">
-            <span class="anat__lvl">Level 1 · optional</span>
-            <h3>Header</h3>
-            <ul>
-              <li>Title text, typography and alignment</li>
-              <li>Call to action label, link, style and icon</li>
-              <li>Carousel arrows can sit here too</li>
-              <li>Leave the title empty to hide the header</li>
-            </ul>
-          </div>
-          <div class="anat">
-            <span class="anat__lvl">Level 2 · whole banner</span>
-            <h3>Display</h3>
-            <ul>
-              <li>Show on: mobile and desktop, mobile only, or desktop only</li>
-              <li>Show as: grid or carousel (one choice for both devices)</li>
-              <li>Columns or slides in view, gap and outer padding, set per device</li>
-              <li>Carousel: arrows, dots, peek, autoplay, loop</li>
-            </ul>
-          </div>
-          <div class="anat">
-            <span class="anat__lvl">Level 3 · each slide</span>
-            <h3>Slides</h3>
-            <ul>
-              <li>Type: Image, Video, Text only or Shoppable</li>
-              <li>Artwork, with an optional separate desktop image</li>
-              <li>Live text: lines, button, position, color, padding</li>
-              <li>Link: a URL or a Klaviyo form</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <section class="card" id="rules">
-        <h2>Rules that save you trouble</h2>
-        <ul class="rules">
-          <li><h3>Keep shapes consistent within a banner</h3><p>If images in one banner have different shapes on the same device, some get cropped. The editor warns with "Mixed mobile image sizes, some will crop." The exception is a grid with 1 column, where slides stack and each keeps its own shape.</p></li>
-          <li><h3>A separate desktop image needs both files</h3><p>Turning on <em>Use another artwork for desktop</em> gives each slide two images. If you leave one empty, that slide is hidden on that device.</p></li>
-          <li><h3>Video needs two URLs</h3><p>Video slides need both a mobile and a desktop video URL, or nothing plays at all. The image becomes the poster shown before playback. Keep videos muted if they autoplay, because browsers block autoplay with sound.</p></li>
-          <li><h3>Arrows and dots need something to scroll</h3><p>A carousel only shows arrows and dots when there are more slides than slides in view on that device. With 3 slides and 3 in view, nothing moves.</p></li>
-          <li><h3>Short grids are centered</h3><p>If a grid has fewer slides than columns (say 3 slides in a 4-column grid), tiles keep the 4-column width and the row is centered.</p></li>
-          <li><h3>Text beside an image halves it</h3><p>Placing live text <em>before</em> or <em>after</em> the image splits the slide 50/50, so the image is half as wide. Export accordingly.</p></li>
-          <li><h3>Shoppable slides ignore the slide link</h3><p>On a Shoppable slide the product pins carry the links. The slide link is ignored and live text is turned off. Pins need a position for each device or they don't show there.</p></li>
-          <li><h3>Empty slides disappear</h3><p>A slide with no artwork and no copy doesn't appear. With copy but no artwork, it shows as a Text only slide on its background color.</p></li>
-          <li><h3>Put words in live text, not in the image</h3><p>Live text stays crisp at every size, follows the site's typography and can be edited without a new export. Text burned into an image gets tiny on mobile. (Recommendation.)</p></li>
-          <li><h3>Product carousels need products</h3><p>The two homepage product carousels have a fixed layout. A Category carousel that returns nothing, or a Manual one where no SKU has a price, is skipped.</p></li>
+        <h2>How image sizes are worked out</h2>
+        <ul class="guide-list">
+          <li>The page is 390px wide on mobile and 1440px on desktop. A tile's width comes from the tiles per row, the gap and the page margin.</li>
+          <li>Images are exported at 2× the tile width on mobile and 1.5× on desktop, rounded up to the nearest 10px, so they stay sharp.</li>
+          <li>Never narrower than 1000px, or 800px when 4 or more tiles sit across on desktop.</li>
+          <li>A full-width banner with 1 tile on desktop is always 2880px wide for desktop.</li>
+          <li>The height comes from the aspect ratio. With the same ratio on both devices, one file covers both, at the larger size.</li>
         </ul>
       </section>
 
-      <section class="card" id="settings">
-        <h2>All banner settings</h2>
-        <p>The full list of options in the Billboard editor. "Per device" means mobile and desktop are set separately.</p>
-        <div class="tablewrap"><table>
-          <thead><tr><th>Setting</th><th>Level</th><th>Options</th></tr></thead>
-          <tbody>
-            <tr><td>Show on</td><td>Banner</td><td>Mobile &amp; desktop · Mobile only · Desktop only</td></tr>
-            <tr><td>Show as</td><td>Banner</td><td>Grid (every slide on the page at once) · Carousel (one row, the rest scroll past)</td></tr>
-            <tr><td>Columns / Slides per view</td><td>Banner, per device</td><td>1 to 6 or more</td></tr>
-            <tr><td>Gap</td><td>Banner, per device</td><td class="num">None 0 · 3XS 2 · 2XS 4 · XS 8 · SM 12 · MD 16 · LG 24 px</td></tr>
-            <tr><td>Outer padding</td><td>Banner, per device</td><td>On or off for grids, on all four sides, same size as the gap. Carousels always have it: the page margin on all four sides</td></tr>
-            <tr><td>Arrows</td><td>Carousel, per device</td><td>None · Sides · Header</td></tr>
-            <tr><td>Dots</td><td>Carousel, per device</td><td>None · Top · Bottom · Left · Right</td></tr>
-            <tr><td>Peek</td><td>Carousel, per device</td><td>None · 1/8 · 1/4 · 1/2 of the next slide</td></tr>
-            <tr><td>Autoplay</td><td>Carousel</td><td>On or off, with a delay of 1 to 10 seconds</td></tr>
-            <tr><td>Loop</td><td>Carousel</td><td>On or off</td></tr>
-            <tr><td>Header</td><td>Banner</td><td>Title, typography, alignment (start, center, end), call to action with style and icon</td></tr>
-            <tr><td>Slide type</td><td>Slide</td><td>Image · Video · Text only · Shoppable</td></tr>
-            <tr><td>Artwork</td><td>Slide</td><td>One image, or a separate mobile and desktop image</td></tr>
-            <tr><td>Video playback</td><td>Slide</td><td>Autoplay · Muted · Loop · Controls</td></tr>
-            <tr><td>Live text position</td><td>Slide, per device</td><td>Overlay on the image (9 spots), or placed above, below, before or after it (start, center, end). Desktop can differ, and one slide's position can be applied to all</td></tr>
-            <tr><td>Live text content</td><td>Slide</td><td>Text lines with site typography, a button (Primary, Secondary, Link, Button link, optional arrow icon), text color, padding</td></tr>
-            <tr><td>Link</td><td>Slide</td><td>Opens a link · Opens a Klaviyo form (separate mobile and desktop form IDs)</td></tr>
-          </tbody>
-        </table></div>
+      <section class="card" id="rules">
+        <h2>Three rules</h2>
+        <ul class="guide-list">
+          <li><b>Put words in live text, not in the image.</b> Live text stays sharp and can change without a new export.</li>
+          <li><b>Keep one shape per banner.</b> Tiles with different shapes in the same banner get cropped.</li>
+          <li><b>A different desktop ratio means two files per tile.</b> If one is missing, that tile is hidden on that device.</li>
+        </ul>
       </section>
-
-      <footer>Built from the Billboard editor in <span class="mono">tenengroup/site-experience-manager</span> and the homepage code in <span class="mono">tenengroup/frontend-next</span> (develop). Preview widths match the editor's own frames: 390px mobile and 1600px desktop. Real screens vary, and images scale to fill the width.</footer>
     </div>
   </div>
 </div>
@@ -820,7 +777,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   const DEVICE = DEVICE_PRESETS.iphone;
   const DEVW = { mobile: DEVICE.width, desktop: DESKTOP_EXPORT_REFERENCE };
   // Width the preview lays the page out at (export maths keeps using DEVW).
-  const layoutW = (d) => (d === "mobile" ? DEVICE.width : ui.desktopMode === "full" && ui.device === "desktop" ? (ui.deskFullW || DEVICE_PRESETS.desktop.width) : DEVICE_PRESETS.desktop.width);
+  // Full-screen preview lays the desktop page out at the browser's width; otherwise at the 1440 reference.
+  const layoutW = (d) => (d === "mobile" ? DEVICE.width : ui.present ? (ui.deskFullW || DEVICE_PRESETS.desktop.width) : DEVICE_PRESETS.desktop.width);
   const MULT = { mobile: 2, desktop: 1.5 };
   // A full-width, one-across banner is always exported this wide for desktop (2× the 1440 page).
   const FULL_WIDTH_EXPORT = 2880;
@@ -925,7 +883,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   const LAYOUTS = {
     hero: { label: "Full-width image", make: () => make({}) },
     heroCarousel: {
-      label: "Full-width carousel, autoplay", make: () => make({
+      label: "Full-width carousel", make: () => make({
         display: "carousel", m: { cols: 1, dots: "block-end", arrows: "none" }, d: { cols: 1, dots: "block-end", arrows: "block" },
         autoplay: true, delay: 5000, loop: true,
         slides: slidesOf("image", ["The Birthstone Edit", "Engraved for Her", "Gifts Under $75"]),
@@ -1038,7 +996,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   };
 
   // ---------- State: templates (saved and shared through the db capability) ----------
-  const ui = { view: "config", desktopMode: "fixed", mobileMode: "frame", hl: null, panel: "sections", theme: "tgr", device: "mobile", tab: "editor", sel: null, layout: "hero", picking: false, column: true, menu: null, renaming: false, confirmDelete: false, pos: {}, last: {}, copied: "", fallback: "", save: "local" };
+  const ui = { view: "config", present: false, mobileMode: "frame", hl: null, panel: "sections", theme: "tgr", device: "mobile", tab: "editor", sel: null, layout: "hero", picking: false, column: true, menu: null, renaming: false, confirmDelete: false, pos: {}, last: {}, copied: "", fallback: "", save: "local" };
   const newTemplate = (name, from) => ensureAll({
     id: `t${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`,
     name, createdAt: Date.now(),
@@ -1122,7 +1080,6 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   const titleAt = (r, i) => { const t = copyOf(r).titles; return (t && t[i] != null ? t[i] : r.slides[i]?.title) || ""; };
 
   try { if (localStorage.getItem("bb-mobile-mode") === "full") ui.mobileMode = "full"; } catch (err) { /* storage unavailable */ }
-  try { if (localStorage.getItem("bb-desktop-mode") === "full") ui.desktopMode = "full"; } catch (err) { /* storage unavailable */ }
   try { if (localStorage.getItem("bb-view") === "designer") ui.view = "designer"; } catch (err) { /* storage unavailable */ }
   try { ui.theme = themeFromPath() || themeFromHash() || (BRAND_KEYS.includes(localStorage.getItem("bb-theme")) ? localStorage.getItem("bb-theme") : "tgr"); } catch (err) { ui.theme = themeFromPath() || themeFromHash() || "tgr"; }
   if (pathRouting && location.pathname.replace(/\/$/, "").toLowerCase() !== `/${ui.theme}`) showThemeInUrl(ui.theme);
@@ -1172,6 +1129,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     both: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><rect x="1.5" y="3.5" width="12" height="9" rx="1.2"/><path d="M5 15.5h5"/><rect x="13.5" y="8" width="5" height="9" rx="1.2" fill="#fff"/></svg>',
     rename: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 16h3l8.5-8.5-3-3L4 13z"/></svg>',
     copy: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><rect x="7" y="7" width="9.5" height="9.5" rx="1.5"/><path d="M13 7V4.5A1 1 0 0 0 12 3.5H4.5a1 1 0 0 0-1 1V12a1 1 0 0 0 1 1H7"/></svg>',
+    expand: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 8V3.5H8M12 3.5h4.5V8M16.5 12v4.5H12M8 16.5H3.5V12"/></svg>',
     replace: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M15.5 8A6 6 0 0 0 4.7 6.2M4.5 12a6 6 0 0 0 10.8 1.8"/><path d="M15.5 3.5V8H11M4.5 16.5V12H9"/></svg>',
     trash: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 5.5h13M8 5.5V4h4v1.5M5 5.5l.8 11h8.4l.8-11"/></svg>',
     close: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5 5 15"/></svg>',
@@ -1240,16 +1198,20 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     if (c.kind === "products") return c.type === "manual" ? `Manual · ${c.items} SKU${c.items === 1 ? "" : "s"}` : `Category · ${c.category}`;
     const lay = c.display === "carousel" ? `Carousel ${c.m.cols}/${c.d.cols}` : `Grid ${c.m.cols}/${c.d.cols}`;
     const shape = usesArt(c) ? (c.ratio.split ? `${c.ratio.m} + ${c.ratio.d}` : c.ratio.m) : "text only";
-    return `${lay} · ${shape} · ${c.slides.length} slide${c.slides.length === 1 ? "" : "s"}`;
+    return `${lay} · ${shape} · ${c.slides.length} tile${c.slides.length === 1 ? "" : "s"}`;
   };
 
   const renderTop = () => {
-    $("#topRight").innerHTML = `<span class="view-info" id="viewInfo">${ui.viewInfo || ""}</span><span class="save-state" id="saveState"></span>${ui.copied ? `<span class="copy-status">${esc(ui.copied)}</span>` : ""}<button type="button" class="btn btn--primary" data-act="copy-brief" ${shownCount() ? "" : "disabled"} title="Copy which sections, layouts, image counts and sizes this template uses">${ui.view === "designer" ? "Copy image specs" : "Copy layout specs"}</button>`;
-    $("#viewPick").innerHTML = `<div class="view-seg" role="group" aria-label="View">${[["config", "Site configuration"], ["designer", "Designer"]].map(([k, l]) => `<button type="button" data-act="view" data-val="${k}" aria-pressed="${ui.view === k}">${l}</button>`).join("")}</div>`;
-    $("#canvas").hidden = ui.tab !== "editor";
-    $("#guide").hidden = ui.tab !== "guide";
+    const specs = ui.view === "specs";
+    $("#topRight").innerHTML = `<span class="view-info" id="viewInfo">${ui.viewInfo || ""}</span><span class="save-state" id="saveState"></span>`;
+    $("#viewPick").innerHTML = `<div class="view-seg" role="group" aria-label="View">${[["config", "Site configuration"], ["designer", "Designer"], ["specs", "Specs"]].map(([k, l]) => `<button type="button" data-act="view" data-val="${k}" aria-pressed="${ui.view === k}">${l}</button>`).join("")}</div>`;
+    document.querySelector(".app").classList.toggle("is-specs", specs);
+    $("#canvas").hidden = specs || ui.tab !== "editor";
+    $("#guide").hidden = specs || ui.tab !== "guide";
+    $("#specs").hidden = !specs;
+    if (specs) renderSpecs();
     const vi = $("#viewInfo");
-    if (vi) vi.hidden = ui.tab !== "editor";
+    if (vi) vi.hidden = specs || ui.tab !== "editor";
     $("#themePick").innerHTML = `<button type="button" class="theme-btn" data-act="menu" data-val="theme" aria-haspopup="menu" aria-expanded="${ui.menu === "theme"}" title="Preview another brand">Theme: <span class="k">${ui.theme.toUpperCase()}</span>${esc(brandName())}${ICON.caret}</button>
       ${ui.menu === "theme" ? `<div class="menu" role="menu">
         <span class="menu__label">Preview as</span>
@@ -1361,7 +1323,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
         <button type="button" class="fb-btn" data-act="back" aria-label="Back to images" title="Back to images">${ICON.back}</button>
         <span class="column__title"><b>${esc(ui.sel)}</b><span>Section ${sectionNo(ui.sel)} · Images</span></span>
       </div>`;
-    if (r.kind || !usesArt(r)) return `${head}<div class="step"><p class="b-help">${r.kind ? "This section has no images to make." : "Every slide is Text only, so there are no images to make."} Its settings are in Site configuration.</p><div class="ctx-line"><span></span><button type="button" data-act="view" data-val="config">Open Site configuration</button></div></div>`;
+    if (r.kind || !usesArt(r)) return `${head}<div class="step"><p class="b-help">${r.kind ? "This section has no images to make." : "Every tile is Text only, so there are no images to make."} Its settings are in Site configuration.</p><div class="ctx-line"><span></span><button type="button" data-act="view" data-val="config">Open Site configuration</button></div></div>`;
     const { art } = imageNeeds(r);
     const anyImages = art.some(([sl]) => Object.values(sl.imgs?.[ui.theme] || {}).some(Boolean));
     const textOnly = r.slides.length - art.length;
@@ -1381,22 +1343,19 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       </div>
       <div class="step">
         <div class="step__title"><span class="step__num">3</span><span>Images</span></div>
-        <div class="img-slots">${art.map(([sl, i]) => `<div><div class="img-slot__label">Slide ${i + 1}<span>${esc(titleAt(r, i).trim() || KIND_OPTS.find(([v]) => v === sl.kind)?.[1] || "")}</span></div>${uploadSlots(r, sl, i)}</div>`).join("")}</div>
-        ${textOnly ? `<p class="b-help">${textOnly} Text only slide${textOnly === 1 ? "" : "s"} need${textOnly === 1 ? "s" : ""} no image.</p>` : ""}
+        <div class="img-slots">${art.map(([sl, i]) => `<div><div class="img-slot__label">Tile ${i + 1}<span>${esc(titleAt(r, i).trim() || KIND_OPTS.find(([v]) => v === sl.kind)?.[1] || "")}</span></div>${uploadSlots(r, sl, i)}</div>`).join("")}</div>
+        ${textOnly ? `<p class="b-help">${textOnly} Text only tile${textOnly === 1 ? "" : "s"} need${textOnly === 1 ? "s" : ""} no image.</p>` : ""}
         ${anyImages ? `<div class="shoot"><button type="button" class="shoot__clear" data-act="clear-images">Clear images</button></div>` : ""}
       </div>`;
   };
 
   const editorHTML = () => {
     const r = cur();
-    const fallback = ui.fallback ? `<div class="sect"><label class="field"><span class="field__label">Your browser blocked copying. Select this text and copy it.</span><textarea class="brief-fallback" id="briefText" readonly>${esc(ui.fallback)}</textarea></label></div>` : "";
     return `
       <div class="column__head column__head--edit">
         <button type="button" class="fb-btn" data-act="back" aria-label="Back to sections" title="Back to sections">${ICON.back}</button>
-        <span class="column__title"><b>${esc(ui.sel)}</b><span>Section ${sectionNo(ui.sel)} · ${r.kind === "topline" ? "Topline component" : r.kind === "products" ? "Product carousel" : "Billboard banner"}</span></span>
+        <span class="column__title"><b>${esc(ui.sel)}</b><span>Section ${sectionNo(ui.sel)}</span></span>
       </div>
-      ${fallback}
-      ${r.kind === "topline" ? "" : `<div class="b-note"><span>Layout is shared by every brand. Copy is per brand.</span><button type="button" data-act="dup-brand">Different layout for ${esc(brandName())}?</button></div>`}
       ${r.kind === "products" ? specsSection(r) : ""}
       ${r.kind === "topline" ? toplineInspector(r) : r.kind === "products" ? productsInspector(r) : bannerInspector(r)}
       ${r.on && r.kind === "products" ? `<div class="sect"><button type="button" class="btn" data-act="toggle" data-name="${esc(ui.sel)}" style="align-self:flex-start">Hide this section</button></div>` : ""}`;
@@ -1415,10 +1374,10 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const focusedCard = document.activeElement?.closest?.(".crow")?.dataset.name;
     const tabs = `<nav class="col-tabs" aria-label="View">${[["editor", "Editor"], ["guide", "Guide"]].map(([k, l]) => `<button type="button" class="tab" data-act="tab" data-val="${k}" aria-pressed="${ui.tab === k}">${ICON[k]}${l}</button>`).join("")}</nav>`;
     const guideNav = `
-      <div class="column__head"><span class="column__title-row">${ICON.guide}<span class="column__title"><b>Guide</b><span>How homepage banners work</span></span></span></div>
-      <ul class="guide-nav">${[["order", "Homepage order"], ["sizes", "Image size cheat sheet"], ["anatomy", "How a banner is built"], ["rules", "Rules that save you trouble"], ["settings", "All banner settings"]].map(([id, l]) => `<li><button type="button" data-act="guide-jump" data-val="${id}">${l}</button></li>`).join("")}</ul>`;
+      <div class="column__head"><span class="column__title-row">${ICON.guide}<span class="column__title"><b>Guide</b><span>How it works</span></span></span></div>
+      <ul class="guide-nav">${[["order", "Homepage order"], ["sizes", "How image sizes are worked out"], ["rules", "Three rules"]].map(([id, l]) => `<li><button type="button" data-act="guide-jump" data-val="${id}">${l}</button></li>`).join("")}</ul>`;
     const designer = ui.view === "designer";
-    const inner = ui.tab === "guide" ? guideNav : editing ? (designer ? designerEditorHTML() : editorHTML()) : designer ? designerListHTML() : (ui.fallback ? `<div class="sect"><label class="field"><span class="field__label">Your browser blocked copying. Select this text and copy it.</span><textarea class="brief-fallback" id="briefText" readonly>${esc(ui.fallback)}</textarea></label></div>` : "") + listHTML();
+    const inner = ui.tab === "guide" ? guideNav : editing ? (designer ? designerEditorHTML() : editorHTML()) : designer ? designerListHTML() : listHTML();
     const guide = "";
     col.innerHTML = `<div class="col-main">${inner}</div><div class="col-bottom">${guide}${tabs}</div>`;
     const chip = $("#exportChip");
@@ -1429,7 +1388,6 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     if (!editing && focusedCard) col.querySelector(`.crow[data-name="${CSS.escape(focusedCard)}"]`)?.focus({ preventScroll: true });
     col.dataset.sel = ui.sel || "";
     col.scrollTop = editing && wasEditing === ui.sel ? keep : (editing ? 0 : keep);
-    if (ui.fallback) { const t = $("#briefText"); t?.focus(); t?.select(); }
   };
 
   const saveLabel = () => ({
@@ -1479,10 +1437,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       ${tplControl}
       <span class="fb-sep"></span>
       ${[["mobile", "Mobile preview"], ["desktop", "Desktop preview"], ["both", "Desktop and mobile side by side"]].map(([k, l]) => `<button type="button" class="fb-btn" data-act="device" data-val="${k}" aria-pressed="${ui.device === k}" aria-label="${l}" title="${l}">${ICON[k]}</button>`).join("")}
-      ${ui.device === "desktop" ? `<span class="fb-sep"></span><span class="mode-seg" role="group" aria-label="Desktop preview width">
-        <button type="button" data-act="desktop-mode" data-val="fixed" aria-pressed="${ui.desktopMode === "fixed"}" title="A common desktop browser width, scaled to fit">${DEVICE_PRESETS.desktop.width}px</button>
-        <button type="button" data-act="desktop-mode" data-val="full" aria-pressed="${ui.desktopMode === "full"}" title="Lay the page out at the full width of this area, at 100%">Full width</button>
-      </span>` : ""}
+      <button type="button" class="fb-btn" data-act="present" aria-label="Full-screen preview" title="Full-screen preview">${ICON.expand}</button>
       ${ui.device === "mobile" ? `<span class="fb-sep"></span><span class="mode-seg" role="group" aria-label="Mobile preview mode">
         <button type="button" data-act="mobile-mode" data-val="frame" aria-pressed="${ui.mobileMode === "frame"}" title="Fixed-size phone, page scrolls inside it">Device frame</button>
         <button type="button" data-act="mobile-mode" data-val="full" aria-pressed="${ui.mobileMode === "full"}" title="Whole page at phone width, no frame">Full height</button>
@@ -1577,7 +1532,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const play = slide.kind === "video" ? `<span class="pic__play"></span>` : "";
     const overlay = block && isOverlay(p) ? `<div class="pic__overlay" style="${textPadCSS(r, d)};justify-content:${FLEX[cell(p).col]};align-items:${FLEX[cell(p).row]}">${block}</div>` : "";
     const src = imgSrc(imgRef(r, slide, d));
-    const editing = ui.view === "designer" && ui.sel && cfg[ui.sel] === r;
+    const editing = !ui.present && ui.view === "designer" && ui.sel && cfg[ui.sel] === r;
     const drop = editing ? ` data-act="tile-upload" data-drop data-i="${i}" data-dev="${imgKey(r, d)}" title="Drop an image here or click to upload"` : "";
     const picture = `<div class="pic ${src ? "has-img" : ""}"${drop}><div class="pic__art" style="aspect-ratio:${sz.key.replace(":", " / ")}">${src ? `<img class="pic__img" src="${esc(src)}" alt="" loading="lazy">` : ""}</div>${pins}${play}${overlay}</div>`;
     const s = block ? side(p) : null;
@@ -1665,7 +1620,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
         return { n: 0, html: `<div style="padding:${mobile ? 16 : 40}px">
           <div class="store-empty" style="padding:${mobile ? "56px 20px" : "140px 40px"};font-size:${mobile ? 13 : 17}px">
             <b style="font-size:${mobile ? 20 : 34}px">Your homepage is blank</b>
-            <span>Every section starts hidden. Click the eye next to a section in the Sections list to show it.</span>
+            <span>1. Turn on the sections you need with the eye in the Sections list.<br>2. Set each one's layout in Site configuration.<br>3. Open Designer for the image sizes.</span>
           </div></div>` };
       }
       // Sections sit flush against each other; spacing comes from each banner's own outer padding setting.
@@ -1675,6 +1630,14 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       const b = bodyFor(d);
       return `<div class="page" data-theme="${ui.theme}" style="${esc(themeVars[ui.theme][d])};width:${layoutW(d)}px;${scale !== 1 ? `transform:scale(${scale});` : ""}--ui:${uiScale.toFixed(3)};--pb:${b.n ? gapFor(d) : 0}px">${storeHeader(d)}${b.html}</div>`;
     };
+    document.querySelector(".app").classList.toggle("presenting", ui.present);
+    if (ui.present) {
+      // Just the homepage, as a shopper sees it: desktop at the browser's width, mobile at phone width.
+      const d = ui.device === "mobile" ? "mobile" : "desktop";
+      ui.deskFullW = Math.max(768, Math.floor(canvas.clientWidth));
+      stage.innerHTML = `<div class="present-page" style="width:${layoutW(d)}px">${pageHTML(d, 1, 1)}</div>`;
+      return;
+    }
     const both = ui.device === "both";
     const availW = Math.max(240, canvas.clientWidth - 48);
     const availH = Math.max(300, canvas.clientHeight - 112); // room for the floating bar and canvas padding
@@ -1713,7 +1676,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       </div>`;
     stage.innerHTML = (ui.device !== "mobile" ? desk : "") + (ui.device !== "desktop" ? phone : "");
     const info = [];
-    if (ui.device !== "mobile") info.push(`<b>Desktop</b> ${ui.desktopMode === "full" && ui.device === "desktop" ? `full width, ${dW}px` : `${dW}px`} · ${Math.round(ds * 100)}%`);
+    if (ui.device !== "mobile") info.push(`<b>Desktop</b> ${dW}px · ${Math.round(ds * 100)}%`);
     if (ui.device !== "desktop") info.push(`<b>${DEVICE.label}</b> ${DEVICE.width}${full ? "px wide, full height" : ` × ${DEVICE.height}px`} · ${Math.round(ps * 100)}%`);
     ui.viewInfo = info.join('<span style="margin:0 8px;opacity:.5">|</span>');
     const vi = $("#viewInfo");
@@ -1932,8 +1895,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     </div>`;
 
   const LAYOUT_HELP = {
-    grid: "Every card is on the page at once and wraps into rows.",
-    carousel: "One row of cards. The rest scroll sideways.",
+    grid: "Every tile is on the page at once and wraps into rows.",
+    carousel: "One row of tiles. The rest scroll sideways.",
   };
   const textMode = (r) => (!r.text.on ? "none" : isOverlay(r.text.pos) ? "on" : "below");
   const belowAlign = (r) => { const sfx = (r.text.pos || "").split("-").pop(); return sfx === "start" ? "left" : sfx === "end" ? "right" : "center"; };
@@ -1947,15 +1910,15 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       : `<label class="slide-thumb" data-drop data-i="${i}" data-dev="m" title="${ref ? "Replace image" : "Upload image"}">${src ? `<img src="${esc(src)}" alt="">` : ICON.upload}${input}</label>`;
     const msg = ui.imgMsg && ui.imgMsg.key.startsWith(`${i}-`) ? ui.imgMsg.text : "";
     if (ui.view !== "designer") return `<li class="slide-row slide-row--plain">
-      ${sel(`slides.${i}.kind`, KIND_OPTS, s.kind, `Slide ${i + 1} type`)}
-      <input type="text" id="f-copy-title-${i}" data-copy="title" data-i="${i}" value="${esc(titleAt(r, i))}" placeholder="Card text" aria-label="Slide ${i + 1} text for ${esc(brandName())}">
-      <button type="button" class="x-btn" data-act="del-slide" data-i="${i}" ${r.slides.length === 1 ? "disabled" : ""} aria-label="Remove slide ${i + 1}">✕</button>
+      ${sel(`slides.${i}.kind`, KIND_OPTS, s.kind, `Tile ${i + 1} type`)}
+      <input type="text" id="f-copy-title-${i}" data-copy="title" data-i="${i}" value="${esc(titleAt(r, i))}" placeholder="Tile text" aria-label="Tile ${i + 1} text for ${esc(brandName())}">
+      <button type="button" class="x-btn" data-act="del-slide" data-i="${i}" ${r.slides.length === 1 ? "disabled" : ""} aria-label="Remove tile ${i + 1}">✕</button>
     </li>`;
     return `<li class="slide-row">
       ${thumb}
-      ${sel(`slides.${i}.kind`, KIND_OPTS, s.kind, `Slide ${i + 1} type`)}
-      <input type="text" id="f-copy-title-${i}" data-copy="title" data-i="${i}" value="${esc(titleAt(r, i))}" placeholder="Card text" aria-label="Slide ${i + 1} text for ${esc(brandName())}">
-      <button type="button" class="x-btn" data-act="del-slide" data-i="${i}" ${r.slides.length === 1 ? "disabled" : ""} aria-label="Remove slide ${i + 1}">✕</button>
+      ${sel(`slides.${i}.kind`, KIND_OPTS, s.kind, `Tile ${i + 1} type`)}
+      <input type="text" id="f-copy-title-${i}" data-copy="title" data-i="${i}" value="${esc(titleAt(r, i))}" placeholder="Tile text" aria-label="Tile ${i + 1} text for ${esc(brandName())}">
+      <button type="button" class="x-btn" data-act="del-slide" data-i="${i}" ${r.slides.length === 1 ? "disabled" : ""} aria-label="Remove tile ${i + 1}">✕</button>
       ${msg ? `<span class="slide-warn">${esc(msg)}</span>` : ""}
     </li>`;
   };
@@ -1986,24 +1949,24 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
           <span></span><span class="dtable__h">Mobile</span><span class="dtable__h">Desktop</span>
           ${dRow(car ? "In view" : "Per row", "", (k) => sel(`${k}.cols`, colOpts(r[k].cols), r[k].cols, `${dev(k)} ${car ? "in view" : "per row"}`, "num"))}
           ${dRow("Gap", "", (k) => sel(`${k}.gap`, GAP_OPTS, r[k].gap, `${dev(k)} gap`))}
-          ${car ? "" : dRow("Outer padding", "Same size as the gap, on all four sides", (k) => tog(`${k}.pad`, r[k].pad, `${dev(k)} outer padding`, "", true))}
+          ${car ? "" : dRow("Padding around", "Same as the gap, on all four sides", (k) => tog(`${k}.pad`, r[k].pad, `${dev(k)} outer padding`, "", true))}
           ${car ? dRow("Peek", "Part of the next card", (k) => sel(`${k}.peek`, PEEK_OPTS, r[k].peek, `${dev(k)} peek`, "num")) : ""}
         </div>
         ${car ? `<label class="switch"><span>Arrows (desktop)</span><input type="checkbox" id="f-arrows-d" data-arrows-d ${r.d.arrows !== "none" ? "checked" : ""}></label>` : ""}
       </div>
 
       <div class="step">
-        <div class="step__title"><span class="step__num">2</span><span>Slides</span><span class="step__aside">${r.slides.length}</span></div>
+        <div class="step__title"><span class="step__num">2</span><span>Tiles</span><span class="step__aside">${r.slides.length}</span></div>
         <ul class="slides-list">${r.slides.map((sl, i) => slideRow(r, sl, i)).join("")}</ul>
         <div class="shoot">
-          <button type="button" class="btn" data-act="add-slide" ${r.slides.length >= 12 ? "disabled" : ""}>Add slide</button>
+          <button type="button" class="btn" data-act="add-slide" ${r.slides.length >= 12 ? "disabled" : ""}>Add tile</button>
         </div>
         ${usesArt(r) ? `<div class="ctx-line"><span>Image shape and sizes are set in Designer view.</span><button type="button" data-act="view" data-val="designer">Open</button></div>` : ""}
       </div>
 
       <div class="step">
-        <div class="step__title"><span class="step__num">3</span><span>Card text</span></div>
-        <div class="seg" role="group" aria-label="Card text">${[["none", "None"], ["below", "Below image"], ["on", "On image"]].map(([v, l]) => `<button type="button" data-act="text-mode" data-val="${v}" aria-pressed="${mode === v}">${l}</button>`).join("")}</div>
+        <div class="step__title"><span class="step__num">3</span><span>Tile text</span></div>
+        <div class="seg" role="group" aria-label="Tile text">${[["none", "None"], ["below", "Below image"], ["on", "On image"]].map(([v, l]) => `<button type="button" data-act="text-mode" data-val="${v}" aria-pressed="${mode === v}">${l}</button>`).join("")}</div>
         ${mode === "on" ? `
           <div class="subhead">Placement</div>
           <div class="field"><label for="f-text-pos">Position</label><select id="f-text-pos" data-path="text.pos" aria-label="Position">${OVERLAY.map((p) => `<option value="${p}" ${r.text.pos === p ? "selected" : ""}>${POS_LABEL[p].split(",")[0]}</option>`).join("")}</select></div>
@@ -2016,9 +1979,9 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
         ${mode === "below" ? `<div class="subhead">Placement</div><div class="field"><span class="field__label">Alignment</span><div class="seg" role="group" aria-label="Alignment">${[["left", "Left"], ["center", "Center"], ["right", "Right"]].map(([v, l]) => `<button type="button" data-act="text-align" data-val="${v}" aria-pressed="${belowAlign(r) === v}">${l}</button>`).join("")}</div></div>` : ""}
         ${mode !== "none" ? `
           <div class="subhead">Style</div>
-          <div class="field"><label for="f-text-headVariant">Typography</label>${sel("text.headVariant", typeOpts(), tv(r, "head"), "Card text typography")}</div>
+          <div class="field"><label for="f-text-headVariant">Typography</label>${sel("text.headVariant", typeOpts(), tv(r, "head"), "Tile text typography")}</div>
           <div class="two"><div class="field"><label for="f-text-btnStyle">Button</label>${sel("text.btnStyle", BTN_OPTS, r.text.btnStyle, "Button style")}</div>${r.text.btnStyle !== "none" ? copyTxt("btn", copyOf(r).btn, "Button label", "Shop now", true) : "<span></span>"}</div>` : ""}
-        ${r.slides.some((sl) => sl.kind === "text") ? `<div class="field"><span class="field__label">Background for Text only slides</span><div class="swatches">${BG_SWATCHES.map((c) => `<button type="button" class="swatch" style="background:${c}" data-act="set" data-path="text.bg" data-val="${c}" aria-pressed="${r.text.bg === c}" aria-label="Background ${c}"></button>`).join("")}</div></div>` : ""}
+        ${r.slides.some((sl) => sl.kind === "text") ? `<div class="field"><span class="field__label">Background for Text only tiles</span><div class="swatches">${BG_SWATCHES.map((c) => `<button type="button" class="swatch" style="background:${c}" data-act="set" data-path="text.bg" data-val="${c}" aria-pressed="${r.text.bg === c}" aria-label="Background ${c}"></button>`).join("")}</div></div>` : ""}
       </div>
 
       <div class="step">
@@ -2044,7 +2007,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     return { m, d, files, split: !!r.ratio.split };
   };
   const exportGuideHTML = (r) => {
-    if (!usesArt(r)) return `<div class="export-guide"><div class="export-guide__head"><b>No images to export</b></div><p>Every slide is Text only.</p></div>`;
+    if (!usesArt(r)) return `<div class="export-guide"><div class="export-guide__head"><b>No images to export</b></div><p>Every tile is Text only.</p></div>`;
     const { m, d, files, split } = exportSummary(r);
     const card = (label, z, n) => `<div class="export-card"><span class="export-card__shape">${ratioBox(z.key)}</span><span class="export-card__label">${label}</span><span class="export-card__size">${z.ew} × ${z.eh} px</span><span class="export-card__sub">${z.key} · ${n} file${n === 1 ? "" : "s"}</span></div>`;
     const warns = [];
@@ -2052,11 +2015,11 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       const g = dv2 === "mobile" ? m.geo : d.geo;
       if (!g.carousel && g.n > g.cols && g.n % g.cols !== 0) {
         const fills = [1, 2].map((k) => g.cols * Math.ceil(g.n / g.cols) * k / Math.ceil(g.n / g.cols)).map((x) => x);
-        warns.push(`${dv2 === "mobile" ? "Mobile" : "Desktop"}'s last row has ${g.n % g.cols} of ${g.cols} cards. ${g.cols} or ${g.cols * 2} cards fill every row.`);
+        warns.push(`${dv2 === "mobile" ? "Mobile" : "Desktop"}'s last row has ${g.n % g.cols} of ${g.cols} tiles. ${g.cols} or ${g.cols * 2} tiles fill every row.`);
       }
     });
-    if (textMode(r) === "on" && m.geo.slideW < 140) warns.push(`Cards are ${Math.round(m.geo.slideW)} px wide on mobile, so text on the image will be cramped. Try "Below image".`);
-    if (r.slides.some((x) => x.kind === "video")) warns.push("Video slides need a mobile and a desktop video URL. The image is the poster.");
+    if (textMode(r) === "on" && m.geo.slideW < 140) warns.push(`Tiles are ${Math.round(m.geo.slideW)} px wide on mobile, so text on the image will be cramped. Try "Below image".`);
+    if (r.slides.some((x) => x.kind === "video")) warns.push("Video tiles need a mobile and a desktop video URL. The image is the poster.");
     return `<div class="export-guide">
       <div class="step__title"><span class="step__num">1</span><span>Export your images at</span><button type="button" class="step__btn" data-act="copy-size">${ui.sizeCopied ? "Copied" : "Copy size"}</button></div>
       ${split ? card("Mobile", m, files) + card("Desktop", d, files) : card("One image for mobile and desktop", m, files)}
@@ -2071,31 +2034,40 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 
   // ---------- Reference tables ----------
   const renderOrderTable = () => {
-    $("#orderTable").innerHTML = `<thead><tr><th>Section</th><th>Name in the back office</th><th>What it is</th></tr></thead><tbody>${ORDER.map((s, i) => `
-      <tr><td class="num">${i + 1}</td><td><b>${esc(s.name)}</b></td><td>${s.products ? "Product carousel. A heading plus products from a category or a manual SKU list (up to 12). The layout is fixed." : "Billboard banner."} ${esc(s.note)}</td></tr>`).join("")}</tbody>`;
+    $("#orderTable").innerHTML = `<thead><tr><th>#</th><th>Section</th><th>What it is</th></tr></thead><tbody>${ORDER.map((s, i) => `
+      <tr><td class="num">${i + 1}</td><td><b>${esc(s.name)}</b></td><td>${s.products ? "Product carousel with a fixed layout. No images to make." : esc(s.note)}</td></tr>`).join("")}</tbody>`;
   };
-  const renderCheat = () => {
-    const sample = (o) => make({ ...o, text: { on: false } });
-    const layouts = [
-      ["Full width, 1 across", "Grid 1 · Grid 1", sample({ m: { cols: 1 }, d: { cols: 1 } }), "4:5 mobile, 21:9 or 16:9 desktop"],
-      ["Two across", "Grid 1 · Grid 2", sample({ m: { cols: 1 }, d: { cols: 2 } }), "4:5 or 1:1"],
-      ["Two across on both", "Grid 2 · Grid 2", sample({ m: { cols: 2 }, d: { cols: 2 } }), "4:5 or 1:1"],
-      ["Three across", "Grid 1 · Grid 3", sample({ m: { cols: 1 }, d: { cols: 3 } }), "4:5 or 3:4"],
-      ["Category tiles", "Grid 2 · Grid 4", sample({ m: { cols: 2 }, d: { cols: 4 } }), "1:1"],
-      ["Carousel with peek", "1 + 1/4 · 3 in view", sample({ display: "carousel", m: { cols: 1, peek: 0.25 }, d: { cols: 3 }, slides: slidesOf("image", ["a", "b", "c", "d", "e"]) }), "4:5 or 3:2"],
-      ["Product-style carousel", "2 + 1/4 · 4 in view", sample({ display: "carousel", m: { cols: 2, peek: 0.25 }, d: { cols: 4 }, slides: slidesOf("image", ["a", "b", "c", "d", "e", "f"]) }), "1:1 or 4:5"],
-    ];
-    const rowsHTML = layouts.map(([name, setup, r, shape]) => {
-      if (r.display === "grid") r.slides = slidesOf("image", Array.from({ length: Math.max(r.m.cols, r.d.cols) }, () => "x"));
-      const gm = geometry(r, "mobile"), gd = geometry(r, "desktop");
-      const ex = (g, d) => r10(g.slideW * MULT[d]);
-      const q = parseRatio(shape.split(" ")[0]);
-      return `<tr><td><b>${name}</b><br><span class="hint">${setup}</span></td>
-        <td class="num">${Math.round(gm.slideW)}px</td><td class="num"><b>${ex(gm, "mobile")}px</b></td>
-        <td class="num">${Math.round(gd.slideW)}px</td><td class="num"><b>${ex(gd, "desktop")}px</b></td>
-        <td>${shape}<br><span class="hint mono">e.g. ${ex(gm, "mobile")}×${Math.round(ex(gm, "mobile") / q)} mobile</span></td></tr>`;
-    }).join("");
-    $("#cheat").innerHTML = `<thead><tr><th>Layout</th><th>Mobile shows</th><th>Mobile export</th><th>Desktop shows</th><th>Desktop export</th><th>Suggested shape</th></tr></thead><tbody>${rowsHTML}</tbody>`;
+  // ---------- Specs view ----------
+  const specsListHTML = (lines) => {
+    let html = "", depth = -1;
+    lines.forEach((ln) => {
+      const m = /^(\t*)- (.*)$/.exec(ln);
+      if (!m) return;
+      const d = m[1].length;
+      while (depth < d) { html += "<ul>"; depth += 1; }
+      while (depth > d) { html += "</li></ul>"; depth -= 1; }
+      if (html.endsWith("<ul>")) html += "<li>"; else html += "</li><li>";
+      const [k, ...rest] = m[2].split(": ");
+      html += rest.length ? `<span class="specs-k">${esc(k)}:</span> ${esc(rest.join(": "))}` : esc(m[2]);
+    });
+    while (depth >= 0) { html += "</li></ul>"; depth -= 1; }
+    return html;
+  };
+  const renderSpecs = () => {
+    const el = $("#specs");
+    const text = brief();
+    const blocks = text.split("\n\n").slice(1).map((b) => b.split("\n")).filter((b) => /^Section \d+:/.test(b[0]));
+    el.innerHTML = `<div class="guide__inner specs-inner">
+      <div class="specs-head">
+        <div><h1>Specs</h1><p>${esc(tpl().name)} · ${esc(brandName())}</p></div>
+        <span class="specs-actions">${ui.copied ? `<span class="copy-status">${esc(ui.copied)}</span>` : ""}<button type="button" class="btn btn--primary" data-act="copy-brief" ${blocks.length ? "" : "disabled"}>Copy specs</button></span>
+      </div>
+      ${ui.fallback ? `<label class="field"><span class="field__label">Your browser blocked copying. Select this text and copy it.</span><textarea class="brief-fallback" id="briefText" readonly>${esc(ui.fallback)}</textarea></label>` : ""}
+      ${blocks.length
+        ? blocks.map((b) => `<section class="card specs-sec"><h2>${esc(b[0])}</h2><div class="specs-list">${specsListHTML(b.slice(1))}</div></section>`).join("")
+        : `<section class="card"><p>No sections are turned on yet. Turn sections on in Site configuration to see their specs here.</p></section>`}
+    </div>`;
+    if (ui.fallback) { const t = $("#briefText"); t?.focus(); t?.select(); }
   };
 
   // ---------- Brief ----------
@@ -2106,7 +2078,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const padName = (k) => (PAD_OPTS.find(([v]) => v === k)?.[1] || "None").split(" · ")[0];
     const perView = (r, k) => {
       const n = Number(r[k].cols) + (r.display === "carousel" ? Number(r[k].peek) || 0 : 0);
-      return r.display === "carousel" ? `${n} card${n === 1 ? "" : "s"}` : `${n} per row`;
+      return r.display === "carousel" ? `${n} tile${n === 1 ? "" : "s"}` : `${n} per row`;
     };
     let no = 0;
     onPage().forEach((s) => {
@@ -2513,7 +2485,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       choose(t.dataset.name, true);
     } else if (act === "view") {
       if (ui.view === t.dataset.val) return;
-      ui.view = t.dataset.val; ui.menu = null; ui.tab = "editor"; ui.column = true;
+      ui.view = t.dataset.val; ui.menu = null; ui.tab = "editor"; ui.column = true; ui.copied = ""; ui.fallback = "";
       try { localStorage.setItem("bb-view", ui.view); } catch (err) { /* storage unavailable */ }
       renderAll();
     } else if (act === "select") {
@@ -2540,16 +2512,6 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       ui.menu = next; ui.confirmDelete = false; ui.confirmReset = false; renderFloat(); renderTop();
     } else if (act === "theme") {
       setTheme(t.dataset.val);
-    } else if (act === "dup-brand") {
-      syncActive();
-      const keepSel = ui.sel;
-      const nt = newTemplate(`${tpl().name} – ${ui.theme.toUpperCase()}`, tpl());
-      Object.values(nt.cfg).forEach((c) => { c.id = newId(); });
-      templates.push(nt);
-      loadTemplate(nt.id);
-      if (keepSel && page.has(keepSel)) ui.sel = keepSel;
-      scheduleSave(nt);
-      renderAll();
     } else if (act === "switch-tpl") {
       switchTo(t.dataset.id);
     } else if (act === "new-tpl") {
@@ -2645,12 +2607,10 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     } else if (act === "img-remove") {
       const sl = r?.slides[Number(t.dataset.i)];
       if (sl?.imgs?.[ui.theme]) { delete sl.imgs[ui.theme][t.dataset.dev]; ui.imgMsg = null; changed(); }
-    } else if (act === "desktop-mode") {
-      if (ui.desktopMode === t.dataset.val) return;
-      ui.desktopMode = t.dataset.val;
-      try { localStorage.setItem("bb-desktop-mode", ui.desktopMode); } catch (err) { /* storage unavailable */ }
-      ui.pos = {};
-      renderFloat(); renderStage();
+    } else if (act === "present") {
+      ui.present = true; ui.menu = null; renderAll();
+    } else if (act === "present-exit") {
+      ui.present = false; renderAll();
     } else if (act === "mobile-mode") {
       if (ui.mobileMode === t.dataset.val) return;
       // Remember how far down the page you were, in page pixels.
@@ -2674,7 +2634,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       setPath(r, t.dataset.path, v === "true" ? true : v === "false" ? false : /^-?\d+(\.\d+)?$/.test(v) ? Number(v) : v);
       changed();
     } else if (act === "add-slide") {
-      const title = `Slide ${r.slides.length + 1}`;
+      const title = `Tile ${r.slides.length + 1}`;
       Object.values(r.copy || {}).forEach((c) => { c.titles = [...(c.titles || []), title]; });
       r.slides.push({ kind: r.slides.at(-1)?.kind || "image", title }); changed();
     } else if (act === "del-slide") {
@@ -2689,11 +2649,12 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       const text = brief();
       try {
         await navigator.clipboard.writeText(text);
-        ui.copied = "Layout specs copied"; ui.fallback = "";
+        ui.copied = "Copied"; ui.fallback = "";
+        setTimeout(() => { ui.copied = ""; if (ui.view === "specs") renderSpecs(); }, 1600);
       } catch (err) {
-        ui.copied = ""; ui.fallback = text; ui.tab = "editor"; ui.column = true;
+        ui.copied = ""; ui.fallback = text;
       }
-      renderAll();
+      renderSpecs();
     }
   });
   document.addEventListener("keydown", (e) => {
@@ -2703,6 +2664,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       return;
     }
     if (e.key === "Escape") {
+      if (ui.present) { ui.present = false; renderAll(); return; }
       if (ui.menu) { closeMenus(); return; }
 
       if (ui.sel) { ui.sel = null; renderAll(); return; }
@@ -2864,8 +2826,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   }).observe($("#canvas"));
 
   $("#workspace").appendChild($("#guide"));
+  $("#workspace").appendChild($("#specs"));
   renderOrderTable();
-  renderCheat();
   renderAll();
   initDb();
 })();
