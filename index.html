@@ -746,6 +746,27 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .theme-btn { gap: 6px; }
 .topbar__right .theme-pick .menu { left: auto; right: 0; transform: none; }
 .topbar__right { gap: 10px; }
+
+/* ---------- Sidebar: clean, bordered fields with labels above (Site configuration + Designer) ---------- */
+.column .step { padding: 20px 16px; gap: 14px; }
+.column .step__title { font-size: 15px; font-weight: 600; gap: 8px; }
+.column .field, .column .field--row, .column .field:has(> select), .column .field:has(> .seg), .column .field:has(> .color-field) { display: flex; flex-direction: column; align-items: stretch; gap: 6px; }
+.column .field > label, .column .field__label, .column .dtable__l, .column .ratio-pair__cell > span { color: var(--ink); font-size: 13px; }
+.column .field__label small { display: block; color: var(--subtle); font-size: 12px; margin-top: 2px; }
+.column select, .column input[type="text"], .column .color-field { height: 40px; border: 1px solid var(--line-strong); border-radius: 8px; background-color: var(--surface); font-size: 13.5px; box-shadow: none; }
+.column .dtable select { height: 40px; }
+.column select:hover, .column input[type="text"]:hover, .column .color-field:hover { background-color: var(--surface); border-color: #9e9e9e; }
+.column select:focus, .column input[type="text"]:focus, .column .color-field:focus-within { border-color: var(--accent); outline: none; box-shadow: 0 0 0 1px var(--accent); background-color: var(--surface); }
+.column .color-field .hex-input:focus { box-shadow: none; }
+.column .step .seg, .column .seg { padding: 2px; border-radius: 8px; background: #f1f1f1; border: 1px solid var(--line-strong); }
+.column .step .seg button, .column .seg button { height: 34px; border-radius: 6px; font-size: 13px; color: var(--muted); background: transparent; box-shadow: none; }
+.column .step .seg button[aria-pressed="true"], .column .seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); font-weight: 600; box-shadow: 0 0 0 1px var(--line-strong), 0 1px 2px rgba(0,0,0,0.06); }
+.column .step .seg button:hover:not([aria-pressed="true"]), .column .seg button:hover:not([aria-pressed="true"]) { color: var(--ink); }
+.column .seg--tog { width: 100%; }
+.column .dtable .seg--tog button { height: 34px; padding: 0 4px; }
+.column .step .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.column .subhead { font-size: 13px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--ink); padding-top: 14px; }
+.column .b-help, .column .step .hint { color: var(--subtle); font-size: 12.5px; }
 </style>
 
 <div class="app">
@@ -1380,13 +1401,13 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     return `${head}
       ${r.on ? "" : `<div class="sect">${offBanner()}</div>`}
       <div class="step">
-        <div class="step__title"><span class="step__num">1</span><span>Images</span></div>
+        <div class="step__title"><span>Images</span></div>
         <div class="img-slots">${art.map(([sl, i]) => `<div><div class="img-slot__label">Tile ${i + 1}<span>${esc(titleAt(r, i).trim() || KIND_OPTS.find(([v]) => v === sl.kind)?.[1] || "")}</span></div>${uploadSlots(r, sl, i)}</div>`).join("")}</div>
         ${textOnly ? `<p class="b-help">${textOnly} Text only tile${textOnly === 1 ? "" : "s"} need${textOnly === 1 ? "s" : ""} no image.</p>` : ""}
         ${anyImages ? `<div class="shoot"><button type="button" class="shoot__clear" data-act="clear-images">Clear images</button></div>` : ""}
       </div>
       <div class="step">
-        <div class="step__title"><span class="step__num">2</span><span>Aspect ratio</span></div>
+        <div class="step__title"><span>Aspect ratio</span></div>
         <div class="ratio-pair">
           <label class="ratio-pair__cell"><span>Mobile</span><select id="f-ratio-m" data-ratio="m">${ratioOptions(r.ratio.m)}</select></label>
           <label class="ratio-pair__cell"><span>Desktop</span><select id="f-ratio-d" data-ratio="d">${ratioOptions(ratioKey(r, "desktop"))}</select></label>
@@ -1873,7 +1894,11 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   const opt = (list, val) => list.map(([v, l]) => `<option value="${esc(v)}" ${String(v) === String(val) ? "selected" : ""}>${esc(l)}</option>`).join("");
   const sel = (path, list, val, label, type = "") => `<select id="${fid(path)}" data-path="${path}" ${type ? `data-type="${type}"` : ""} aria-label="${esc(label)}">${opt(list, val)}</select>`;
   const seg = (path, list, val, label) => `<div class="seg" role="group" aria-label="${esc(label)}">${list.map(([v, l]) => `<button type="button" data-act="set" data-path="${path}" data-val="${v}" aria-pressed="${String(v) === String(val)}">${esc(l)}</button>`).join("")}</div>`;
-  const tog = (path, val, label, hint = "", hideLabel = false) => `<label class="switch"><span ${hideLabel ? 'class="sr"' : ""}>${esc(label)}${hint ? `<small>${esc(hint)}</small>` : ""}</span><input type="checkbox" id="${fid(path)}" data-path="${path}" ${val ? "checked" : ""}></label>`;
+  // Two-option text toggle (On/Off, Show/Hide) in place of a switch.
+  const togSeg = (path, val, label, words = ["On", "Off"], vals = [true, false]) => `<div class="seg seg--tog" role="group" aria-label="${esc(label)}">${[0, 1].map((k) => `<button type="button" data-act="set" data-path="${path}" data-val="${vals[k]}" aria-pressed="${String(val) === String(vals[k])}">${words[k]}</button>`).join("")}</div>`;
+  const tog = (path, val, label, hint = "", hideLabel = false, words = ["On", "Off"]) => hideLabel
+    ? togSeg(path, !!val, label, words)
+    : `<div class="field field--tog"><span class="field__label">${esc(label)}${hint ? `<small>${esc(hint)}</small>` : ""}</span>${togSeg(path, !!val, label, words)}</div>`;
   const txt = (path, val, label, ph = "") => `<div class="field"><label for="${fid(path)}">${esc(label)}</label><input type="text" id="${fid(path)}" data-path="${path}" value="${esc(val)}" placeholder="${esc(ph)}"></div>`;
   const ratioSelect = (path, val, label) => `<select id="${fid(path)}" data-path="${path}" aria-label="${esc(label)}">${RATIO_GROUPS.map(([g, l]) => `<optgroup label="${g}">${opt(l, val)}</optgroup>`).join("")}</select>`;
   const uploadSlot = (r, s, i, dev, label) => {
@@ -1949,10 +1974,10 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       <div class="sect__title"><h3>${c.type === "category" ? "Category settings" : "Items"}</h3></div>
       ${c.type === "category"
         ? `<div class="field"><label for="f-category">Select category</label>${sel("category", CATEGORIES.map((x) => [x, x]), c.category, "Category")}</div>
-           ${tog("ribbon", c.ribbon, "Show catalog ribbon", "Shows ribbons like Best Seller or New on product cards.")}`
+           ${tog("ribbon", c.ribbon, "Catalog ribbon", "Shows ribbons like Best Seller or New on product cards.", false, ["Show", "Hide"])}`
         : `<div class="field"><label for="f-items">Number of SKUs</label>${sel("items", Array.from({ length: 12 }, (_, i) => [i + 1, String(i + 1)]), c.items, "Number of SKUs", "num")}</div>
-           ${tog("itemRibbon", c.itemRibbon, "Show ribbon", "Set per SKU in the back office. Applied to all here.")}`}
-      ${tog("quick", c.quick, "Enable quick add", "Shows a quick add to cart button on the product cards.")}
+           ${tog("itemRibbon", c.itemRibbon, "Ribbon", "Set per SKU in the back office. Applied to all here.", false, ["Show", "Hide"])}`}
+      ${tog("quick", c.quick, "Quick add", "Shows a quick add to cart button on the product cards.")}
     </div>
     <div class="sect">
       <div class="sect__title"><h3>Layout</h3><span>fixed</span></div>
@@ -2000,7 +2025,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       ${r.on ? "" : `<div class="sect">${offBanner()}</div>`}
 
       <div class="step">
-        <div class="step__title"><span class="step__num">1</span><span>Layout</span></div>
+        <div class="step__title"><span>Layout</span></div>
         <select id="f-layout-pick" aria-label="Layout">
           <option value="grid" ${layoutValue === "grid" ? "selected" : ""}>Grid</option>
           <option value="carousel" ${layoutValue === "carousel" ? "selected" : ""}>Carousel</option>
@@ -2017,11 +2042,11 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
           ${car ? "" : dRow("Padding around", "Same as the gap, on all four sides", (k) => tog(`${k}.pad`, r[k].pad, `${dev(k)} outer padding`, "", true))}
           ${car ? dRow("Peek", "Part of the next card", (k) => sel(`${k}.peek`, PEEK_OPTS, r[k].peek, `${dev(k)} peek`, "num")) : ""}
         </div>
-        ${car ? `<label class="switch"><span>Arrows (desktop)</span><input type="checkbox" id="f-arrows-d" data-arrows-d ${r.d.arrows !== "none" ? "checked" : ""}></label>` : ""}
+        ${car ? `<div class="field field--tog"><span class="field__label">Arrows (desktop)</span>${togSeg("d.arrows", r.d.arrows !== "none" ? "block" : "none", "Arrows on desktop", ["Show", "Hide"], ["block", "none"])}</div>` : ""}
       </div>
 
       <div class="step">
-        <div class="step__title"><span class="step__num">2</span><span>Tiles</span><span class="step__aside">${r.slides.length}</span></div>
+        <div class="step__title"><span>Tiles</span><span class="step__aside">${r.slides.length}</span></div>
         <ul class="slides-list">${r.slides.map((sl, i) => slideRow(r, sl, i)).join("")}</ul>
         <div class="shoot">
           <button type="button" class="btn" data-act="add-slide" ${r.slides.length >= 12 ? "disabled" : ""}>Add tile</button>
@@ -2030,7 +2055,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       </div>
 
       <div class="step">
-        <div class="step__title"><span class="step__num">3</span><span>Tile text</span></div>
+        <div class="step__title"><span>Tile text</span></div>
         <div class="seg" role="group" aria-label="Tile text">${[["none", "None"], ["below", "Below image"], ["on", "On image"]].map(([v, l]) => `<button type="button" data-act="text-mode" data-val="${v}" aria-pressed="${mode === v}">${l}</button>`).join("")}</div>
         ${mode === "on" ? `
           <div class="subhead">Placement</div>
@@ -2050,7 +2075,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       </div>
 
       <div class="step">
-        <div class="step__title"><span class="step__num">4</span><span>Header</span></div>
+        <div class="step__title"><span>Header</span></div>
         ${copyTxt("htext", copyOf(r).htext, "Title", "Leave empty to hide", true)}
         ${copyTxt("hcta", copyOf(r).hcta, "Link text", "Leave empty to hide", true)}
         <div class="field"><label for="f-header-variant">Title typography</label>${sel("header.variant", typeOpts(), tv(r, "header"), "Title typography")}</div>
@@ -2086,7 +2111,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     if (textMode(r) === "on" && m.geo.slideW < 140) warns.push(`Tiles are ${Math.round(m.geo.slideW)} px wide on mobile, so text on the image will be cramped. Try "Below image".`);
     if (r.slides.some((x) => x.kind === "video")) warns.push("Video tiles need a mobile and a desktop video URL. The image is the poster.");
     return `<div class="export-guide">
-      <div class="step__title"><span class="step__num">3</span><span>Export your images at</span><button type="button" class="step__btn" data-act="copy-size">${ui.sizeCopied ? "Copied" : "Copy size"}</button></div>
+      <div class="step__title"><span>Export your images at</span><button type="button" class="step__btn" data-act="copy-size">${ui.sizeCopied ? "Copied" : "Copy size"}</button></div>
       ${split ? card("Mobile", m, files) + card("Desktop", d, files) : card("One image for mobile and desktop", m, files)}
       ${warns.map((t) => `<p class="warn">${esc(t)}</p>`).join("")}
     </div>`;
