@@ -1245,7 +1245,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   const typeCSS = (v) => `font-family:var(--typography-rules-${v}-font-family, inherit);font-size:var(--typography-rules-${v}-font-size);line-height:var(--typography-rules-${v}-line-height, normal);font-weight:var(--typography-rules-${v}-font-weight, normal);letter-spacing:var(--typography-rules-${v}-letter-spacing, normal);text-transform:var(--typography-rules-${v}-text-transform, none);`;
   const btnCSS = (kind) => (kind === "primary" || kind === "secondary")
     ? `background:var(--buttons-${kind}-background);color:var(--buttons-${kind}-text);border:1px solid var(--buttons-${kind}-border-color, transparent);border-radius:var(--buttons-${kind}-border-radius, 0);padding:var(--buttons-${kind}-padding);min-height:var(--buttons-${kind}-min-height);${typeCSS("button1")}`
-    : kind === "link" ? `${typeCSS("links1")}text-decoration:underline;text-underline-offset:0.25em;` : `${typeCSS("button1")}border-bottom:1px solid currentColor;padding-bottom:2px;`;
+    : kind === "link" ? `${typeCSS("links1")}color:inherit;text-decoration:underline;text-underline-offset:0.25em;` : `${typeCSS("button1")}color:inherit;border-bottom:1px solid currentColor;padding-bottom:2px;`;
   const tv = (r, which) => (which === "header" ? r.header?.variant || "headline4" : which === "head" ? r.text?.headVariant || "headline2" : r.text?.subVariant || "paragraph2");
   const brandName = (k = ui.theme) => THEMES.brands[k].name;
 
@@ -2984,6 +2984,11 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     } else if (act === "set") {
       const v = t.dataset.val;
       setPath(r, t.dataset.path, v === "true" ? true : v === "false" ? false : /^-?\d+(\.\d+)?$/.test(v) ? Number(v) : v);
+      // Light text pairs with the Secondary button, dark text with Primary (only swaps between those two).
+      if (t.dataset.path === "text.color" && r.text) {
+        if (v === "light" && r.text.btnStyle === "primary") r.text.btnStyle = "secondary";
+        else if (v === "dark" && r.text.btnStyle === "secondary") r.text.btnStyle = "primary";
+      }
       changed();
     } else if (act === "add-slide") {
       const title = `Tile ${r.slides.length + 1}`;
