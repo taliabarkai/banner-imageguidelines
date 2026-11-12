@@ -811,6 +811,9 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 /* Open section header: title, then the show/hide eye on the right */
 .column__head--edit { padding-right: 10px; }
 .column__head .head-eye { opacity: 1; position: relative; margin-left: auto; flex: none; }
+.column__head .head-edit { opacity: 1; position: relative; margin-left: auto; flex: none; }
+.column__head .head-edit + .head-eye { margin-left: 2px; }
+.column__head .head-edit .row-tip { top: calc(100% + 6px); bottom: auto; }
 .column__head .head-eye .row-tip { top: calc(100% + 6px); bottom: auto; }
 
 /* ---------- Preview on phone ---------- */
@@ -1529,6 +1532,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       <div class="column__head column__head--edit">
         <button type="button" class="fb-btn" data-act="back" aria-label="Back to images" title="Back to images">${ICON.back}</button>
         <span class="column__title"><b>${esc(ui.sel)}</b></span>
+        <button type="button" class="pen head-edit" data-act="view" data-val="config" aria-label="Edit section layout">${ICON.pencil}<span class="row-tip" role="tooltip">Edit section</span></button>
         ${headEye(ui.sel)}
       </div>`;
     if (r.kind || !usesArt(r)) return `${head}<div class="step"><p class="b-help">${r.kind ? "This section has no images to make." : "Every tile is Text only, so there are no images to make."} Its settings are in Sections.</p><div class="ctx-line"><span></span><button type="button" data-act="view" data-val="config">Open Sections</button></div></div>${r.kind ? "" : colorsStep(r)}`;
@@ -1553,7 +1557,6 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       ${colorsStep(r)}
       <div class="step">
         ${exportGuideHTML(r)}
-        <div class="ctx-line"><button type="button" data-act="view" data-val="config">Change layout</button></div>
       </div>`;
   };
 
