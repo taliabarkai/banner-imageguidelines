@@ -1603,8 +1603,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       trackStyle = `grid-template-columns:repeat(${geo.used}, ${geo.slideW}px);gap:${g}px;justify-content:center;padding:0 ${sidePad}px;`;
     }
     const dotsHTML = dots ? `<div class="dots ${dots.startsWith("inline") ? "dots--inline" : ""}" style="${dots.startsWith("inline") ? `padding-inline:${d === "mobile" ? 6 : 12}px` : ""}">${Array.from({ length: (geo.maxPos || 0) + 1 }, (_, k) => `<button type="button" data-act="dot" data-id="${r.id}" data-k="${k}" class="${k === pos ? "is-on" : ""}" aria-label="Go to position ${k + 1}"></button>`).join("")}</div>` : "";
-    // Outer padding wraps the whole section: sides on the strip, top and bottom here.
-    return `<div class="sec${sel}" data-name="${esc(name)}" style="${hasPad(r, d) ? `padding-block:${geo.carousel ? geo.margin : g}px` : ""}">
+    // Top and bottom match the sides: page margin plus any outer padding.
+    return `<div class="sec${sel}" data-name="${esc(name)}" style="${sidePad ? `padding-block:${sidePad}px` : ""}">
       ${tag}${header}
       ${dots === "block-start" ? dotsHTML : ""}
       <div class="stage-wrap">
