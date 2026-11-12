@@ -251,6 +251,12 @@ select:hover, input[type="text"]:hover { border-color: #b5b5b5; }
 .sec.is-sel::after { border-color: #005bd3; }
 .sec__tag { position: absolute; z-index: 7; top: 0; left: 0; background: #005bd3; color: #fff; font-family: var(--font-ui); font-weight: 500; font-size: calc(11px * var(--ui)); padding: calc(3px * var(--ui)) calc(8px * var(--ui)); border-radius: 0 0 calc(6px * var(--ui)) 0; opacity: 0; pointer-events: none; white-space: nowrap; }
 .sec:hover .sec__tag, .sec.is-sel .sec__tag { opacity: 1; }
+.sec .sec__tag--tools { pointer-events: auto; display: inline-flex; align-items: center; gap: calc(6px * var(--ui)); padding-right: calc(4px * var(--ui)); }
+.sec__tag-eye { position: relative; display: grid; place-items: center; width: calc(20px * var(--ui)); height: calc(20px * var(--ui)); border: 0; padding: 0; border-radius: calc(4px * var(--ui)); background: transparent; color: #fff; cursor: pointer; }
+.sec__tag-eye:hover, .sec__tag-eye:focus-visible { background: rgba(255,255,255,0.2); outline: none; }
+.sec__tag-eye .i { width: calc(15px * var(--ui)); height: calc(15px * var(--ui)); }
+.sec__tag-tip { position: absolute; top: calc(100% + 6px * var(--ui)); left: 50%; transform: translateX(-50%); background: #1d1d1f; color: #fff; font-size: calc(11.5px * var(--ui)); font-weight: 500; white-space: nowrap; padding: calc(4px * var(--ui)) calc(8px * var(--ui)); border-radius: calc(6px * var(--ui)); pointer-events: none; opacity: 0; transition: opacity .12s; }
+.sec__tag-eye:hover .sec__tag-tip, .sec__tag-eye:focus-visible .sec__tag-tip { opacity: 1; }
 .sec--note { padding: calc(12px * var(--ui)); text-align: center; color: #8d867f; background: repeating-linear-gradient(135deg, #f7f6f4 0 10px, #f0eeeb 10px 20px); font-size: calc(11px * var(--ui)); }
 .sec__header { display: flex; align-items: center; gap: 12px; padding-bottom: var(--hgap); }
 .sec__header-title { font-family: var(--font-store); font-weight: 500; line-height: 1.15; flex: 1; }
@@ -274,6 +280,8 @@ select:hover, input[type="text"]:hover { border-color: #b5b5b5; }
 .tile__mid--split > * { flex: 1 1 50%; min-width: 0; }
 .tile__band { display: flex; min-width: 0; padding: var(--bandpad) 8px; }
 .tile__band--side { padding: 0 var(--bandpad); align-items: center; }
+.tile__band--below { padding: var(--band-gap, 16px) var(--band-x, 0px) var(--bandpad); }
+.tile__band--above { padding: var(--bandpad) var(--band-x, 0px) var(--band-gap, 16px); }
 .pic { position: relative; flex: 1; min-width: 0; overflow: hidden; }
 .pic__art { width: 100%; background: var(--tile); }
 .pic__label { position: absolute; z-index: 2; left: calc(6px * var(--ui)); bottom: calc(6px * var(--ui)); background: rgba(20,18,16,0.72); color: #fff; font-family: var(--font-mono); font-size: calc(9.5px * var(--ui)); line-height: 1.3; padding: calc(3px * var(--ui)) calc(6px * var(--ui)); border-radius: calc(4px * var(--ui)); white-space: nowrap; }
@@ -1699,10 +1707,17 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 
   const sideArrowsHTML = (id) => `<button type="button" class="arrow arrow--start" data-act="prev" data-id="${id}" aria-label="Previous">‹</button><button type="button" class="arrow arrow--end" data-act="next" data-id="${id}" aria-label="Next">›</button>`;
 
+  // The blue label on a section in the preview. On the selected section it also has an eye to hide it.
+  const secTag = (n, name) => {
+    const eye = !ui.present && ui.sel === name && cfg[name]?.on
+      ? `<button type="button" class="sec__tag-eye" data-act="toggle" data-name="${esc(name)}" aria-label="Hide ${esc(name)}">${ICON.eye}<span class="sec__tag-tip" role="tooltip">Hide section</span></button>`
+      : "";
+    return `<span class="sec__tag${eye ? " sec__tag--tools" : ""}">${n} · ${esc(name)}${eye}</span>`;
+  };
   const productsHTML = (name, n, d) => {
     const c = cfg[name];
     const sel = name === ui.sel || name === ui.hl ? " is-sel" : "";
-    const tag = `<span class="sec__tag">${n} · ${esc(name)}</span>`;
+    const tag = secTag(n, name);
     if (!c.on) return "";
     const r = productLayout(c);
     const geo = geometry(r, d, layoutW(d));
@@ -1774,19 +1789,23 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       </div>` : `<div class="crop-ctl">${ratioPick}</div>`;
     const picture = `<div class="pic ${src ? "has-img" : ""}"${drop}><div class="pic__art" style="aspect-ratio:${sz.key.replace(":", " / ")}">${src ? `<img class="pic__img" src="${esc(src)}" alt="" loading="lazy" draggable="false" style="${cropCSS(ref)}">` : `<span class="pic__empty">${ICON.upload}</span>`}</div>${pins}${play}${overlay}${cropCtl}</div>`;
     const s = block ? side(p) : null;
-    const band = () => `<div class="tile__band" style="justify-content:${align(p)}">${block}</div>`;
+    // Text above/below the image: 8px (mobile) / 16px (desktop) from the image, no side padding, except a full-width image,
+    // where the text lines up with the page margins.
+    const fullBleed = !hasMargin(r) && !hasPad(r, d);
+    const bandX = fullBleed ? PAGE_MARGIN[d] : 0;
+    const band = (where) => `<div class="tile__band tile__band--${where}" style="justify-content:${align(p)};--band-x:${bandX}px;--band-gap:${d === "mobile" ? 8 : 16}px">${block}</div>`;
     const bandSide = () => `<div class="tile__band tile__band--side" style="align-items:${align(p)}">${block}</div>`;
     return `<div class="tile" style="--bandpad:${d === "mobile" ? 8 : 12}px">
-      ${s === "above" ? band() : ""}
+      ${s === "above" ? band("above") : ""}
       <div class="tile__mid ${s === "before" || s === "after" ? "tile__mid--split" : ""}">${s === "before" ? bandSide() : ""}${picture}${s === "after" ? bandSide() : ""}</div>
-      ${s === "below" ? band() : ""}
+      ${s === "below" ? band("below") : ""}
     </div>`;
   };
 
   const bannerHTML = (name, n, d) => {
     const r = cfg[name];
     const sel = name === ui.sel || name === ui.hl ? " is-sel" : "";
-    const tag = `<span class="sec__tag">${n} · ${esc(name)}</span>`;
+    const tag = secTag(n, name);
     if (!r.on) return "";
     if (!visibleOn(r, d)) return `<div class="sec sec--note${sel}" data-name="${esc(name)}">${tag}${esc(name)} is set to ${r.devices} only, so it's hidden on ${d}.</div>`;
     const sz = sizesFor(r, d);
@@ -1836,7 +1855,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const text = (copyOf(c).ttext || "").trim();
     const { bg, fg } = toplineColors(c);
     return `<div class="sec${sel}" data-name="${esc(name)}" style="background:${bg};color:${fg};padding:${d === "mobile" ? "10px 16px" : "12px 32px"};text-align:center;${typeCSS("text2")}">
-      <span class="sec__tag">${n} · Topline</span>${text ? esc(text) : `<span style="opacity:.6">Add the Topline text</span>`}
+      ${secTag(n, "Topline")}${text ? esc(text) : `<span style="opacity:.6">Add the Topline text</span>`}
     </div>`;
   };
 
@@ -2769,11 +2788,12 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 
   document.addEventListener("click", async (e) => {
     if (e.target.closest?.("[contenteditable], .crop-ctl select")) return;
-    // Clicking an image (or an empty image tile) in the preview opens that section in Images.
+    // First click on a section selects it (staying in Sections). Clicking an image in the section
+    // that's already selected opens it in Images.
     const picHit = !ui.present && ui.view !== "designer" && e.target.closest?.(".sec .pic:not(.pic--text)");
     if (picHit && !e.target.closest(".crop-ctl, [data-edit]")) {
       const name = picHit.closest(".sec[data-name]")?.dataset.name;
-      if (name && cfg[name] && !cfg[name].kind) {
+      if (name && name === ui.sel && cfg[name] && !cfg[name].kind) {
         ui.view = "designer"; ui.tab = "editor"; ui.hl = null;
         try { localStorage.setItem("bb-view", ui.view); } catch (err) { /* storage unavailable */ }
         closeMenus();
