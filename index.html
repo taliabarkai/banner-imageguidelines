@@ -768,6 +768,23 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .canvas .floatbar-wrap { padding-bottom: 10px; }
 @media (max-width: 1150px) { .topbar { grid-template-columns: auto minmax(0, 1fr) auto; } .floatbar--top .mode-seg { display: none; } }
 
+/* Images list: same rows as Sections, just the name and how many images are in */
+.img-rows { padding: 12px 8px; }
+.img-row { grid-template-columns: 18px minmax(0, 1fr) auto; }
+.img-row__shape { width: 18px; height: 18px; display: grid; place-items: center; }
+.img-row__shape span { display: block; background: none; border: 1.5px solid var(--muted); border-radius: 2px; box-sizing: border-box; }
+.img-row__count { font-size: 12px; font-weight: 600; color: var(--subtle); padding-right: 10px; font-variant-numeric: tabular-nums; }
+.img-row__count.is-done { color: #29845a; }
+
+/* − value + stepper (header spacing) */
+.stepper { display: flex; align-items: center; justify-content: space-between; height: 36px; border: 1px solid var(--line-strong); border-radius: 8px; background: #f1f1f1; padding: 2px; }
+.stepper b { flex: 1; text-align: center; font-size: 12.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em; }
+.stepper button { width: 28px; height: 30px; border: 0; border-radius: 6px; background: var(--surface); box-shadow: 0 0 0 1px var(--line-strong); cursor: pointer; font-size: 15px; line-height: 1; color: var(--ink); padding: 0; }
+.stepper button:hover:not(:disabled) { background: var(--hover); }
+.stepper button:disabled { background: transparent; box-shadow: none; color: var(--subtle); opacity: 0.6; cursor: default; }
+.column .dtable--steps { grid-template-columns: minmax(0, 1fr) 104px 104px; margin-top: 4px; }
+.column .dtable--steps .dtable__l:first-child { font-weight: 600; }
+
 /* Open section header: title, then the show/hide eye on the right */
 .column__head--edit { padding-right: 10px; }
 .column__head .head-eye { opacity: 1; position: relative; margin-left: auto; flex: none; }
@@ -925,6 +942,13 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     if (!r.text.pad) r.text.pad = { m: { block: "spacing-md", inline: "spacing-md" }, d: { block: "spacing-md", inline: "spacing-md" } };
     return r.text.pad;
   };
+  // Space above and below a section's header title (defaults: none above, MD below).
+  const ensureHeaderPad = (r) => {
+    r.header ||= {};
+    if (!r.header.pad) r.header.pad = { m: { top: "none", bottom: "spacing-md" }, d: { top: "none", bottom: "spacing-md" } };
+    return r.header.pad;
+  };
+  const PAD_SHORT = (k) => (k === "none" ? "None" : (PAD_OPTS.find(([v]) => v === k)?.[1] || "").split(" · ")[0]);
   const textPadCSS = (r, d) => {
     const p = ensureTextPad(r)[d === "mobile" ? "m" : "d"];
     return `padding:${PAD_PX[p.block] ?? 0}px ${PAD_PX[p.inline] ?? 0}px`;
@@ -1445,13 +1469,12 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const withImages = shown.filter((o) => !cfg[o.name].kind && usesArt(cfg[o.name]));
     const cards = withImages.map((o) => {
       const r = cfg[o.name];
-      const { m, d, split } = exportSummary(r);
+      const { m } = exportSummary(r);
       const { needed, have } = imageNeeds(r);
-      const spec = split ? `M ${m.ew} × ${m.eh} · D ${d.ew} × ${d.eh}` : `${m.ew} × ${m.eh}`;
-      return `<li class="img-card" data-act="select" data-name="${esc(o.name)}" tabindex="0">
-        <span class="img-card__shape">${ratioBox(m.key)}</span>
-        <span style="min-width:0"><span class="img-card__name">${esc(o.name)}</span><span class="img-card__spec">${spec} px</span><span class="img-card__sub">${split ? `${m.key} + ${d.key}` : m.key} · ${needed} file${needed === 1 ? "" : "s"}</span></span>
-        <span class="img-card__count ${needed && have >= needed ? "is-done" : ""}">${have}/${needed}</span>
+      return `<li class="row img-row" data-act="select" data-name="${esc(o.name)}" tabindex="0">
+        <span class="img-row__shape" aria-hidden="true">${ratioBox(m.key, 16)}</span>
+        <span class="row__name">${esc(o.name)}</span>
+        <span class="img-row__count ${needed && have >= needed ? "is-done" : ""}" title="${have} of ${needed} image${needed === 1 ? "" : "s"} uploaded">${have}/${needed}</span>
       </li>`;
     }).join("");
     return `
@@ -1459,7 +1482,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
         <span class="column__title-row">${ICON.image}<span class="column__title"><b>Images</b><span>${esc(tpl().name)}</span></span></span>
       </div>
       ${withImages.length
-        ? `<ul class="img-list">${cards}</ul>`
+        ? `<ul class="rows img-rows">${cards}</ul>`
         : `<p class="img-sum">No sections with images yet. Turn sections on in Sections.</p>`}`;
   };
   const bgHexField = (r) => `<div class="field"><label for="f-text-bg-hex">Background for Text only tiles</label><div class="color-field"><input type="color" data-path="text.bg" value="${esc(r.text.bg)}" aria-label="Pick a background color"><input type="text" class="mono hex-input" id="f-text-bg-hex" data-hex="text.bg" value="${esc(String(r.text.bg).toUpperCase())}" maxlength="7" spellcheck="false" autocomplete="off"></div></div>`;
@@ -1631,8 +1654,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     </header>`;
   };
 
-  const sectionHeader = (d, title, align = "start", cta = "", arrowsId = null, variant = "text3", inset = PAGE_MARGIN[d]) => `
-    <div class="sec__header" style="--hgap:${d === "mobile" ? 12 : 20}px;padding-inline:${inset}px">
+  const sectionHeader = (d, title, align = "start", cta = "", arrowsId = null, variant = "text3", inset = PAGE_MARGIN[d], pad = null) => `
+    <div class="sec__header" style="--hgap:${pad ? PAD_PX[pad.bottom] ?? 16 : d === "mobile" ? 12 : 20}px;${pad ? `padding-top:${PAD_PX[pad.top] ?? 0}px;` : ""}padding-inline:${inset}px">
       <span class="sec__header-title" data-edit="htext" style="${typeCSS(variant)}text-align:${cta || arrowsId ? "left" : ({ start: "left", center: "center", end: "right" })[align]}">${esc(title)}</span>
       ${cta ? `<span class="sec__header-cta" data-edit="hcta" style="${typeCSS("links1")}">${esc(cta)}</span>` : ""}
       ${arrowsId ? `<span class="sec__header-arrows"><button type="button" class="arrow arrow-inline" data-act="prev" data-id="${arrowsId}" aria-label="Previous">‹</button><button type="button" class="arrow arrow-inline" data-act="next" data-id="${arrowsId}" aria-label="Next">›</button></span>` : ""}
@@ -1742,7 +1765,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const hCta = (copyOf(r).hcta || "").trim();
     const sidePad = geo.margin + (hasPad(r, d) && !geo.carousel ? g : 0);
     // The header lines up with the cards, and never sits closer to the screen edge than the page margin.
-    const header = (hText || hCta) ? sectionHeader(d, hText, "start", hCta, null, tv(r, "header"), Math.max(PAGE_MARGIN[d], sidePad)) : "";
+    const header = (hText || hCta) ? sectionHeader(d, hText, "start", hCta, null, tv(r, "header"), Math.max(PAGE_MARGIN[d], sidePad), ensureHeaderPad(r)[d === "mobile" ? "m" : "d"]) : "";
     const tiles = r.slides.map((s, i) => tileHTML(r, s, i, d, sz)).join("");
     let trackStyle, stripPad = "";
     if (geo.carousel) {
@@ -1989,6 +2012,15 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   const opt = (list, val) => list.map(([v, l]) => `<option value="${esc(v)}" ${String(v) === String(val) ? "selected" : ""}>${esc(l)}</option>`).join("");
   const sel = (path, list, val, label, type = "") => `<select id="${fid(path)}" data-path="${path}" ${type ? `data-type="${type}"` : ""} aria-label="${esc(label)}">${opt(list, val)}</select>`;
   const seg = (path, list, val, label) => `<div class="seg" role="group" aria-label="${esc(label)}">${list.map(([v, l]) => `<button type="button" data-act="set" data-path="${path}" data-val="${v}" aria-pressed="${String(v) === String(val)}">${esc(l)}</button>`).join("")}</div>`;
+  // − value + stepper over the spacing scale (None, XS, SM, MD, LG, XL, 2XL, 3XL).
+  const padStepper = (path, val, label) => {
+    const i = Math.max(0, PAD_OPTS.findIndex(([v]) => v === val));
+    return `<span class="stepper" role="group" aria-label="${esc(label)}">
+      <button type="button" data-act="pad-step" data-path="${path}" data-dir="-1" aria-label="Less" ${i === 0 ? "disabled" : ""}>−</button>
+      <b title="${esc(PAD_OPTS[i][1])}">${PAD_SHORT(PAD_OPTS[i][0])}</b>
+      <button type="button" data-act="pad-step" data-path="${path}" data-dir="1" aria-label="More" ${i === PAD_OPTS.length - 1 ? "disabled" : ""}>+</button>
+    </span>`;
+  };
   // Two-option text toggle (On/Off, Show/Hide) in place of a switch.
   const togSeg = (path, val, label, words = ["On", "Off"], vals = [true, false]) => `<div class="seg seg--tog" role="group" aria-label="${esc(label)}">${[0, 1].map((k) => `<button type="button" data-act="set" data-path="${path}" data-val="${vals[k]}" aria-pressed="${String(val) === String(vals[k])}">${words[k]}</button>`).join("")}</div>`;
   const tog = (path, val, label, hint = "", hideLabel = false, words = ["On", "Off"]) => hideLabel
@@ -2169,6 +2201,10 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
         ${copyTxt("htext", copyOf(r).htext, "Title", "Leave empty to hide", true)}
         ${copyTxt("hcta", copyOf(r).hcta, "Link text", "Leave empty to hide", true)}
         <div class="field"><label for="f-header-variant">Title typography</label>${sel("header.variant", typeOpts(), tv(r, "header"), "Title typography")}</div>
+        ${(copyOf(r).htext || copyOf(r).hcta || "").trim() ? `<div class="dtable dtable--steps">
+          <span class="dtable__l">Spacing</span><span class="dtable__h">Mobile</span><span class="dtable__h">Desktop</span>
+          ${[["top", "Top padding"], ["bottom", "Bottom padding"]].map(([side, label]) => dRow(label, "", (k) => padStepper(`header.pad.${k}.${side}`, ensureHeaderPad(r)[k][side], `${dev(k)} ${label.toLowerCase()}`))).join("")}
+        </div>` : ""}
       </div>
 
 `;
@@ -2882,6 +2918,13 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       if (sl?.imgs?.[ui.theme]) { delete sl.imgs[ui.theme][t.dataset.dev]; ui.imgMsg = null; changed(); }
     } else if (act === "present") {
       ui.present = true; ui.menu = null; renderAll();
+    } else if (act === "pad-step") {
+      const keys = t.dataset.path.split(".");
+      const curVal = keys.reduce((o, k) => o?.[k], r);
+      const i = Math.max(0, PAD_OPTS.findIndex(([v]) => v === curVal));
+      const next = PAD_OPTS[Math.min(PAD_OPTS.length - 1, Math.max(0, i + Number(t.dataset.dir)))][0];
+      setPath(r, t.dataset.path, next);
+      changed();
     } else if (act === "phone-preview") {
       publishPhone();
     } else if (act === "phone-close") {
