@@ -700,6 +700,14 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .pic__empty { position: absolute; inset: 0; display: grid; place-items: center; color: #ffffff; pointer-events: none; }
 .pic__empty .i { width: calc(24px * var(--ui)); height: calc(24px * var(--ui)); stroke-width: 1.8; }
 .app.presenting .pic__empty { display: none; }
+
+/* Tooltips directly below the preview buttons */
+.fb-btn { position: relative; }
+.fb-tip { position: absolute; top: calc(100% + 10px); left: 50%; transform: translateX(-50%); background: var(--surface); color: var(--ink); font-size: 12.5px; font-weight: 500; white-space: nowrap; padding: 6px 10px; border-radius: 8px; box-shadow: 0 0 0 1px rgba(0,0,0,0.08), 0 6px 18px rgba(0,0,0,0.12); opacity: 0; pointer-events: none; transition: opacity .12s; z-index: 70; }
+.fb-tip::before { content: ""; position: absolute; top: -5px; left: 50%; width: 10px; height: 10px; background: var(--surface); transform: translateX(-50%) rotate(45deg); box-shadow: -1px -1px 0 rgba(0,0,0,0.06); }
+.fb-btn:hover .fb-tip, .fb-btn:focus-visible .fb-tip { opacity: 1; }
+.floatbar-col { position: relative; }
+.floatbar { position: relative; z-index: 2; }
 </style>
 
 <div class="app">
@@ -1442,8 +1450,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       <span class="fb-sep"></span>
       ${tplControl}
       <span class="fb-sep"></span>
-      ${[["mobile", "Mobile preview"], ["desktop", "Desktop preview"], ["both", "Desktop and mobile side by side"]].map(([k, l]) => `<button type="button" class="fb-btn" data-act="device" data-val="${k}" aria-pressed="${ui.device === k}" aria-label="${l}" title="${l}">${ICON[k]}</button>`).join("")}
-      <button type="button" class="fb-btn" data-act="present" aria-label="Full-screen preview" title="Full-screen preview">${ICON.expand}</button>
+      ${[["mobile", "Mobile view"], ["desktop", "Desktop view"], ["both", "Mobile & desktop view"]].map(([k, l]) => `<button type="button" class="fb-btn" data-act="device" data-val="${k}" aria-pressed="${ui.device === k}" aria-label="${l}">${ICON[k]}<span class="fb-tip" role="tooltip">${l}</span></button>`).join("")}
+      <button type="button" class="fb-btn" data-act="present" aria-label="Full-screen view">${ICON.expand}<span class="fb-tip" role="tooltip">Full-screen view</span></button>
       ${ui.device === "mobile" ? `<span class="fb-sep"></span><span class="mode-seg" role="group" aria-label="Mobile preview mode">
         <button type="button" data-act="mobile-mode" data-val="frame" aria-pressed="${ui.mobileMode === "frame"}" title="Fixed-size phone, page scrolls inside it">Device frame</button>
         <button type="button" data-act="mobile-mode" data-val="full" aria-pressed="${ui.mobileMode === "full"}" title="Whole page at phone width, no frame">Full height</button>
