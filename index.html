@@ -475,6 +475,31 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .shoot .shoot__clear { border: 0; background: none; color: var(--critical); cursor: pointer; font-size: 12.5px; padding: 0; }
 .slide-row { display: grid; grid-template-columns: 44px 96px minmax(0, 1fr) 26px; gap: 6px; align-items: center; }
 .slide-row select, .slide-row input[type="text"] { height: 40px; font-size: 13px; }
+.slide-row--plain { grid-template-columns: 96px minmax(0, 1fr) 26px; }
+/* View switch in the top bar */
+.view-seg { display: inline-flex; padding: 2px; border-radius: 9px; background: #f1f1f1; margin-left: 12px; }
+.view-seg button { border: 0; background: transparent; padding: 5px 12px; border-radius: 7px; cursor: pointer; font-size: 12.5px; color: var(--muted); white-space: nowrap; }
+.view-seg button[aria-pressed="true"] { background: #1d1d1f; color: #fff; font-weight: 600; }
+/* Designer view */
+.img-list { list-style: none; margin: 0; padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+.img-card { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); cursor: pointer; }
+.img-card:hover { border-color: #b5b5b5; }
+.img-card__shape { width: 34px; height: 34px; display: grid; place-items: center; }
+.img-card__shape span { display: block; background: var(--tile); border-radius: 2px; }
+.img-card__name { font-weight: 600; font-size: 13px; }
+.img-card__spec { display: block; font-family: var(--font-mono); font-size: 11.5px; color: var(--ink); margin-top: 2px; }
+.img-card__sub { display: block; font-size: 11.5px; color: var(--subtle); margin-top: 2px; }
+.img-card__count { font-size: 11.5px; font-weight: 600; color: var(--subtle); white-space: nowrap; }
+.img-card__count.is-done { color: #29845a; }
+.img-sum { padding: 4px 16px 0; font-size: 12.5px; color: var(--subtle); }
+.img-none { padding: 4px 16px 12px; font-size: 12px; color: var(--subtle); }
+.ctx-line { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; font-size: 12px; color: var(--subtle); }
+.ctx-line button { border: 0; background: none; padding: 0; color: var(--accent); cursor: pointer; font-size: 12px; white-space: nowrap; }
+.step .upl-row { padding-left: 0; }
+.step .upl-row--two { grid-template-columns: 1fr; }
+.img-slot__label { font-size: 12.5px; font-weight: 600; display: flex; justify-content: space-between; gap: 8px; }
+.img-slot__label span { font-weight: 400; color: var(--subtle); }
+.img-slots { display: flex; flex-direction: column; gap: 12px; }
 /* Sidebar fields: compact and filled grey, matching the segmented controls. */
 .column select, .column input[type="text"], .column .color-field { height: 36px; border: 1px solid transparent; border-radius: 8px; background-color: #f1f1f1; font-size: 13px; }
 .column select { appearance: none; -webkit-appearance: none; padding: 0 26px 0 10px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23616161' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 10px 6px; text-overflow: ellipsis; cursor: pointer; }
@@ -632,6 +657,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
         <span class="brand__mark" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="14" height="5" rx="1"/><rect x="3" y="11" width="6" height="5" rx="1"/><rect x="11" y="11" width="6" height="5" rx="1"/></svg></span>
         <span>Banner Builder</span>
       </div>
+      <div id="viewPick"></div>
     </div>
     <div class="top-center" id="topCenter"><div class="theme-pick" id="themePick"></div></div>
     <div class="topbar__right" id="topRight"></div>
@@ -989,7 +1015,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   };
 
   // ---------- State: templates (saved and shared through the db capability) ----------
-  const ui = { desktopMode: "fixed", mobileMode: "frame", hl: null, panel: "sections", theme: "tgr", device: "mobile", tab: "editor", sel: null, layout: "hero", picking: false, column: true, menu: null, renaming: false, confirmDelete: false, pos: {}, last: {}, copied: "", fallback: "", save: "local" };
+  const ui = { view: "config", desktopMode: "fixed", mobileMode: "frame", hl: null, panel: "sections", theme: "tgr", device: "mobile", tab: "editor", sel: null, layout: "hero", picking: false, column: true, menu: null, renaming: false, confirmDelete: false, pos: {}, last: {}, copied: "", fallback: "", save: "local" };
   const newTemplate = (name, from) => ensureAll({
     id: `t${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`,
     name, createdAt: Date.now(),
@@ -1074,6 +1100,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 
   try { if (localStorage.getItem("bb-mobile-mode") === "full") ui.mobileMode = "full"; } catch (err) { /* storage unavailable */ }
   try { if (localStorage.getItem("bb-desktop-mode") === "full") ui.desktopMode = "full"; } catch (err) { /* storage unavailable */ }
+  try { if (localStorage.getItem("bb-view") === "designer") ui.view = "designer"; } catch (err) { /* storage unavailable */ }
   try { ui.theme = themeFromPath() || themeFromHash() || (BRAND_KEYS.includes(localStorage.getItem("bb-theme")) ? localStorage.getItem("bb-theme") : "tgr"); } catch (err) { ui.theme = themeFromPath() || themeFromHash() || "tgr"; }
   if (pathRouting && location.pathname.replace(/\/$/, "").toLowerCase() !== `/${ui.theme}`) showThemeInUrl(ui.theme);
 
@@ -1193,7 +1220,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   };
 
   const renderTop = () => {
-    $("#topRight").innerHTML = `<span class="view-info" id="viewInfo">${ui.viewInfo || ""}</span><span class="save-state" id="saveState"></span>${ui.copied ? `<span class="copy-status">${esc(ui.copied)}</span>` : ""}<button type="button" class="btn btn--primary" data-act="copy-brief" ${shownCount() ? "" : "disabled"} title="Copy which sections, layouts, image counts and sizes this template uses">Copy layout specs</button>`;
+    $("#topRight").innerHTML = `<span class="view-info" id="viewInfo">${ui.viewInfo || ""}</span><span class="save-state" id="saveState"></span>${ui.copied ? `<span class="copy-status">${esc(ui.copied)}</span>` : ""}<button type="button" class="btn btn--primary" data-act="copy-brief" ${shownCount() ? "" : "disabled"} title="Copy which sections, layouts, image counts and sizes this template uses">${ui.view === "designer" ? "Copy image specs" : "Copy layout specs"}</button>`;
+    $("#viewPick").innerHTML = `<div class="view-seg" role="group" aria-label="View">${[["config", "Site configuration"], ["designer", "Designer"]].map(([k, l]) => `<button type="button" data-act="view" data-val="${k}" aria-pressed="${ui.view === k}">${l}</button>`).join("")}</div>`;
     $("#canvas").hidden = ui.tab !== "editor";
     $("#guide").hidden = ui.tab !== "guide";
     const vi = $("#viewInfo");
@@ -1267,6 +1295,82 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       <div class="list-body"><ul class="rows">${rows}</ul></div>`;
   };
 
+  // What a section needs from the designer: files, sizes and how many are uploaded for this brand.
+  const imageNeeds = (r) => {
+    const art = r.slides.map((sl, i) => [sl, i]).filter(([sl]) => hasArtKind(sl.kind));
+    const devs = r.ratio.split ? ["m", "d"] : ["m"];
+    const needed = art.length * devs.length;
+    const have = art.reduce((n, [sl]) => n + devs.filter((k) => sl.imgs?.[ui.theme]?.[k]).length, 0);
+    return { art, devs, needed, have };
+  };
+  const layoutLine = (r) => {
+    const car = r.display === "carousel";
+    const per = (k) => `${r[k].cols}${car && Number(r[k].peek) ? ` + ${PEEK_OPTS.find(([v]) => Number(v) === Number(r[k].peek))?.[1] || r[k].peek} peek` : ""}`;
+    return `${car ? "Carousel" : "Grid"} · ${per("m")} on mobile, ${per("d")} on desktop${car ? "" : r.margin ? " · page margin" : " · full width"}`;
+  };
+  const designerListHTML = () => {
+    const shown = ORDER.filter((o) => cfg[o.name].on);
+    const withImages = shown.filter((o) => !cfg[o.name].kind && usesArt(cfg[o.name]));
+    const without = shown.filter((o) => !withImages.includes(o));
+    const total = withImages.reduce((n, o) => n + imageNeeds(cfg[o.name]).needed, 0);
+    const done = withImages.reduce((n, o) => n + imageNeeds(cfg[o.name]).have, 0);
+    const cards = withImages.map((o) => {
+      const r = cfg[o.name];
+      const { m, d, split } = exportSummary(r);
+      const { needed, have } = imageNeeds(r);
+      const spec = split ? `M ${m.ew} × ${m.eh} · D ${d.ew} × ${d.eh}` : `${m.ew} × ${m.eh}`;
+      return `<li class="img-card" data-act="select" data-name="${esc(o.name)}" tabindex="0">
+        <span class="img-card__shape">${ratioBox(m.key)}</span>
+        <span style="min-width:0"><span class="img-card__name">${esc(o.name)}</span><span class="img-card__spec">${spec} px</span><span class="img-card__sub">${split ? `${m.key} + ${d.key}` : m.key} · ${needed} file${needed === 1 ? "" : "s"}</span></span>
+        <span class="img-card__count ${needed && have >= needed ? "is-done" : ""}">${have}/${needed}</span>
+      </li>`;
+    }).join("");
+    return `
+      <div class="column__head">
+        <span class="column__title-row">${ICON.upload}<span class="column__title"><b>Images to make</b><span>${esc(tpl().name)} · ${esc(brandName())}</span></span></span>
+      </div>
+      ${withImages.length
+        ? `<p class="img-sum">${total} image${total === 1 ? "" : "s"} across ${withImages.length} section${withImages.length === 1 ? "" : "s"} · ${done} uploaded</p><ul class="img-list">${cards}</ul>`
+        : `<p class="img-sum">No sections with images yet. Turn sections on in Site configuration.</p>`}
+      ${without.length ? `<p class="img-none">No images needed: ${without.map((o) => esc(o.name)).join(", ")}</p>` : ""}`;
+  };
+  const designerEditorHTML = () => {
+    const r = cur();
+    const head = `
+      <div class="column__head column__head--edit">
+        <button type="button" class="fb-btn" data-act="back" aria-label="Back to images" title="Back to images">${ICON.back}</button>
+        <span class="column__title"><b>${esc(ui.sel)}</b><span>Section ${sectionNo(ui.sel)} · Images</span></span>
+        <span class="brand-chip b-head-pill">${ui.theme}</span>
+      </div>`;
+    if (r.kind || !usesArt(r)) return `${head}<div class="step"><p class="b-help">${r.kind ? "This section has no images to make." : "Every slide is Text only, so there are no images to make."} Its settings are in Site configuration.</p><div class="ctx-line"><span></span><button type="button" data-act="view" data-val="config">Open Site configuration</button></div></div>`;
+    const { art } = imageNeeds(r);
+    const anyImages = art.some(([sl]) => Object.values(sl.imgs?.[ui.theme] || {}).some(Boolean));
+    const textOnly = r.slides.length - art.length;
+    return `${head}
+      ${r.on ? "" : `<div class="sect">${offBanner()}</div>`}
+      <div class="step">
+        ${exportGuideHTML(r)}
+        <div class="ctx-line"><span>${esc(layoutLine(r))}</span><button type="button" data-act="view" data-val="config">Change layout</button></div>
+      </div>
+      <div class="step">
+        <div class="step__title"><span>Aspect ratio</span></div>
+        <div class="dtable">
+          <span></span><span class="dtable__h">Mobile</span><span class="dtable__h">Desktop</span>
+          <span class="dtable__l">Aspect ratio</span>
+          <span><select id="f-ratio-m" data-ratio="m" aria-label="Mobile aspect ratio">${ratioOptions(r.ratio.m)}</select></span>
+          <span><select id="f-ratio-d" data-ratio="d" aria-label="Desktop aspect ratio">${ratioOptions(ratioKey(r, "desktop"))}</select></span>
+        </div>
+        ${r.ratio.split ? `<p class="b-help">Different ratios, so each card needs two files: one for mobile, one for desktop.</p>` : ""}
+      </div>
+      <div class="step">
+        <div class="step__title"><span>Images</span><span class="step__aside">for <span class="brand-chip">${ui.theme}</span></span></div>
+        <div class="img-slots">${art.map(([sl, i]) => `<div><div class="img-slot__label">Slide ${i + 1}<span>${esc(titleAt(r, i).trim() || KIND_OPTS.find(([v]) => v === sl.kind)?.[1] || "")}</span></div>${uploadSlots(r, sl, i)}</div>`).join("")}</div>
+        ${textOnly ? `<p class="b-help">${textOnly} Text only slide${textOnly === 1 ? "" : "s"} need${textOnly === 1 ? "s" : ""} no image.</p>` : ""}
+        <p class="b-help">Drop an image on a slot or a card in the preview. Images are cropped to the shape, like on the site, and saved in this browser only.</p>
+        ${anyImages ? `<div class="shoot"><button type="button" class="shoot__clear" data-act="clear-images">Clear images</button></div>` : ""}
+      </div>`;
+  };
+
   const editorHTML = () => {
     const r = cur();
     const fallback = ui.fallback ? `<div class="sect"><label class="field"><span class="field__label">Your browser blocked copying. Select this text and copy it.</span><textarea class="brief-fallback" id="briefText" readonly>${esc(ui.fallback)}</textarea></label></div>` : "";
@@ -1298,11 +1402,12 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const guideNav = `
       <div class="column__head"><span class="column__title-row">${ICON.guide}<span class="column__title"><b>Guide</b><span>How homepage banners work</span></span></span></div>
       <ul class="guide-nav">${[["order", "Homepage order"], ["sizes", "Image size cheat sheet"], ["anatomy", "How a banner is built"], ["rules", "Rules that save you trouble"], ["settings", "All banner settings"]].map(([id, l]) => `<li><button type="button" data-act="guide-jump" data-val="${id}">${l}</button></li>`).join("")}</ul>`;
-    const inner = ui.tab === "guide" ? guideNav : editing ? editorHTML() : (ui.fallback ? `<div class="sect"><label class="field"><span class="field__label">Your browser blocked copying. Select this text and copy it.</span><textarea class="brief-fallback" id="briefText" readonly>${esc(ui.fallback)}</textarea></label></div>` : "") + listHTML();
-    const guide = ui.tab === "editor" && editing && !cur().kind ? exportGuideHTML(cur()) : "";
+    const designer = ui.view === "designer";
+    const inner = ui.tab === "guide" ? guideNav : editing ? (designer ? designerEditorHTML() : editorHTML()) : designer ? designerListHTML() : (ui.fallback ? `<div class="sect"><label class="field"><span class="field__label">Your browser blocked copying. Select this text and copy it.</span><textarea class="brief-fallback" id="briefText" readonly>${esc(ui.fallback)}</textarea></label></div>` : "") + listHTML();
+    const guide = "";
     col.innerHTML = `<div class="col-main">${inner}</div><div class="col-bottom">${guide}${tabs}</div>`;
     const chip = $("#exportChip");
-    const chipText = ui.tab === "editor" && editing ? exportChipText(cur()) : "";
+    const chipText = ui.tab === "editor" && editing && designer ? exportChipText(cur()) : "";
     chip.hidden = !chipText;
     chip.textContent = chipText;
     col.dataset.mode = editing ? "edit" : "list";
@@ -1457,7 +1562,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const play = slide.kind === "video" ? `<span class="pic__play"></span>` : "";
     const overlay = block && isOverlay(p) ? `<div class="pic__overlay" style="${textPadCSS(r, d)};justify-content:${FLEX[cell(p).col]};align-items:${FLEX[cell(p).row]}">${block}</div>` : "";
     const src = imgSrc(imgRef(r, slide, d));
-    const editing = ui.sel && cfg[ui.sel] === r;
+    const editing = ui.view === "designer" && ui.sel && cfg[ui.sel] === r;
     const drop = editing ? ` data-act="tile-upload" data-drop data-i="${i}" data-dev="${imgKey(r, d)}" title="Drop an image here or click to upload"` : "";
     const picture = `<div class="pic ${src ? "has-img" : ""}"${drop}><div class="pic__art" style="aspect-ratio:${sz.key.replace(":", " / ")}">${src ? `<img class="pic__img" src="${esc(src)}" alt="" loading="lazy">` : ""}</div>${pins}${play}${overlay}</div>`;
     const s = block ? side(p) : null;
@@ -1829,6 +1934,11 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       ? `<span class="slide-thumb slide-thumb--none">Text</span>`
       : `<label class="slide-thumb" data-drop data-i="${i}" data-dev="m" title="${ref ? "Replace image" : "Upload image"}">${src ? `<img src="${esc(src)}" alt="">` : ICON.upload}${input}</label>`;
     const msg = ui.imgMsg && ui.imgMsg.key.startsWith(`${i}-`) ? ui.imgMsg.text : "";
+    if (ui.view !== "designer") return `<li class="slide-row slide-row--plain">
+      ${sel(`slides.${i}.kind`, KIND_OPTS, s.kind, `Slide ${i + 1} type`)}
+      <input type="text" id="f-copy-title-${i}" data-copy="title" data-i="${i}" value="${esc(titleAt(r, i))}" placeholder="Card text" aria-label="Slide ${i + 1} text for ${esc(brandName())}">
+      <button type="button" class="x-btn" data-act="del-slide" data-i="${i}" ${r.slides.length === 1 ? "disabled" : ""} aria-label="Remove slide ${i + 1}">✕</button>
+    </li>`;
     return `<li class="slide-row">
       ${thumb}
       ${sel(`slides.${i}.kind`, KIND_OPTS, s.kind, `Slide ${i + 1} type`)}
@@ -1838,14 +1948,13 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     </li>`;
   };
 
+  const ratioOptions = (val) => RATIO_GROUPS.map(([g, l]) => `<optgroup label="${g}">${l.map(([v, t]) => `<option value="${v}" ${v === val ? "selected" : ""}>${esc(t)}</option>`).join("")}</optgroup>`).join("");
   const bannerInspector = (r) => {
     const car = r.display === "carousel";
     const colOpts = (n) => Array.from({ length: Math.max(6, n) }, (_, i) => [i + 1, String(i + 1)]);
     const dev = (k) => (k === "m" ? "Mobile" : "Desktop");
     const dRow = (label, hint, cellFn) => `<span class="dtable__l">${label}${hint ? `<small>${hint}</small>` : ""}</span>${["m", "d"].map((k) => `<span>${cellFn(k)}</span>`).join("")}`;
-    const ratioOptions = (val) => RATIO_GROUPS.map(([g, l]) => `<optgroup label="${g}">${l.map(([v, t]) => `<option value="${v}" ${v === val ? "selected" : ""}>${esc(t)}</option>`).join("")}</optgroup>`).join("");
     const mode = textMode(r);
-    const anyImages = r.slides.some((sl) => Object.values(sl.imgs?.[ui.theme] || {}).some(Boolean));
     const layoutValue = r.display;
     return `
       ${r.on ? "" : `<div class="sect">${offBanner()}</div>`}
@@ -1872,24 +1981,12 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       </div>
 
       <div class="step">
-        <div class="step__title"><span class="step__num">2</span><span>Slides</span><span class="step__aside">${r.slides.length} · images and text for <span class="brand-chip">${ui.theme}</span></span></div>
+        <div class="step__title"><span class="step__num">2</span><span>Slides</span><span class="step__aside">${r.slides.length} · text for <span class="brand-chip">${ui.theme}</span></span></div>
         <ul class="slides-list">${r.slides.map((sl, i) => slideRow(r, sl, i)).join("")}</ul>
         <div class="shoot">
           <button type="button" class="btn" data-act="add-slide" ${r.slides.length >= 12 ? "disabled" : ""}>Add slide</button>
-          ${anyImages ? `<button type="button" class="shoot__clear" data-act="clear-images">Clear images</button>` : ""}
         </div>
-        <p class="b-help">Click a slide's thumbnail to upload its image. Images are cropped to the shape, like on the site, and saved in this browser only.</p>
-      </div>
-
-      <div class="step">
-        <div class="step__title"><span class="step__num">3</span><span>Image aspect ratio</span></div>
-        <div class="dtable">
-          <span></span><span class="dtable__h">Mobile</span><span class="dtable__h">Desktop</span>
-          <span class="dtable__l">Aspect ratio</span>
-          <span><select id="f-ratio-m" data-ratio="m" aria-label="Mobile aspect ratio">${ratioOptions(r.ratio.m)}</select></span>
-          <span><select id="f-ratio-d" data-ratio="d" aria-label="Desktop aspect ratio">${ratioOptions(ratioKey(r, "desktop"))}</select></span>
-        </div>
-        ${r.ratio.split ? `<p class="b-help">Different ratios, so each card needs two files: one for mobile, one for desktop.</p>` : ""}
+        ${usesArt(r) ? `<div class="ctx-line"><span>Image shape and sizes are set in Designer view.</span><button type="button" data-act="view" data-val="designer">Open</button></div>` : ""}
       </div>
 
       <div class="step">
@@ -2405,6 +2502,11 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     } else if (act === "edit") {
       ui.hl = null;
       choose(t.dataset.name, true);
+    } else if (act === "view") {
+      if (ui.view === t.dataset.val) return;
+      ui.view = t.dataset.val; ui.menu = null; ui.tab = "editor"; ui.column = true;
+      try { localStorage.setItem("bb-view", ui.view); } catch (err) { /* storage unavailable */ }
+      renderAll();
     } else if (act === "select") {
       if (e.target.closest(".eye")) return;
       choose(t.dataset.name, true);
