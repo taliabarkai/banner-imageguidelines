@@ -671,6 +671,9 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 /* ---------- Specs view ---------- */
 .app.is-specs .column, .app.is-specs .rail, .app.is-specs .col-toggle { display: none !important; }
 .app.is-specs .workspace { grid-template-columns: minmax(0, 1fr); }
+/* The Guide reads like Specs: full width in the middle, no sidebar. */
+.app.is-guide .column, .app.is-guide .col-toggle { display: none !important; }
+.app.is-guide .workspace { grid-template-columns: minmax(0, 1fr); }
 .specs-inner { max-width: 760px; }
 .specs-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; }
 .specs-head h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
@@ -1299,6 +1302,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     $("#topRight").innerHTML = `<span class="save-state" id="saveState"></span>`;
     // Views are switched from the icon rail on the left (renderRail).
     document.querySelector(".app").classList.toggle("is-specs", specs);
+    document.querySelector(".app").classList.toggle("is-guide", ui.tab === "guide");
     $("#canvas").hidden = specs || ui.tab !== "editor";
     $("#guide").hidden = specs || ui.tab !== "guide";
     $("#specs").hidden = !specs;
@@ -2717,8 +2721,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     } else if (act === "tab") {
       ui.tab = t.dataset.val; ui.sel = null; ui.column = true; renderAll();
     } else if (act === "rail-open") {
-      if (ui.tab === t.dataset.val) ui.column = !ui.column;
-      else { ui.tab = t.dataset.val; ui.column = true; }
+      if (ui.tab === t.dataset.val) return;
+      ui.tab = t.dataset.val; ui.column = true;
       renderAll();
     } else if (act === "guide-jump") {
       const target = document.getElementById(t.dataset.val);
