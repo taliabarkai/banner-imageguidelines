@@ -703,6 +703,10 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 /* Double-click preview text to edit it in place. */
 .app:not(.presenting) .sec [data-edit] { cursor: text; }
 .app:not(.presenting) .sec [data-edit]:hover { outline: 1px dashed rgba(0, 91, 211, 0.6); outline-offset: 2px; }
+.sec-tools { position: absolute; z-index: 8; top: calc(6px * var(--ui)); right: calc(6px * var(--ui)); display: flex; gap: calc(6px * var(--ui)); padding: calc(4px * var(--ui)) calc(6px * var(--ui)); border-radius: calc(10px * var(--ui)); background: #ffffff; box-shadow: 0 0 0 1px rgba(0,0,0,0.08), 0 4px 14px rgba(0,0,0,0.14); font-family: var(--font-ui); color: var(--ink); cursor: default; }
+.sec-tools label { display: flex; align-items: center; gap: calc(6px * var(--ui)); font-size: calc(12px * var(--ui)); font-weight: 500; color: var(--muted); white-space: nowrap; }
+.sec-tools select { width: auto; height: calc(28px * var(--ui)); font-size: calc(12.5px * var(--ui)); font-weight: 600; color: var(--ink); border: 0; border-radius: calc(7px * var(--ui)); background-color: #f1f1f1; padding: 0 calc(22px * var(--ui)) 0 calc(8px * var(--ui)); appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23616161' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right calc(8px * var(--ui)) center; background-size: calc(10px * var(--ui)) calc(6px * var(--ui)); cursor: pointer; }
+.sec-tools select:hover { background-color: #e8e8e8; }
 .sec [data-edit][contenteditable] { outline: 2px solid #005bd3; outline-offset: 2px; cursor: text; user-select: text; -webkit-user-select: text; }
 @media (max-width: 900px) { .app.presenting .canvas { height: auto; min-height: 0; border-top: 0; } }
 
@@ -1576,7 +1580,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const overlay = block && isOverlay(p) ? `<div class="pic__overlay" style="${textPadCSS(r, d)};justify-content:${FLEX[cell(p).col]};align-items:${FLEX[cell(p).row]}">${block}</div>` : "";
     const ref = imgRef(r, slide, d);
     const src = imgSrc(ref);
-    const editing = !ui.present && ui.view === "designer" && ui.sel && cfg[ui.sel] === r;
+    const editing = !ui.present && ui.sel && cfg[ui.sel] === r;
     const slot = `data-i="${i}" data-dev="${imgKey(r, d)}"`;
     const drop = !editing ? "" : src
       ? ` data-drop data-crop ${slot} title="Drag to reposition"`
@@ -1625,9 +1629,13 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       trackStyle = `grid-template-columns:repeat(${geo.used}, ${geo.slideW}px);gap:${g}px;justify-content:center;padding:0 ${sidePad}px;`;
     }
     const dotsHTML = dots ? `<div class="dots ${dots.startsWith("inline") ? "dots--inline" : ""}" style="${dots.startsWith("inline") ? `padding-inline:${d === "mobile" ? 6 : 12}px` : ""}">${Array.from({ length: (geo.maxPos || 0) + 1 }, (_, k) => `<button type="button" data-act="dot" data-id="${r.id}" data-k="${k}" class="${k === pos ? "is-on" : ""}" aria-label="Go to position ${k + 1}"></button>`).join("")}</div>` : "";
+    // The selected section gets a small toolbar in the preview: its image ratio on this device.
+    const tools = !ui.present && name === ui.sel && usesArt(r)
+      ? `<div class="sec-tools"><label><span>${d === "mobile" ? "Mobile" : "Desktop"} ratio</span><select data-ratio="${d === "mobile" ? "m" : "d"}" aria-label="${d === "mobile" ? "Mobile" : "Desktop"} image aspect ratio">${ratioOptions(ratioKey(r, d))}</select></label></div>`
+      : "";
     // Top and bottom match the sides: page margin plus any outer padding.
     return `<div class="sec${sel}" data-name="${esc(name)}" style="${sidePad ? `padding-block:${sidePad}px` : ""}">
-      ${tag}${header}
+      ${tag}${tools}${header}
       ${dots === "block-start" ? dotsHTML : ""}
       <div class="stage-wrap">
         ${dots === "inline-start" ? dotsHTML : ""}
@@ -2507,7 +2515,9 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   };
 
   document.addEventListener("click", async (e) => {
-    if (e.target.closest?.("[contenteditable]")) return;
+    if (e.target.closest?.("[contenteditable], .sec-tools")) return;
+    const editHit = !ui.present && e.target.closest?.(".sec [data-edit]");
+    if (editHit && editHit.closest(".sec[data-name]")?.dataset.name === ui.sel) { closeMenus(); startEdit(editHit, e.clientX, e.clientY); return; }
     const t = e.target.closest("[data-act]");
     if (!e.target.closest(".tpl, .theme-pick")) closeMenus();
     if (!t) {
@@ -2874,22 +2884,26 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     });
     el.addEventListener("blur", () => finish(true));
   };
-  document.addEventListener("dblclick", (e) => {
-    if (ui.present) return;
-    const hit = document.elementFromPoint(e.clientX, e.clientY)?.closest?.(".sec [data-edit]");
-    if (!hit || hit.isContentEditable) return;
+  const startEdit = (hit, x, y) => {
     const name = hit.closest(".sec[data-name]")?.dataset.name;
     const r = name && cfg[name];
     if (!r) return;
-    e.preventDefault();
     const key = copyKey(r, hit.dataset.edit);
     const i = hit.dataset.i != null ? Number(hit.dataset.i) : null;
     if (ui.sel !== name) { ui.hl = null; choose(name); }
     // The preview may have re-rendered: find the same text again, preferring the one under the pointer.
     const q = `.sec[data-name="${CSS.escape(name)}"] [data-edit="${hit.dataset.edit}"]${i != null ? `[data-i="${i}"]` : ""}`;
     const found = [...document.querySelectorAll(q)];
-    const el = found.find((n) => { const b = n.getBoundingClientRect(); return e.clientX >= b.left && e.clientX <= b.right && e.clientY >= b.top && e.clientY <= b.bottom; }) || found[0];
+    const el = found.find((n) => { const b = n.getBoundingClientRect(); return x >= b.left && x <= b.right && y >= b.top && y <= b.bottom; }) || found[0];
     if (el) editInPlace(el, r, key, i);
+  };
+  // Double-click also works on a section that isn't selected yet.
+  document.addEventListener("dblclick", (e) => {
+    if (ui.present) return;
+    const hit = document.elementFromPoint(e.clientX, e.clientY)?.closest?.(".sec [data-edit]");
+    if (!hit || hit.isContentEditable) return;
+    e.preventDefault();
+    startEdit(hit, e.clientX, e.clientY);
   });
 
   // Drag an uploaded image to reposition it in its tile.
