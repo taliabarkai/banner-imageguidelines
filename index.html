@@ -801,6 +801,11 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 
 .ctx-line--inline button { font-size: inherit; text-decoration: underline; text-underline-offset: 2px; }
 
+/* Product carousels: arrows only on hover (desktop) */
+.sec--products .arrow { opacity: 0; transition: opacity .15s; }
+.sec--products .stage-wrap:hover .arrow, .sec--products .arrow:focus-visible { opacity: 1; }
+.sec--products .pcard__name, .sec--products .pcard__price { padding-left: 0; padding-right: 0; }
+
 /* − value + stepper (header spacing) */
 .stepper { display: flex; align-items: center; justify-content: space-between; height: 36px; border: 1px solid var(--line-strong); border-radius: 8px; background: #f1f1f1; padding: 2px; }
 .stepper b { flex: 1; text-align: center; font-size: 12.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em; }
@@ -1334,7 +1339,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   };
 
   // Slide geometry, following the editor's own math (stageField.ts / billboardView.tsx).
-  const hasMargin = (r) => r.kind !== "products" && (r.display === "carousel" || !!r.margin);
+  const hasMargin = (r) => r.display === "carousel" || !!r.margin;
   // Carousels always get outer padding, like the margin: the page margin on all four sides.
   const hasPad = (r, d) => r.kind !== "products" && (r.display === "carousel" || !!dv(r, d).pad);
   const geometry = (r, d, layoutWidth) => {
@@ -1570,7 +1575,6 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
         <span class="column__title"><b>${esc(ui.sel)}</b></span>
         ${headEye(ui.sel)}
       </div>
-      ${r.kind === "products" ? specsSection(r) : ""}
       ${r.kind === "topline" ? toplineInspector(r) : r.kind === "products" ? productsInspector(r) : bannerInspector(r)}
 `;
   };
@@ -1698,22 +1702,22 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const geo = geometry(r, d, layoutW(d));
     const pos = Math.min(ui.pos[c.id] || 0, geo.maxPos);
     const mobile = d === "mobile";
-    const ribbon = c.type === "category" ? c.ribbon : c.itemRibbon;
     const heading = copyOf(c).heading || "";
     const cards = r.slides.map((_, i) => {
       const [title, price] = PRODUCTS[i % PRODUCTS.length];
-      return `<div class="pcard" style="gap:${mobile ? 4 : 6}px">
-        <div class="pcard__img" style="background:var(--tile)">${ribbon && i % 3 === 0 ? `<span class="pcard__ribbon" style="top:${mobile ? 6 : 10}px;left:${mobile ? 6 : 10}px;padding:2px 8px;background:var(--ribbon-background);color:var(--ribbon-text);border-radius:var(--ribbon-border-radius, 0);${typeCSS("ribbons1")}">${i % 2 ? "New" : "Best Seller"}</span>` : ""}</div>
-        <div class="pcard__name" style="padding:${mobile ? 4 : 6}px 8px 0;${typeCSS("paragraph2")}">${esc(title)}</div>
-        <div class="pcard__price" style="padding:0 8px;${typeCSS("text5")}color:var(--colors-price-selling, inherit)">${price}</div>
-        ${c.quick ? `<div class="pcard__add tbtn" style="margin:${mobile ? 2 : 4}px 8px 0;${btnCSS("secondary")}min-height:0;padding:${mobile ? "6px 0" : "9px 0"}">Quick add</div>` : ""}
+      return `<div class="pcard" style="gap:${mobile ? 2 : 4}px">
+        <div class="pcard__img" style="background:var(--tile)"></div>
+        <div class="pcard__name" style="padding-top:${mobile ? 6 : 8}px;${typeCSS("text1")}">${esc(title)}</div>
+        <div class="pcard__price" style="${typeCSS("text2")}">${price}</div>
       </div>`;
     }).join("");
+    // Left edge always sits on the page margin; with a peek the cards run off the right edge.
+    const stripPad = `padding:0 ${geo.peek ? 0 : geo.margin}px 0 ${geo.margin}px;`;
     const arrows = geo.chrome && dv(r, d).arrows === "block";
-    return `<div class="sec${sel}" data-name="${esc(name)}">
+    return `<div class="sec sec--products${sel}" data-name="${esc(name)}">
       ${tag}${heading.trim() ? sectionHeader(d, heading, "start", "", null, "headline2") : ""}
       <div class="stage-wrap">
-        <div class="strip"><div class="track track--carousel" data-track="${c.id}" style="grid-auto-columns:${geo.slideW}px;gap:${geo.g}px;transform:translateX(${-pos * (geo.slideW + geo.g)}px)">${cards}</div></div>
+        <div class="strip" style="${stripPad}"><div class="track track--carousel" data-track="${c.id}" style="grid-auto-columns:${geo.slideW}px;gap:${geo.g}px;transform:translateX(${-pos * (geo.slideW + geo.g)}px)">${cards}</div></div>
         ${arrows ? sideArrowsHTML(c.id) : ""}
       </div>
     </div>`;
@@ -2119,25 +2123,10 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       ${colorField("fgCustom", "Text color")}
     </div>`;
 
+  // Product carousels have a fixed layout; the only thing to set is the heading copy.
   const productsInspector = (c) => `
-    <div class="sect">
-      ${copyTxt("heading", copyOf(c).heading, `Heading (required) · copy for ${brandName()}`, "Best Sellers")}
-      <p class="hint">Shown in ${variantLabel("headline2")}, the storefront's fixed style for this carousel.</p>
-      <div class="field"><span class="field__label">Carousel type</span>${seg("type", [["category", "Category"], ["manual", "Manual"]], c.type, "Carousel type")}</div>
-      <p class="hint">${c.type === "category" ? "Products come from one category, picked by the site's recommendations." : "You enter up to 12 SKUs, in the order they should appear."}</p>
-    </div>
-    <div class="sect">
-      <div class="sect__title"><h3>${c.type === "category" ? "Category settings" : "Items"}</h3></div>
-      ${c.type === "category"
-        ? `<div class="field"><label for="f-category">Select category</label>${sel("category", CATEGORIES.map((x) => [x, x]), c.category, "Category")}</div>
-           ${tog("ribbon", c.ribbon, "Catalog ribbon", "Shows ribbons like Best Seller or New on product cards.", false, ["Show", "Hide"])}`
-        : `<div class="field"><label for="f-items">Number of SKUs</label>${sel("items", Array.from({ length: 12 }, (_, i) => [i + 1, String(i + 1)]), c.items, "Number of SKUs", "num")}</div>
-           ${tog("itemRibbon", c.itemRibbon, "Ribbon", "Set per SKU in the back office. Applied to all here.", false, ["Show", "Hide"])}`}
-      ${tog("quick", c.quick, "Quick add", "Shows a quick add to cart button on the product cards.")}
-    </div>
-    <div class="sect">
-      <div class="sect__title"><h3>Layout</h3><span>fixed</span></div>
-      <p class="hint">Mobile: 2 products with a 1/4 peek, 4px gap, no arrows. Desktop: 4 products in view, 4px gap, side arrows. Loops. These can't be changed in the back office.</p>
+    <div class="step">
+      ${copyTxt("heading", copyOf(c).heading, "Heading", "Best Sellers")}
     </div>`;
 
   const LAYOUT_HELP = {
