@@ -713,6 +713,16 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .pic[data-act="tile-upload"] { cursor: pointer; }
 .pic[data-act="tile-upload"]:not(.has-img) .pic__art { transition: background-color .12s; }
 .pic[data-act="tile-upload"]:not(.has-img):hover .pic__art, .pic[data-act="tile-upload"].is-drag:not(.has-img) .pic__art { background-color: #b3b3b3; }
+
+/* Reposition and zoom an uploaded image */
+.pic[data-crop] { cursor: grab; touch-action: none; user-select: none; }
+.pic[data-crop].is-panning { cursor: grabbing; }
+.pic__img { will-change: transform; }
+.crop-ctl { position: absolute; z-index: 4; right: calc(8px * var(--ui)); bottom: calc(8px * var(--ui)); display: flex; gap: calc(2px * var(--ui)); padding: calc(3px * var(--ui)); border-radius: calc(9px * var(--ui)); background: rgba(255,255,255,0.95); box-shadow: 0 2px 10px rgba(0,0,0,0.18); opacity: 0; transition: opacity .12s; font-family: var(--font-ui); }
+.pic[data-crop]:hover .crop-ctl, .crop-ctl:focus-within, .pic.is-panning .crop-ctl { opacity: 1; }
+.crop-ctl button { border: 0; background: transparent; color: #1d1d1f; cursor: pointer; min-width: calc(26px * var(--ui)); height: calc(26px * var(--ui)); padding: 0 calc(6px * var(--ui)); border-radius: calc(6px * var(--ui)); font-size: calc(13px * var(--ui)); font-weight: 600; line-height: 1; }
+.crop-ctl button:hover:not(:disabled) { background: #ececec; }
+.crop-ctl button:disabled { opacity: 0.35; cursor: default; }
 </style>
 
 <div class="app">
@@ -756,8 +766,6 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       <section class="card" id="sizes">
         <h2>How image sizes are worked out</h2>
         <ul class="guide-list">
-          <li>The page is 390px wide on mobile and 1440px on desktop. A tile's width comes from the tiles per row, the gap and the page margin.</li>
-          <li>Images are exported at 2× the tile width on mobile and 1.5× on desktop, rounded up to the nearest 10px, so they stay sharp.</li>
           <li>Never narrower than 1000px, or 800px when 4 or more tiles sit across on desktop.</li>
           <li>A full-width banner with 1 tile on desktop is always 2880px wide for desktop.</li>
           <li>The height comes from the aspect ratio. With the same ratio on both devices, one file covers both, at the larger size.</li>
@@ -1550,10 +1558,19 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const pins = slide.kind === "hotspot" ? [[30, 62], [58, 44], [76, 70]].map(([x, y]) => `<span class="pin" style="left:${x}%;top:${y}%"></span>`).join("") : "";
     const play = slide.kind === "video" ? `<span class="pic__play"></span>` : "";
     const overlay = block && isOverlay(p) ? `<div class="pic__overlay" style="${textPadCSS(r, d)};justify-content:${FLEX[cell(p).col]};align-items:${FLEX[cell(p).row]}">${block}</div>` : "";
-    const src = imgSrc(imgRef(r, slide, d));
+    const ref = imgRef(r, slide, d);
+    const src = imgSrc(ref);
     const editing = !ui.present && ui.view === "designer" && ui.sel && cfg[ui.sel] === r;
-    const drop = editing ? ` data-act="tile-upload" data-drop data-i="${i}" data-dev="${imgKey(r, d)}" title="Drop an image here or click to upload"` : "";
-    const picture = `<div class="pic ${src ? "has-img" : ""}"${drop}><div class="pic__art" style="aspect-ratio:${sz.key.replace(":", " / ")}">${src ? `<img class="pic__img" src="${esc(src)}" alt="" loading="lazy">` : `<span class="pic__empty">${ICON.upload}</span>`}</div>${pins}${play}${overlay}</div>`;
+    const slot = `data-i="${i}" data-dev="${imgKey(r, d)}"`;
+    const drop = !editing ? "" : src
+      ? ` data-drop data-crop ${slot} title="Drag to reposition"`
+      : ` data-act="tile-upload" data-drop ${slot} title="Drop an image here or click to upload"`;
+    const cropCtl = editing && src ? `<div class="crop-ctl">
+        <button type="button" data-act="crop-zoom" data-step="-1" ${slot} aria-label="Zoom out" ${cropOf(ref).z <= 1 ? "disabled" : ""}>−</button>
+        <button type="button" data-act="crop-zoom" data-step="1" ${slot} aria-label="Zoom in" ${cropOf(ref).z >= 3 ? "disabled" : ""}>+</button>
+        <button type="button" data-act="crop-reset" ${slot}>Reset</button>
+      </div>` : "";
+    const picture = `<div class="pic ${src ? "has-img" : ""}"${drop}><div class="pic__art" style="aspect-ratio:${sz.key.replace(":", " / ")}">${src ? `<img class="pic__img" src="${esc(src)}" alt="" loading="lazy" draggable="false" style="${cropCSS(ref)}">` : `<span class="pic__empty">${ICON.upload}</span>`}</div>${pins}${play}${overlay}${cropCtl}</div>`;
     const s = block ? side(p) : null;
     const band = () => `<div class="tile__band" style="justify-content:${align(p)}">${block}</div>`;
     const bandSide = () => `<div class="tile__band tile__band--side" style="align-items:${align(p)}">${block}</div>`;
@@ -2223,6 +2240,10 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   // Which image a slide shows on a device for the brand being previewed.
   const imgKey = (r, d) => (r.ratio.split && d === "desktop" ? "d" : "m");
   const imgRef = (r, slide, d) => slide.imgs?.[ui.theme]?.[imgKey(r, d)] || null;
+  // Where an uploaded image sits in its tile: x and y are the focal point in %, z the zoom (1 = fill the tile).
+  const clamp = (lo, hi, v) => Math.min(hi, Math.max(lo, v));
+  const cropOf = (ref) => ({ x: ref?.x ?? 50, y: ref?.y ?? 50, z: ref?.z ?? 1 });
+  const cropCSS = (ref) => { const c = cropOf(ref); return `object-position:${c.x}% ${c.y}%;transform:scale(${c.z});transform-origin:${c.x}% ${c.y}%`; };
   const readDims = (file) => new Promise((resolve) => {
     const url = URL.createObjectURL(file);
     const im = new Image();
@@ -2623,6 +2644,12 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       picker.accept = IMG_TYPES.join(",");
       picker.onchange = () => { if (picker.files?.[0]) uploadImage(picker.files[0], Number(t.dataset.i), t.dataset.dev); };
       picker.click();
+    } else if (act === "crop-zoom" || act === "crop-reset") {
+      const ref = r?.slides[Number(t.dataset.i)]?.imgs?.[ui.theme]?.[t.dataset.dev];
+      if (!ref) return;
+      if (act === "crop-reset") { delete ref.x; delete ref.y; delete ref.z; }
+      else ref.z = clamp(1, 3, Math.round((cropOf(ref).z + 0.25 * Number(t.dataset.step)) * 100) / 100);
+      changed();
     } else if (act === "img-remove") {
       const sl = r?.slides[Number(t.dataset.i)];
       if (sl?.imgs?.[ui.theme]) { delete sl.imgs[ui.theme][t.dataset.dev]; ui.imgMsg = null; changed(); }
@@ -2789,6 +2816,41 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     setPath(cur(), el.dataset.path, el.value);
     renderStage();
     commitSoon();
+  });
+
+  // Drag an uploaded image to reposition it in its tile.
+  document.addEventListener("pointerdown", (e) => {
+    const pic = e.target.closest?.(".pic[data-crop]");
+    if (!pic || e.button !== 0 || e.target.closest(".crop-ctl")) return;
+    const ref = cur()?.slides[Number(pic.dataset.i)]?.imgs?.[ui.theme]?.[pic.dataset.dev];
+    const img = pic.querySelector(".pic__img");
+    if (!ref || !img) return;
+    e.preventDefault();
+    const box = pic.querySelector(".pic__art").getBoundingClientRect();
+    const start = { cx: e.clientX, cy: e.clientY, ...cropOf(ref) };
+    // How far past the tile the image reaches, so it follows the pointer.
+    const imgAR = (ref.w || 1) / (ref.h || 1), boxAR = box.width / box.height;
+    const over = { x: (imgAR > boxAR ? imgAR / boxAR : 1) * start.z - 1, y: (imgAR > boxAR ? 1 : boxAR / imgAR) * start.z - 1 };
+    let moved = false;
+    pic.classList.add("is-panning");
+    pic.setPointerCapture(e.pointerId);
+    const move = (ev) => {
+      const dx = ev.clientX - start.cx, dy = ev.clientY - start.cy;
+      if (Math.abs(dx) + Math.abs(dy) > 2) moved = true;
+      if (over.x > 0.01) ref.x = Math.round(clamp(0, 100, start.x - (dx / (box.width * over.x)) * 100) * 10) / 10;
+      if (over.y > 0.01) ref.y = Math.round(clamp(0, 100, start.y - (dy / (box.height * over.y)) * 100) * 10) / 10;
+      img.style.cssText = cropCSS(ref);
+    };
+    const up = () => {
+      pic.removeEventListener("pointermove", move);
+      pic.removeEventListener("pointerup", up);
+      pic.removeEventListener("pointercancel", up);
+      pic.classList.remove("is-panning");
+      if (moved) changed();
+    };
+    pic.addEventListener("pointermove", move);
+    pic.addEventListener("pointerup", up);
+    pic.addEventListener("pointercancel", up);
   });
 
   // Drag an image file onto an upload slot.
