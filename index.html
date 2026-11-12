@@ -1,4 +1,10 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
 <title>Homepage Site Dressing</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -694,6 +700,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .pic__empty { position: absolute; inset: 0; display: grid; place-items: center; color: #ffffff; pointer-events: none; }
 .pic__empty .i { width: calc(24px * var(--ui)); height: calc(24px * var(--ui)); stroke-width: 1.8; }
 .app.presenting .pic__empty { display: none; }
+@media (max-width: 900px) { .app.presenting .canvas { height: auto; min-height: 0; border-top: 0; } }
 
 /* Tooltips directly below the preview buttons */
 .fb-btn { position: relative; }
@@ -799,7 +806,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   const DEVW = { mobile: DEVICE.width, desktop: DESKTOP_EXPORT_REFERENCE };
   // Width the preview lays the page out at (export maths keeps using DEVW).
   // Full-screen preview lays the desktop page out at the browser's width; otherwise at the 1440 reference.
-  const layoutW = (d) => (d === "mobile" ? DEVICE.width : ui.present ? (ui.deskFullW || DEVICE_PRESETS.desktop.width) : DEVICE_PRESETS.desktop.width);
+  const layoutW = (d) => (d === "mobile" ? (ui.present && ui.mobFullW ? ui.mobFullW : DEVICE.width) : ui.present ? (ui.deskFullW || DEVICE_PRESETS.desktop.width) : DEVICE_PRESETS.desktop.width);
   const MULT = { mobile: 2, desktop: 1.5 };
   // A full-width, one-across banner is always exported this wide for desktop (2× the 1440 page).
   const FULL_WIDTH_EXPORT = 2880;
@@ -1663,9 +1670,10 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     };
     document.querySelector(".app").classList.toggle("presenting", ui.present);
     if (ui.present) {
-      // Just the homepage, as a shopper sees it: desktop at the browser's width, mobile at phone width.
+      // Just the homepage, as a shopper sees it, filling the screen it's viewed on.
       const d = ui.device === "mobile" ? "mobile" : "desktop";
       ui.deskFullW = Math.max(768, Math.floor(canvas.clientWidth));
+      ui.mobFullW = Math.max(320, Math.floor(canvas.clientWidth));
       stage.innerHTML = `<div class="present-page" style="width:${layoutW(d)}px">${pageHTML(d, 1, 1)}</div>`;
       return;
     }
@@ -2908,5 +2916,5 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   initDb();
 })();
 </script>
-
-</body></html>
+</body>
+</html>
