@@ -787,6 +787,12 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .app .column .img-list { padding: 18px 24px; gap: 10px; }
 .app .column .col-info { padding: 16px 24px 18px; }
 
+/* Image slots: 8px between "Tile N" and its upload row; empty rows are fully clickable */
+.img-slots > div { display: flex; flex-direction: column; gap: 8px; }
+.upl--empty { cursor: pointer; transition: background .12s, border-color .12s; }
+.upl--empty:hover { background: #f1f1f1; border-color: #9e9e9e; }
+.upl--empty:focus-within { border-color: var(--accent); }
+
 /* − value + stepper (header spacing) */
 .stepper { display: flex; align-items: center; justify-content: space-between; height: 36px; border: 1px solid var(--line-strong); border-radius: 8px; background: #f1f1f1; padding: 2px; }
 .stepper b { flex: 1; text-align: center; font-size: 12.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em; }
@@ -2054,6 +2060,10 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const thumb = canUpload() && !busy
       ? `<label class="upl__thumb" title="${ref ? "Replace image" : "Upload image"}">${src ? `<img src="${esc(src)}" alt="">` : ICON.upload}${input}</label>`
       : `<span class="upl__thumb">${src ? `<img src="${esc(src)}" alt="">` : ICON.upload}</span>`;
+    // An empty slot is one big click target: the whole row opens the file picker.
+    if (!ref && !busy && canUpload()) {
+      return `<label class="upl upl--empty" data-drop data-i="${i}" data-dev="${dev}" title="Upload image"><span class="upl__thumb">${ICON.upload}</span><div class="upl__meta">${meta}</div>${input}</label>`;
+    }
     return `<div class="upl" ${canUpload() ? `data-drop data-i="${i}" data-dev="${dev}"` : ""}>${thumb}<div class="upl__meta">${meta}</div>${acts}</div>`;
   };
   const uploadSlots = (r, s, i) => (r.ratio.split
