@@ -1156,6 +1156,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     both: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><rect x="1.5" y="3.5" width="12" height="9" rx="1.2"/><path d="M5 15.5h5"/><rect x="13.5" y="8" width="5" height="9" rx="1.2" fill="#fff"/></svg>',
     rename: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 16h3l8.5-8.5-3-3L4 13z"/></svg>',
     copy: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><rect x="7" y="7" width="9.5" height="9.5" rx="1.5"/><path d="M13 7V4.5A1 1 0 0 0 12 3.5H4.5a1 1 0 0 0-1 1V12a1 1 0 0 0 1 1H7"/></svg>',
+    image: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="4" width="14" height="12" rx="2"/><circle cx="7.5" cy="8.5" r="1.4"/><path d="m3.5 14.5 4-4 3 3 2-2 4 4"/></svg>',
     expand: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 8V3.5H8M12 3.5h4.5V8M16.5 12v4.5H12M8 16.5H3.5V12"/></svg>',
     replace: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M15.5 8A6 6 0 0 0 4.7 6.2M4.5 12a6 6 0 0 0 10.8 1.8"/><path d="M15.5 3.5V8H11M4.5 16.5V12H9"/></svg>',
     trash: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 5.5h13M8 5.5V4h4v1.5M5 5.5l.8 11h8.4l.8-11"/></svg>',
@@ -1337,7 +1338,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     }).join("");
     return `
       <div class="column__head">
-        <span class="column__title-row">${ICON.upload}<span class="column__title"><b>Images</b></span></span>
+        <span class="column__title-row">${ICON.image}<span class="column__title"><b>Images</b></span></span>
       </div>
       ${withImages.length
         ? `<ul class="img-list">${cards}</ul>`
