@@ -708,6 +708,11 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .fb-btn:hover .fb-tip, .fb-btn:focus-visible .fb-tip { opacity: 1; }
 .floatbar-col { position: relative; }
 .floatbar { position: relative; z-index: 2; }
+
+/* Empty tiles you can upload to darken on hover */
+.pic[data-act="tile-upload"] { cursor: pointer; }
+.pic[data-act="tile-upload"]:not(.has-img) .pic__art { transition: background-color .12s; }
+.pic[data-act="tile-upload"]:not(.has-img):hover .pic__art, .pic[data-act="tile-upload"].is-drag:not(.has-img) .pic__art { background-color: #b3b3b3; }
 </style>
 
 <div class="app">
