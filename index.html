@@ -440,7 +440,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .slide-block:last-child { border-bottom: 0; }
 .upl-row { display: grid; grid-template-columns: 1fr; gap: 6px; padding-left: 22px; }
 .upl-row--two { grid-template-columns: 1fr 1fr; }
-.upl { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 8px; align-items: center; padding: 6px; border: 1px dashed var(--line-strong); border-radius: 9px; background: #fafafa; }
+.upl { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 6px; border: 1px dashed var(--line-strong); border-radius: 9px; background: #fafafa; }
 .upl.is-drag { border-color: var(--accent); background: var(--accent-soft); }
 .upl__thumb { width: 52px; height: 52px; border-radius: 6px; background: var(--tile); display: grid; place-items: center; overflow: hidden; cursor: pointer; color: #fff; position: relative; }
 .upl__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -448,9 +448,11 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .upl__meta { min-width: 0; display: flex; flex-direction: column; gap: 2px; font-size: 11.5px; color: var(--subtle); }
 .upl__meta b { color: var(--ink); font-weight: 600; font-size: 12px; }
 .upl__warn { color: var(--warn); }
-.upl__acts { display: flex; gap: 8px; }
-.upl__acts button, .upl__acts label { border: 0; background: none; padding: 0; color: var(--accent); cursor: pointer; font-size: 11.5px; }
-.upl__acts .rm { color: var(--critical); }
+.upl__acts { display: flex; gap: 2px; }
+.upl__icon { width: 30px; height: 30px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); cursor: pointer; display: grid; place-items: center; padding: 0; }
+.upl__icon:hover { background: #ececec; color: var(--ink); }
+.upl__icon .i { width: 17px; height: 17px; }
+.upl__icon--rm:hover { color: var(--critical); }
 /* ---------- Step-based banner settings ---------- */
 .floatbar-col { display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; max-width: 100%; }
 .floatbar-col > * { pointer-events: auto; }
@@ -646,6 +648,30 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   .brand > span:last-child { display: none; }
   .slide-item { grid-template-columns: 14px 86px minmax(0, 1fr) 26px; }
 }
+
+/* ---------- Readability pass: label vs value, grouping, calmer help text ---------- */
+.step { padding: 20px 16px 22px; gap: 14px; }
+.step + .step { border-top: 0; }
+.step__title { font-size: 14.5px; }
+.step__btn { margin-left: auto; border: 1px solid var(--line-strong); background: var(--surface); border-radius: 8px; padding: 4px 10px; font-weight: 600; font-size: 12px; cursor: pointer; color: var(--ink); }
+.step__btn:hover { background: var(--hover); }
+.column .field > label, .column .field__label, .column .dtable__l, .column .switch > span, .column .ratio-pair__cell > span { color: var(--muted); font-size: 13px; }
+.column .dtable__l small, .column .switch small { color: var(--subtle); }
+.column .dtable__h { font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--subtle); }
+.column .dtable > .dtable__l:first-child { color: var(--ink); font-weight: 600; }
+.subhead { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--subtle); padding-top: 10px; margin-top: 2px; border-top: 1px solid var(--line); }
+.step .seg + .subhead { border-top: 0; padding-top: 4px; }
+.b-help, .step .b-help { font-size: 12px; color: var(--subtle); line-height: 1.45; }
+.b-note { background: #fafafa; font-size: 12px; color: var(--subtle); }
+.b-note button { font-size: 12px; }
+.ctx-line { font-size: 12px; }
+/* Designer: export sizes sit directly in the step, not in a box inside a box */
+.step .export-guide { background: none; border: 0; padding: 0; max-height: none; overflow: visible; gap: 10px; }
+.step .export-card { padding: 12px 14px; }
+.ratio-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ratio-pair__cell { display: flex; flex-direction: column; gap: 6px; }
+.img-slots { gap: 14px; }
+.img-slot__label { font-size: 13px; }
 </style>
 
 <div class="app">
@@ -1147,6 +1173,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     both: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><rect x="1.5" y="3.5" width="12" height="9" rx="1.2"/><path d="M5 15.5h5"/><rect x="13.5" y="8" width="5" height="9" rx="1.2" fill="#fff"/></svg>',
     rename: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 16h3l8.5-8.5-3-3L4 13z"/></svg>',
     copy: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><rect x="7" y="7" width="9.5" height="9.5" rx="1.5"/><path d="M13 7V4.5A1 1 0 0 0 12 3.5H4.5a1 1 0 0 0-1 1V12a1 1 0 0 0 1 1H7"/></svg>',
+    replace: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M15.5 8A6 6 0 0 0 4.7 6.2M4.5 12a6 6 0 0 0 10.8 1.8"/><path d="M15.5 3.5V8H11M4.5 16.5V12H9"/></svg>',
     trash: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 5.5h13M8 5.5V4h4v1.5M5 5.5l.8 11h8.4l.8-11"/></svg>',
     close: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5 5 15"/></svg>',
     listEdit: '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 5.5h8M3.5 10h8M3.5 14.5h5"/><path d="m11.5 15.5 1.5.4 4-4-1.9-1.9-4 4z"/></svg>',
@@ -1350,20 +1377,17 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
         <div class="ctx-line"><span>${esc(layoutLine(r))}</span><button type="button" data-act="view" data-val="config">Change layout</button></div>
       </div>
       <div class="step">
-        <div class="step__title"><span>Aspect ratio</span></div>
-        <div class="dtable">
-          <span></span><span class="dtable__h">Mobile</span><span class="dtable__h">Desktop</span>
-          <span class="dtable__l">Aspect ratio</span>
-          <span><select id="f-ratio-m" data-ratio="m" aria-label="Mobile aspect ratio">${ratioOptions(r.ratio.m)}</select></span>
-          <span><select id="f-ratio-d" data-ratio="d" aria-label="Desktop aspect ratio">${ratioOptions(ratioKey(r, "desktop"))}</select></span>
+        <div class="step__title"><span class="step__num">2</span><span>Aspect ratio</span></div>
+        <div class="ratio-pair">
+          <label class="ratio-pair__cell"><span>Mobile</span><select id="f-ratio-m" data-ratio="m">${ratioOptions(r.ratio.m)}</select></label>
+          <label class="ratio-pair__cell"><span>Desktop</span><select id="f-ratio-d" data-ratio="d">${ratioOptions(ratioKey(r, "desktop"))}</select></label>
         </div>
         ${r.ratio.split ? `<p class="b-help">Different ratios, so each card needs two files: one for mobile, one for desktop.</p>` : ""}
       </div>
       <div class="step">
-        <div class="step__title"><span>Images</span></div>
+        <div class="step__title"><span class="step__num">3</span><span>Images</span></div>
         <div class="img-slots">${art.map(([sl, i]) => `<div><div class="img-slot__label">Slide ${i + 1}<span>${esc(titleAt(r, i).trim() || KIND_OPTS.find(([v]) => v === sl.kind)?.[1] || "")}</span></div>${uploadSlots(r, sl, i)}</div>`).join("")}</div>
         ${textOnly ? `<p class="b-help">${textOnly} Text only slide${textOnly === 1 ? "" : "s"} need${textOnly === 1 ? "s" : ""} no image.</p>` : ""}
-        <p class="b-help">Drop an image on a slot or a card in the preview. Images are cropped to the shape, like on the site, and saved in this browser only.</p>
         ${anyImages ? `<div class="shoot"><button type="button" class="shoot__clear" data-act="clear-images">Clear images</button></div>` : ""}
       </div>`;
   };
@@ -1836,24 +1860,21 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const busy = ui.uploading === key;
     const msg = ui.imgMsg?.key === key ? ui.imgMsg.text : "";
     const input = `<input type="file" accept="${IMG_TYPES.join(",")}" data-upload data-i="${i}" data-dev="${dev}" hidden>`;
-    let meta;
-    if (busy) meta = `<b>${label}</b><span>Uploading…</span>`;
+    let meta, acts = "";
+    if (busy) meta = `<b>Uploading…</b>`;
     else if (ref) {
-      meta = `<b>${label}</b><span>${ref.w} × ${ref.h}</span>
-        ${canUpload() ? `<span class="upl__acts"><label>Replace${input}</label><button type="button" class="rm" data-act="img-remove" data-i="${i}" data-dev="${dev}">Remove</button></span>` : ""}`;
-    } else {
-      const need = imgNeed(r, dev);
-      meta = `<b>${label}</b><span>${canUpload() ? "Drop an image or click to upload" : "No image yet"}</span><span>Export ${need.ew} × ${need.eh} (${need.key})</span>`;
-    }
+      meta = `<b>${label ? `${label} · ` : ""}${ref.w} × ${ref.h}</b>`;
+      if (canUpload()) acts = `<span class="upl__acts"><label class="upl__icon" title="Replace image" aria-label="Replace image">${ICON.replace}${input}</label><button type="button" class="upl__icon upl__icon--rm" data-act="img-remove" data-i="${i}" data-dev="${dev}" title="Remove image" aria-label="Remove image">${ICON.trash}</button></span>`;
+    } else meta = `<b>${canUpload() ? `Upload ${label ? `${label.toLowerCase()} ` : ""}image` : "No image yet"}</b>`;
     if (msg) meta += `<span class="upl__warn">${esc(msg)}</span>`;
     const thumb = canUpload() && !busy
       ? `<label class="upl__thumb" title="${ref ? "Replace image" : "Upload image"}">${src ? `<img src="${esc(src)}" alt="">` : ICON.upload}${input}</label>`
       : `<span class="upl__thumb">${src ? `<img src="${esc(src)}" alt="">` : ICON.upload}</span>`;
-    return `<div class="upl" ${canUpload() ? `data-drop data-i="${i}" data-dev="${dev}"` : ""}>${thumb}<div class="upl__meta">${meta}</div></div>`;
+    return `<div class="upl" ${canUpload() ? `data-drop data-i="${i}" data-dev="${dev}"` : ""}>${thumb}<div class="upl__meta">${meta}</div>${acts}</div>`;
   };
   const uploadSlots = (r, s, i) => (r.ratio.split
     ? `<div class="upl-row upl-row--two">${uploadSlot(r, s, i, "m", "Mobile")}${uploadSlot(r, s, i, "d", "Desktop")}</div>`
-    : `<div class="upl-row">${uploadSlot(r, s, i, "m", `Image for ${brandName()}`)}</div>`);
+    : `<div class="upl-row">${uploadSlot(r, s, i, "m", "")}</div>`);
 
   const typeOpts = () => variantsOf(ui.theme).map((v) => [v, variantLabel(v)]);
   const copyTxt = (key, val, label, ph = "", row = false) => `<div class="field${row ? " field--row" : ""}"><label for="f-copy-${key}">${esc(label)}</label><input type="text" id="f-copy-${key}" data-copy="${key}" value="${esc(val || "")}" placeholder="${esc(ph)}"></div>`;
@@ -1986,9 +2007,10 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       </div>
 
       <div class="step">
-        <div class="step__title"><span>Card text</span></div>
+        <div class="step__title"><span class="step__num">3</span><span>Card text</span></div>
         <div class="seg" role="group" aria-label="Card text">${[["none", "None"], ["below", "Below image"], ["on", "On image"]].map(([v, l]) => `<button type="button" data-act="text-mode" data-val="${v}" aria-pressed="${mode === v}">${l}</button>`).join("")}</div>
         ${mode === "on" ? `
+          <div class="subhead">Placement</div>
           <div class="field"><label for="f-text-pos">Position</label><select id="f-text-pos" data-path="text.pos" aria-label="Position">${OVERLAY.map((p) => `<option value="${p}" ${r.text.pos === p ? "selected" : ""}>${POS_LABEL[p].split(",")[0]}</option>`).join("")}</select></div>
           <div class="field"><span class="field__label">Text color</span>${seg("text.color", [["dark", "Dark"], ["light", "Light"]], r.text.color, "Text color")}</div>
           <div class="dtable">
@@ -1996,15 +2018,16 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
             ${dRow("Top and bottom", "", (k) => sel(`text.pad.${k}.block`, PAD_OPTS, ensureTextPad(r)[k].block, `${dev(k)} text padding top and bottom`))}
             ${dRow("Sides", "", (k) => sel(`text.pad.${k}.inline`, PAD_OPTS, ensureTextPad(r)[k].inline, `${dev(k)} text padding sides`))}
           </div>` : ""}
-        ${mode === "below" ? `<div class="field"><span class="field__label">Alignment</span><div class="seg" role="group" aria-label="Alignment">${[["left", "Left"], ["center", "Center"], ["right", "Right"]].map(([v, l]) => `<button type="button" data-act="text-align" data-val="${v}" aria-pressed="${belowAlign(r) === v}">${l}</button>`).join("")}</div></div>` : ""}
+        ${mode === "below" ? `<div class="subhead">Placement</div><div class="field"><span class="field__label">Alignment</span><div class="seg" role="group" aria-label="Alignment">${[["left", "Left"], ["center", "Center"], ["right", "Right"]].map(([v, l]) => `<button type="button" data-act="text-align" data-val="${v}" aria-pressed="${belowAlign(r) === v}">${l}</button>`).join("")}</div></div>` : ""}
         ${mode !== "none" ? `
+          <div class="subhead">Style</div>
           <div class="field"><label for="f-text-headVariant">Typography</label>${sel("text.headVariant", typeOpts(), tv(r, "head"), "Card text typography")}</div>
           <div class="two"><div class="field"><label for="f-text-btnStyle">Button</label>${sel("text.btnStyle", BTN_OPTS, r.text.btnStyle, "Button style")}</div>${r.text.btnStyle !== "none" ? copyTxt("btn", copyOf(r).btn, "Button label", "Shop now", true) : "<span></span>"}</div>` : ""}
         ${r.slides.some((sl) => sl.kind === "text") ? `<div class="field"><span class="field__label">Background for Text only slides</span><div class="swatches">${BG_SWATCHES.map((c) => `<button type="button" class="swatch" style="background:${c}" data-act="set" data-path="text.bg" data-val="${c}" aria-pressed="${r.text.bg === c}" aria-label="Background ${c}"></button>`).join("")}</div></div>` : ""}
       </div>
 
       <div class="step">
-        <div class="step__title"><span>Header</span></div>
+        <div class="step__title"><span class="step__num">4</span><span>Header</span></div>
         ${copyTxt("htext", copyOf(r).htext, "Title", "Leave empty to hide", true)}
         ${copyTxt("hcta", copyOf(r).hcta, "Link text", "Leave empty to hide", true)}
         <div class="field"><label for="f-header-variant">Title typography</label>${sel("header.variant", typeOpts(), tv(r, "header"), "Title typography")}</div>
@@ -2040,7 +2063,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     if (textMode(r) === "on" && m.geo.slideW < 140) warns.push(`Cards are ${Math.round(m.geo.slideW)} px wide on mobile, so text on the image will be cramped. Try "Below image".`);
     if (r.slides.some((x) => x.kind === "video")) warns.push("Video slides need a mobile and a desktop video URL. The image is the poster.");
     return `<div class="export-guide">
-      <div class="export-guide__head"><b>Export your images at</b><button type="button" data-act="copy-size">${ui.sizeCopied ? "Copied" : "Copy size"}</button></div>
+      <div class="step__title"><span class="step__num">1</span><span>Export your images at</span><button type="button" class="step__btn" data-act="copy-size">${ui.sizeCopied ? "Copied" : "Copy size"}</button></div>
       ${split ? card("Mobile", m, files) + card("Desktop", d, files) : card("One image for mobile and desktop", m, files)}
       ${warns.map((t) => `<p class="warn">${esc(t)}</p>`).join("")}
     </div>`;
@@ -2265,11 +2288,6 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     changed();
   };
   // Shape and resolution checks against what this slide needs.
-  // The export size an upload slot is for.
-  const imgNeed = (r, dev) => {
-    const devices = r.ratio.split ? [dev === "d" ? "desktop" : "mobile"] : ["mobile", "desktop"].filter((d) => visibleOn(r, d));
-    return devices.map((d) => sizesFor(r, d)).reduce((a, b) => (b.ew > a.ew ? b : a));
-  };
 
   // ---------- Saving (db) ----------
   let db = null;
