@@ -793,9 +793,11 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .upl--empty { cursor: pointer; transition: background .12s, border-color .12s; }
 .upl--empty:hover { background: #f1f1f1; border-color: #9e9e9e; }
 .upl--empty:focus-within { border-color: var(--accent); }
-/* Centre the "Upload … image" text across the whole row (the right padding balances the thumbnail). */
-.upl--empty { grid-template-columns: auto minmax(0, 1fr); }
-.upl--empty .upl__meta { text-align: center; align-items: center; padding-right: calc(52px + 8px); }
+/* Empty slot: a black upload icon and the text, centred together in the row. */
+.upl.upl--empty { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 66px; padding: 6px 12px; }
+.upl__empty-ico { display: grid; place-items: center; color: var(--ink); }
+.upl__empty-ico .i { width: 18px; height: 18px; }
+.upl--empty .upl__meta { align-items: flex-start; }
 
 /* − value + stepper (header spacing) */
 .stepper { display: flex; align-items: center; justify-content: space-between; height: 36px; border: 1px solid var(--line-strong); border-radius: 8px; background: #f1f1f1; padding: 2px; }
@@ -2066,7 +2068,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       : `<span class="upl__thumb">${src ? `<img src="${esc(src)}" alt="">` : ICON.upload}</span>`;
     // An empty slot is one big click target: the whole row opens the file picker.
     if (!ref && !busy && canUpload()) {
-      return `<label class="upl upl--empty" data-drop data-i="${i}" data-dev="${dev}" title="Upload image"><span class="upl__thumb">${ICON.upload}</span><div class="upl__meta">${meta}</div>${input}</label>`;
+      return `<label class="upl upl--empty" data-drop data-i="${i}" data-dev="${dev}" title="Upload image"><span class="upl__empty-ico">${ICON.upload}</span><div class="upl__meta">${meta}</div>${input}</label>`;
     }
     return `<div class="upl" ${canUpload() ? `data-drop data-i="${i}" data-dev="${dev}"` : ""}>${thumb}<div class="upl__meta">${meta}</div>${acts}</div>`;
   };
