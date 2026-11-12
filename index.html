@@ -2058,44 +2058,58 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   };
 
   // ---------- Brief ----------
+  // Plain-text specs for a designer: numbered in page order, nested bullets, no pixel values for type.
   const brief = () => {
-    const lines = [`Homepage layout specs: ${tpl().name}`, `Theme: ${brandName()} (${ui.theme.toUpperCase()}). Typography sizes are ${brandName()}'s.`, `Sections in homepage order. Image sizes in px, exported at about ${MULT.mobile}× display width on mobile and ${MULT.desktop}× on desktop.`, ""];
+    const T = "\t";
+    const lines = [`Homepage layout specs: ${tpl().name}`, `Theme: ${brandName()} (${ui.theme.toUpperCase()})`, ""];
+    const padName = (k) => (PAD_OPTS.find(([v]) => v === k)?.[1] || "None").split(" · ")[0];
+    const perView = (r, k) => {
+      const n = Number(r[k].cols) + (r.display === "carousel" ? Number(r[k].peek) || 0 : 0);
+      return r.display === "carousel" ? `${n} card${n === 1 ? "" : "s"}` : `${n} per row`;
+    };
+    let no = 0;
     onPage().forEach((s) => {
       const r = cfg[s.name];
       if (!r.on) return;
-      const no = sectionNo(s.name);
+      no += 1;
+      lines.push(`Section ${no}: ${s.name}`);
       if (r.kind === "topline") {
-        lines.push(`Section ${no}: Topline, "${copyOf(r).ttext || ""}" (background ${r.bg === "custom" ? r.bgCustom : "brand default"}, text ${r.fg === "custom" ? r.fgCustom : "brand default"}). Text only, no images.`, "");
+        lines.push(`- Text: "${copyOf(r).ttext || ""}"`, `- Colors`, `${T}- Background: ${(r.bgCustom || "#000000").toUpperCase()}`, `${T}- Text: ${(r.fgCustom || "#FFFFFF").toUpperCase()}`, `- Images: none`, "");
         return;
       }
       if (r.kind === "products") {
-        lines.push(`Section ${no}: ${s.name} (product carousel, "${copyOf(r).heading || ""}", heading in ${variantLabel("headline2")})`);
-        lines.push(`  ${r.type === "category" ? `Category: ${r.category}` : `Manual: ${r.items} SKUs`}. No images to export, product images come from the catalog.`, "");
+        lines.push(`- Display: Product carousel`, `${T}- Heading: "${copyOf(r).heading || ""}"`, `${T}- ${r.type === "category" ? `Category: ${r.category}` : `Manual: ${r.items} SKUs`}`, `- Images: from the catalog`, "");
         return;
       }
-      const lay = r.display === "carousel" ? `Carousel, ${r.m.cols} in view on mobile / ${r.d.cols} on desktop` : `Grid, ${r.m.cols} column${r.m.cols > 1 ? "s" : ""} on mobile / ${r.d.cols} on desktop`;
-      lines.push(`Section ${no}: ${s.name} (${lay})`);
-      const n = r.slides.filter((x) => hasArtKind(x.kind)).length;
-      if (!n) lines.push("  No images. Text only slides.");
-      else if (r.ratio.split) {
-        if (visibleOn(r, "mobile")) { const z = sizesFor(r, "mobile"); lines.push(`  Mobile: ${z.ew} × ${z.eh} (${z.key}), ${n} file${n > 1 ? "s" : ""}`); }
-        if (visibleOn(r, "desktop")) { const z = sizesFor(r, "desktop"); lines.push(`  Desktop: ${z.ew} × ${z.eh} (${z.key}), ${n} file${n > 1 ? "s" : ""}`); }
-      } else {
-        const need = ["mobile", "desktop"].filter((d) => visibleOn(r, d)).map((d) => sizesFor(r, d));
-        const best = need.reduce((a, b) => (b.ew > a.ew ? b : a));
-        lines.push(`  One image for ${need.length === 2 ? "both devices" : r.devices}: ${best.ew} × ${best.eh} (${best.key}), ${n} file${n > 1 ? "s" : ""}`);
+      lines.push(`- Display: ${r.display === "carousel" ? "Carousel" : "Grid"}`, `${T}- Mobile: ${perView(r, "m")}`, `${T}- Desktop: ${perView(r, "d")}`);
+      if (r.display !== "carousel") lines.push(`${T}- Width: ${r.margin ? "Page margin" : "Full width"}`);
+      const art = r.slides.some((x) => hasArtKind(x.kind));
+      if (!art) lines.push(`- Images: none (text only)`);
+      else {
+        lines.push(`- Images`);
+        const size = (d) => { const z = sizesFor(r, d); return [`Aspect Ratio: ${z.key}`, `Image Size: ${z.ew} x ${z.eh}`]; };
+        if (r.ratio.split) {
+          lines.push(`${T}- Different for mobile and desktop`);
+          [["mobile", "Mobile"], ["desktop", "Desktop"]].forEach(([d, l]) => lines.push(`${T}- ${l}`, ...size(d).map((x) => `${T}${T}- ${x}`)));
+        } else {
+          const best = ["mobile", "desktop"].map((d) => sizesFor(r, d)).reduce((a, b) => (b.ew > a.ew ? b : a));
+          lines.push(`${T}- Same for both devices`, `${T}- Aspect Ratio: ${best.key}`, `${T}- Image Size: ${best.ew} x ${best.eh}`);
+        }
+        if (r.slides.some((x) => x.kind === "video")) lines.push(`${T}- Includes video: send a mobile and a desktop video URL. The image is the poster.`);
       }
-      if (r.slides.some((x) => x.kind === "video")) lines.push("  Includes video: send a mobile and a desktop video URL. The image is the poster.");
       const typo = [];
-      if ((copyOf(r).htext || "").trim()) typo.push(`header title ${variantLabel(tv(r, "header"))}`);
-      if (r.text.on) typo.push(`headline ${variantLabel(tv(r, "head"))}`, `second line ${variantLabel(tv(r, "sub"))}`);
-      if (typo.length) lines.push(`  Typography: ${typo.join(", ")}`);
-      if (r.text.on && n) {
-        const pm = textPos(r, "mobile"), pd = textPos(r, "desktop");
-        const where = (p) => (isOverlay(p) ? `over the image, ${POS_LABEL[p].split(",")[0].toLowerCase()}` : POS_LABEL[p].toLowerCase());
-        lines.push(`  Live text ${pm === pd ? where(pm) : `on mobile ${where(pm)}; on desktop ${where(pd)}`}. ${isOverlay(pm) || isOverlay(pd) ? "Keep that area calm. No text in the image." : "No text in the image."}`);
-      }
-      lines.push("");
+      if ((copyOf(r).htext || "").trim()) typo.push(`${T}- Header title: ${variantName(tv(r, "header"))}`);
+      const mode = textMode(r);
+      if (mode !== "none") {
+        typo.push(`${T}- Headline: ${variantName(tv(r, "head"))}`);
+        if (r.text.btnStyle !== "none") typo.push(`${T}- Button: ${BTN_OPTS.find(([v]) => v === r.text.btnStyle)?.[1] || r.text.btnStyle}`);
+        if (mode === "on") {
+          const p = ensureTextPad(r);
+          const pad = (k) => (p[k].block === p[k].inline ? padName(p[k].block) : `${padName(p[k].block)} top and bottom, ${padName(p[k].inline)} sides`);
+          typo.push(`${T}- Placement: Live text on the image, ${POS_LABEL[r.text.pos].split(",")[0].toLowerCase()}`, `${T}- Padding:`, `${T}${T}- Mobile: ${pad("m")}`, `${T}${T}- Desktop: ${pad("d")}`);
+        } else typo.push(`${T}- Placement: Live text below the image, ${belowAlign(r)} aligned`);
+      } else typo.push(`${T}- Placement: No live text`);
+      lines.push(`- Typography`, ...typo, "");
     });
     return lines.join("\n").trim();
   };
