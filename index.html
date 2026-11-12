@@ -830,7 +830,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       <section class="card" id="sizes">
         <h2>How image sizes are worked out</h2>
         <ul class="guide-list">
-          <li>Never narrower than 1000px, or 800px when 4 or more tiles sit across on desktop.</li>
+          <li>Images are exported at least 1000px wide. Small tiles (4 or more in a row on desktop) can be 800px, which is the smallest any image gets.</li>
           <li>A full-width banner with 1 tile on desktop is always 2880px wide for desktop.</li>
           <li>The height comes from the aspect ratio. With the same ratio on both devices, one file covers both, at the larger size.</li>
         </ul>
