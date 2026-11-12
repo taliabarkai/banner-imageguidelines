@@ -12,7 +12,11 @@ const fail = (err) => (err instanceof InputError ? json({ error: err.message }, 
 
 export async function GET(request) {
   const q = new URL(request.url).searchParams;
-  if (q.has("ping")) return json({ ready: Boolean(process.env.BLOB_READ_WRITE_TOKEN) });
+  if (q.has("ping")) {
+    // Which Blob connection settings this deployment has (names only, never values).
+    const env = { token: Boolean(process.env.BLOB_READ_WRITE_TOKEN), storeId: Boolean(process.env.BLOB_STORE_ID), oidc: Boolean(process.env.VERCEL_OIDC_TOKEN || request.headers.get("x-vercel-oidc-token")) };
+    return json({ ready: env.token || (env.storeId && env.oidc), ...env });
+  }
   try {
     if (q.has("img")) {
       const img = await store.getImage(q.get("id"), q.get("img"));
