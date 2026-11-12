@@ -1670,10 +1670,12 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     };
     document.querySelector(".app").classList.toggle("presenting", ui.present);
     if (ui.present) {
-      // Just the homepage, as a shopper sees it, filling the screen it's viewed on.
-      const d = ui.device === "mobile" ? "mobile" : "desktop";
-      ui.deskFullW = Math.max(768, Math.floor(canvas.clientWidth));
-      ui.mobFullW = Math.max(320, Math.floor(canvas.clientWidth));
+      // Just the homepage, as a shopper sees it, filling the screen it's viewed on:
+      // the mobile layout on a phone-width screen, the desktop layout on anything wider.
+      const screenW = Math.floor(canvas.clientWidth);
+      const d = screenW < 768 ? "mobile" : "desktop";
+      ui.deskFullW = Math.max(768, screenW);
+      ui.mobFullW = Math.max(320, screenW);
       stage.innerHTML = `<div class="present-page" style="width:${layoutW(d)}px">${pageHTML(d, 1, 1)}</div>`;
       return;
     }
