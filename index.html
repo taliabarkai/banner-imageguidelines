@@ -727,6 +727,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .pic[data-crop]:hover .crop-ctl, .pic[data-act="tile-upload"]:hover .crop-ctl, .crop-ctl:focus-within, .pic.is-panning .crop-ctl { opacity: 1; }
 .crop-ctl { align-items: center; cursor: default; }
 .crop-ctl__ratio { appearance: none; -webkit-appearance: none; border: 0; margin: 0 calc(2px * var(--ui)); width: auto; height: calc(26px * var(--ui)); padding: 0 calc(18px * var(--ui)) 0 calc(8px * var(--ui)); border-radius: calc(6px * var(--ui)); background-color: #f1f1f1; color: #1d1d1f; font-family: var(--font-ui); font-size: calc(13px * var(--ui)); font-weight: 600; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23616161' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right calc(6px * var(--ui)) center; background-size: calc(9px * var(--ui)) calc(5px * var(--ui)); }
+.color-field .hex-input { flex: 1; min-width: 0; height: 100%; border: 0 !important; background: transparent !important; padding: 0 !important; font-family: var(--font-mono); font-size: 12.5px; text-transform: uppercase; outline: none; }
+.color-field:focus-within { background-color: var(--surface) !important; border-color: var(--accent) !important; }
 .crop-ctl__ratio:hover { background-color: #e6e6e6; }
 .crop-ctl .crop-ctl__icon { display: grid; place-items: center; padding: 0; }
 .crop-ctl__icon .i { width: calc(16px * var(--ui)); height: calc(16px * var(--ui)); }
@@ -2044,7 +2046,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
           <div class="subhead">Style</div>
           <div class="field"><label for="f-text-headVariant">Typography</label>${sel("text.headVariant", typeOpts(), tv(r, "head"), "Tile text typography")}</div>
           <div class="two"><div class="field"><label for="f-text-btnStyle">Button</label>${sel("text.btnStyle", BTN_OPTS, r.text.btnStyle, "Button style")}</div>${r.text.btnStyle !== "none" ? copyTxt("btn", copyOf(r).btn, "Button label", "Shop now", true) : "<span></span>"}</div>` : ""}
-        ${r.slides.some((sl) => sl.kind === "text") ? `<div class="field"><span class="field__label">Background for Text only tiles</span><div class="swatches">${BG_SWATCHES.map((c) => `<button type="button" class="swatch" style="background:${c}" data-act="set" data-path="text.bg" data-val="${c}" aria-pressed="${r.text.bg === c}" aria-label="Background ${c}"></button>`).join("")}</div></div>` : ""}
+        ${r.slides.some((sl) => sl.kind === "text") ? `<div class="field"><label for="f-text-bg-hex">Background for Text only tiles</label><div class="color-field"><input type="color" data-path="text.bg" value="${esc(r.text.bg)}" aria-label="Pick a background color"><input type="text" class="mono hex-input" id="f-text-bg-hex" data-hex="text.bg" value="${esc(String(r.text.bg).toUpperCase())}" maxlength="7" spellcheck="false" autocomplete="off"></div></div>` : ""}
       </div>
 
       <div class="step">
@@ -2757,6 +2759,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   document.addEventListener("focusout", (e) => { if (e.target.id === "tplRename") finishRename(true); });
   document.addEventListener("change", (e) => {
     const el = e.target;
+    if (el.dataset?.hex) { el.value = String(el.dataset.hex.split(".").reduce((o, k) => o?.[k], cur()) || "").toUpperCase(); return; } // show the saved color after editing
     if (el.id === "f-layout-pick") {
       const r = cur();
       const v = el.value;
@@ -2821,7 +2824,20 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     if (el.type === "color" && el.dataset.path && cur()) {
       setPath(cur(), el.dataset.path, el.value);
       const hex = el.parentElement.querySelector(".mono");
-      if (hex) hex.textContent = el.value.toUpperCase();
+      if (hex && hex.tagName === "INPUT") hex.value = el.value.toUpperCase();
+      else if (hex) hex.textContent = el.value.toUpperCase();
+      renderStage();
+      commitSoon();
+      return;
+    }
+    if (el.dataset?.hex && cur()) {
+      // A typed hex code: apply it once it's a full 6-digit color.
+      const m = /^#?([0-9a-f]{6})$/i.exec(el.value.trim());
+      if (!m) return;
+      const val = "#" + m[1].toLowerCase();
+      setPath(cur(), el.dataset.hex, val);
+      const sw = el.parentElement.querySelector('input[type="color"]');
+      if (sw) sw.value = val;
       renderStage();
       commitSoon();
       return;
