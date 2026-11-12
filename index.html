@@ -1032,6 +1032,14 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   const THEMES = JSON.parse(document.getElementById("themeData").textContent);
   const BRAND_KEYS = ["tgr", "oal", "lal", "ib", "mnn"];
   const themeFromHash = () => { const h = (location.hash || "").replace("#", "").toLowerCase(); return BRAND_KEYS.includes(h) ? h : null; };
+  // On the hosted site each brand has its own path (/tgr, /oal, ...). Inside claude.ai or a local file the hash is used instead.
+  const BRAND_PATH = new RegExp(`^/(?:(${BRAND_KEYS.join("|")})/?)?$`, "i");
+  const pathRouting = window.self === window.top && BRAND_PATH.test(location.pathname);
+  const themeFromPath = () => (pathRouting ? (location.pathname.match(BRAND_PATH)[1] || "").toLowerCase() || null : null);
+  const showThemeInUrl = (k) => {
+    // window.history: the page's own `history` is the undo history.
+    try { window.history.replaceState(null, "", pathRouting ? `/${k}` : `#${k}`); } catch (err) { /* not allowed in this frame */ }
+  };
   const themeVars = {};
   BRAND_KEYS.forEach((k) => {
     const b = THEMES.brands[k];
@@ -1078,7 +1086,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 
   try { if (localStorage.getItem("bb-mobile-mode") === "full") ui.mobileMode = "full"; } catch (err) { /* storage unavailable */ }
   try { if (localStorage.getItem("bb-desktop-mode") === "full") ui.desktopMode = "full"; } catch (err) { /* storage unavailable */ }
-  try { ui.theme = themeFromHash() || (BRAND_KEYS.includes(localStorage.getItem("bb-theme")) ? localStorage.getItem("bb-theme") : "tgr"); } catch (err) { ui.theme = themeFromHash() || "tgr"; }
+  try { ui.theme = themeFromPath() || themeFromHash() || (BRAND_KEYS.includes(localStorage.getItem("bb-theme")) ? localStorage.getItem("bb-theme") : "tgr"); } catch (err) { ui.theme = themeFromPath() || themeFromHash() || "tgr"; }
+  if (pathRouting && location.pathname.replace(/\/$/, "").toLowerCase() !== `/${ui.theme}`) showThemeInUrl(ui.theme);
 
   // ---------- Helpers ----------
   const $ = (s) => document.querySelector(s);
@@ -2368,7 +2377,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     if (!BRAND_KEYS.includes(k)) return;
     ui.theme = k; ui.menu = null;
     try { localStorage.setItem("bb-theme", k); } catch (err) { /* storage unavailable */ }
-    try { history.replaceState(null, "", `#${k}`); } catch (err) { /* not allowed in this frame */ }
+    showThemeInUrl(k);
     renderAll();
   };
   window.addEventListener("hashchange", () => { const k = themeFromHash(); if (k && k !== ui.theme) setTheme(k); });
