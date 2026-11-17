@@ -1,7 +1,10 @@
 {
   "rewrites": [
     { "source": "/:brand(tgr|oal|lal|ib|mnn)", "destination": "/index.html" },
-    { "source": "/p/:id", "destination": "/index.html" }
+    { "source": "/p/:id", "destination": "/index.html" },
+    { "source": "/v2", "destination": "/v2.html" },
+    { "source": "/v2/:brand(tgr|oal|lal|ib|mnn)", "destination": "/v2.html" },
+    { "source": "/v2/p/:id", "destination": "/v2.html" }
   ],
   "crons": [
     { "path": "/api/cleanup", "schedule": "0 4 * * *" }
