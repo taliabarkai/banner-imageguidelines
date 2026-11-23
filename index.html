@@ -1069,7 +1069,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .phone-modal { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.35); display: grid; place-items: center; padding: 16px; }
 .phone-modal__card { width: min(380px, 100%); background: var(--surface); border-radius: 14px; box-shadow: 0 20px 60px rgba(0,0,0,0.25); padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 14px; }
 .phone-modal__head { display: flex; align-items: center; justify-content: space-between; }
-.phone-modal__head b { font-size: 15px; font-weight: 600; }
+.phone-modal__head b { font-size: 15px; font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .phone-modal__qr { display: grid; place-items: center; }
 .phone-modal__qr img { width: 220px; height: 220px; image-rendering: pixelated; }
 .phone-modal__status { font-size: 13px; color: var(--muted); text-align: center; }
@@ -4000,8 +4000,9 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
          <p class="phone-modal__status">Scan with your phone's camera, or open the link on a computer to see the desktop layout.</p>
          <div class="phone-modal__link"><input type="text" readonly value="${esc(p.url)}" aria-label="Preview link"><button type="button" class="btn" data-act="phone-copy">${p.copied ? "Copied" : "Copy link"}</button></div>
          <p class="phone-modal__note">View only. Works for 7 days. Making a new preview replaces this one.</p>`;
-    el.innerHTML = `<div class="phone-modal__card" role="dialog" aria-modal="true" aria-label="Preview link">
-        <div class="phone-modal__head"><b>Preview link</b><button type="button" class="fb-btn" data-act="phone-close" aria-label="Close">${ICON.close}</button></div>
+    const nm = `“${tpl()?.name || "Template"}”`;
+    el.innerHTML = `<div class="phone-modal__card" role="dialog" aria-modal="true" aria-label="${esc(`Preview link for ${nm}`)}">
+        <div class="phone-modal__head"><b>Preview ${esc(nm)}</b><button type="button" class="fb-btn" data-act="phone-close" aria-label="Close">${ICON.close}</button></div>
         ${body}
       </div>`;
   };
@@ -4289,8 +4290,9 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       : `<p class="phone-modal__status">Anyone with this link can open this template and edit it, images included. Changes save to the link automatically.</p>
          <div class="phone-modal__link"><input type="text" readonly value="${esc(m.url)}" aria-label="Edit link"><button type="button" class="btn" data-act="share-copy">${m.copied ? "Copied" : "Copy link"}</button></div>
          <p class="phone-modal__note">Your moodboard stays on this computer.</p>`;
-    el.innerHTML = `<div class="phone-modal__card" role="dialog" aria-modal="true" aria-label="Share this template">
-        <div class="phone-modal__head"><b>Share this template</b><button type="button" class="fb-btn" data-act="share-close" aria-label="Close">${ICON.close}</button></div>
+    const nm = `“${tpl()?.name || "Template"}”`;
+    el.innerHTML = `<div class="phone-modal__card" role="dialog" aria-modal="true" aria-label="${esc(`Share ${nm}`)}">
+        <div class="phone-modal__head"><b>Share ${esc(nm)}</b><button type="button" class="fb-btn" data-act="share-close" aria-label="Close">${ICON.close}</button></div>
         ${body}
       </div>`;
   };
