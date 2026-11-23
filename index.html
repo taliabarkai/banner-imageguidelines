@@ -1053,6 +1053,35 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .ob-btn--primary:hover { background: #1a1a1a; }
 .guide__ob { margin-top: 14px; }
 
+/* ---------- Storefront footer (frontend-next src/page/footer) ---------- */
+.sf-foot { margin-top: var(--pb, 32px); margin-bottom: calc(var(--pb, 32px) * -1); background: var(--footer-main-background, #f8f8f8); color: var(--footer-text, #1d1b19); font-size: 13px; line-height: 1.5; }
+.sf-foot__box { background: var(--footer-newsletter-background, #e6f0f8); color: var(--footer-newsletter-text, inherit); display: grid; gap: var(--spacing-sm, 16px); text-align: center; justify-items: center; padding: var(--spacing-md, 24px) var(--layout-page-margin, 16px); }
+/* Field and arrow button share the primary button's radius: rounded for TGR, square for OAL. */
+.sf-foot__form { display: grid; grid-template-columns: 1fr auto; width: 100%; margin: var(--spacing-xs, 12px) 0 var(--spacing-sm, 16px); border-radius: var(--buttons-primary-border-radius, 0); }
+.sf-foot__email { display: flex; align-items: center; text-align: left; min-height: 52px; padding: 0 var(--spacing-md, 24px); background: var(--colors-background, #fff); color: var(--colors-text, #000); border-radius: var(--buttons-primary-border-radius, 0) 0 0 var(--buttons-primary-border-radius, 0); }
+.sf-foot__go { display: grid; place-items: center; aspect-ratio: 1; height: 100%; background: var(--buttons-primary-background, #000); color: var(--buttons-primary-text, #fff); border: 1px solid currentColor; border-radius: 0 var(--buttons-primary-border-radius, 0) var(--buttons-primary-border-radius, 0) 0; box-sizing: border-box; }
+.sf-foot__go svg { width: 22px; height: 22px; }
+.sf-foot__social { display: flex; gap: var(--spacing-xs, 12px); }
+.sf-foot__icon { display: grid; place-items: center; }
+.sf-foot__icon svg { width: 20px; height: 20px; }
+.sf-foot--desk .sf-foot__icon svg { width: 24px; height: 24px; }
+.sf-foot__row { display: flex; justify-content: space-between; align-items: center; padding: 14px var(--layout-page-margin, 16px); border-bottom: 1px solid color-mix(in srgb, currentColor 15%, transparent); }
+.sf-foot__trust { display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; padding: var(--spacing-sm, 16px) var(--layout-page-margin, 16px); }
+.sf-foot__tp { color: #00b67a; }
+.sf-foot__stars { display: inline-flex; gap: 2px; }
+.sf-foot__stars i { font-style: normal; width: 16px; height: 16px; display: grid; place-items: center; background: #00b67a; color: #fff; font-size: 11px; }
+.sf-foot__copy { text-align: center; padding: var(--spacing-sm, 16px) var(--layout-page-margin, 16px); color: var(--footer-text-muted, inherit); font-size: 12px; }
+.sf-foot--desk { display: grid; grid-template-columns: 1fr 500px; grid-template-areas: "links social" "trust social" "copy copy"; }
+.sf-foot--start .sf-foot__box { text-align: left; justify-items: start; }
+.sf-foot--start .sf-foot__trust { justify-content: flex-start; }
+.sf-foot--start .sf-foot__copy { text-align: left; }
+.sf-foot--desk .sf-foot__links { grid-area: links; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--spacing-md, 24px); padding: var(--spacing-md, 24px) 32px; min-height: 260px; }
+.sf-foot__col { display: flex; flex-direction: column; gap: 6px; }
+.sf-foot__col b { margin-bottom: 6px; }
+.sf-foot--desk .sf-foot__box { grid-area: social; text-align: left; justify-items: start; align-content: center; padding: var(--spacing-lg, 32px); }
+.sf-foot--desk .sf-foot__trust { grid-area: trust; justify-content: flex-start; padding: 0 32px var(--spacing-sm, 16px); }
+.sf-foot--desk .sf-foot__copy { grid-area: copy; text-align: left; padding: var(--spacing-md, 24px) 32px; border-top: 1px solid color-mix(in srgb, currentColor 12%, transparent); }
+
 /* ---------- Shared edit link ---------- */
 #topRight { display: flex; align-items: center; gap: 8px; }
 .share-btn { height: 32px; display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--surface); color: var(--ink); font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; }
@@ -2052,6 +2081,46 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 
   // ---------- Rendering: storefront preview ----------
   const ANNOUNCEMENTS = ["Free Shipping on All Orders", "Free engraving on every piece", "30-day easy returns"];
+  // Storefront footer, always at the end of the page. Mirrors frontend-next src/page/footer (full version):
+  // newsletter + social links, the footer menu, a Trustpilot summary, then the copyright (payment icons left out).
+  // Its content comes from the CMS there, so the copy here follows the live TGR footer with each brand's name.
+  // Brands whose footer reads from the left instead of centred on mobile.
+  const FOOTER_START = new Set(["oal"]);
+  // The real social icons (frontend-next socialLinks/icons/*/assets), filled in the text colour.
+  const FOOTER_SOCIAL = {
+      "facebook": "<svg aria-hidden=\"true\" viewBox=\"0 0 21 20\" fill=\"none\"><path d=\"M20.08 10.0512C20.08 4.74923 15.7819 0.451172 10.48 0.451172C5.17807 0.451172 0.880005 4.74923 0.880005 10.0512C0.880005 14.8427 4.39057 18.8144 8.98001 19.5345V12.8262H6.54251V10.0512H8.98001V7.93617C8.98001 5.53017 10.4133 4.20117 12.6061 4.20117C13.6564 4.20117 14.755 4.38867 14.755 4.38867V6.75117H13.5445C12.352 6.75117 11.98 7.49123 11.98 8.25042V10.0512H14.6425L14.2169 12.8262H11.98V19.5345C16.5694 18.8144 20.08 14.8429 20.08 10.0512Z\" fill=\"currentColor\"/></svg>",
+      "x": "<svg aria-hidden=\"true\" viewBox=\"0 0 19 19\" fill=\"none\"><path d=\"M9.5 0C4.25329 0 0 4.25329 0 9.5C0 14.7467 4.25329 19 9.5 19C14.7467 19 19 14.7467 19 9.5C19 4.25329 14.7467 0 9.5 0ZM12.0138 5.53067H13.3542L10.4259 8.89344L13.8708 13.469H11.1733L9.06064 10.6941L6.64296 13.469H5.30183L8.43386 9.87244L5.12927 5.53067H7.89503L9.80468 8.06728L12.0138 5.53067ZM11.5433 12.6629H12.2862L7.49166 6.29456H6.69455L11.5433 12.6629Z\" fill=\"currentColor\" /></svg>",
+      "instagram": "<svg aria-hidden=\"true\" viewBox=\"0 0 20 21\" fill=\"none\"><path d=\"M5.99846 0.970703C2.91126 0.970703 0.400024 3.48427 0.400024 6.57227V14.5723C0.400024 17.6595 2.91359 20.1707 6.00159 20.1707H14.0016C17.0888 20.1707 19.6 17.6571 19.6 14.5691V6.56914C19.6 3.48194 17.0865 0.970703 13.9985 0.970703H5.99846ZM15.6 4.1707C16.0416 4.1707 16.4 4.5291 16.4 4.9707C16.4 5.4123 16.0416 5.7707 15.6 5.7707C15.1584 5.7707 14.8 5.4123 14.8 4.9707C14.8 4.5291 15.1584 4.1707 15.6 4.1707ZM10 5.7707C12.6472 5.7707 14.8 7.9235 14.8 10.5707C14.8 13.2179 12.6472 15.3707 10 15.3707C7.35282 15.3707 5.20002 13.2179 5.20002 10.5707C5.20002 7.9235 7.35282 5.7707 10 5.7707ZM10 7.3707C9.15133 7.3707 8.3374 7.70785 7.73728 8.30796C7.13717 8.90808 6.80002 9.72201 6.80002 10.5707C6.80002 11.4194 7.13717 12.2333 7.73728 12.8334C8.3374 13.4336 9.15133 13.7707 10 13.7707C10.8487 13.7707 11.6626 13.4336 12.2628 12.8334C12.8629 12.2333 13.2 11.4194 13.2 10.5707C13.2 9.72201 12.8629 8.90808 12.2628 8.30796C11.6626 7.70785 10.8487 7.3707 10 7.3707Z\" fill=\"currentColor\"/></svg>",
+      "youtube": "<svg aria-hidden=\"true\" viewBox=\"0 0 22 17\" fill=\"none\"><path d=\"M20.5513 3.53062C20.36 2.475 19.4488 1.70625 18.3913 1.46625C16.8088 1.13062 13.88 0.890625 10.7113 0.890625C7.54438 0.890625 4.56875 1.13062 2.98438 1.46625C1.92875 1.70625 1.01563 2.42625 0.824377 3.53062C0.631253 4.73062 0.440002 6.41062 0.440002 8.57062C0.440002 10.7306 0.631253 12.4106 0.871253 13.6106C1.06438 14.6663 1.97563 15.435 3.03125 15.675C4.71125 16.0106 7.59125 16.2506 10.76 16.2506C13.9288 16.2506 16.8088 16.0106 18.4888 15.675C19.5444 15.435 20.4556 14.715 20.6488 13.6106C20.84 12.4106 21.08 10.6819 21.1288 8.57062C21.0313 6.41062 20.7913 4.73062 20.5513 3.53062ZM8.12 11.9306V5.21062L13.9756 8.57062L8.12 11.9306Z\" fill=\"currentColor\"/></svg>",
+      "pinterest": "<svg aria-hidden=\"true\" viewBox=\"0 0 20 21\" fill=\"none\"><path d=\"M10 0.970703C4.69842 0.970703 0.400024 5.2691 0.400024 10.5707C0.400024 14.6379 2.93042 18.1115 6.50162 19.5099C6.41762 18.7507 6.34162 17.5851 6.53522 16.7563C6.70962 16.0075 7.66082 11.9843 7.66082 11.9843C7.66082 11.9843 7.37362 11.4091 7.37362 10.5595C7.37362 9.2243 8.14722 8.2283 9.11042 8.2283C9.92962 8.2283 10.3248 8.8435 10.3248 9.5803C10.3248 10.4043 9.80082 11.6355 9.52962 12.7763C9.30322 13.7323 10.0088 14.5115 10.9512 14.5115C12.6576 14.5115 13.9688 12.7123 13.9688 10.1155C13.9688 7.8171 12.3176 6.2099 9.95922 6.2099C7.22802 6.2099 5.62482 8.2587 5.62482 10.3763C5.62482 11.2011 5.94242 12.0859 6.33922 12.5675C6.41762 12.6627 6.42882 12.7459 6.40562 12.8427C6.33282 13.1459 6.17122 13.7979 6.13922 13.9315C6.09762 14.1075 6.00002 14.1443 5.81842 14.0595C4.61922 13.5011 3.86962 11.7483 3.86962 10.3403C3.86962 7.3123 6.06962 4.5307 10.2128 4.5307C13.5432 4.5307 16.1312 6.9035 16.1312 10.0755C16.1312 13.3843 14.0448 16.0467 11.1496 16.0467C10.1768 16.0467 9.26242 15.5411 8.94963 14.9443C8.94963 14.9443 8.46802 16.7771 8.35122 17.2267C8.13442 18.0603 7.54962 19.1059 7.15762 19.7435C8.05602 20.0203 9.01042 20.1707 10 20.1707C15.3016 20.1707 19.6 15.8723 19.6 10.5707C19.6 5.2691 15.3016 0.970703 10 0.970703Z\" fill=\"currentColor\"/></svg>",
+      "tiktok": "<svg aria-hidden=\"true\" viewBox=\"0 0 18 19\" fill=\"none\"><path d=\"M16.2 0.769531H1.80001C0.916012 0.769531 0.200012 1.48553 0.200012 2.36953V16.7695C0.200012 17.6535 0.916012 18.3695 1.80001 18.3695H16.2C17.084 18.3695 17.8 17.6535 17.8 16.7695V2.36953C17.8 1.48553 17.0832 0.769531 16.2 0.769531ZM15.1512 8.34873C15.0472 8.35833 14.9424 8.36473 14.8368 8.36473C13.6408 8.36473 12.5896 7.75033 11.9776 6.81993C11.9776 9.25913 11.9776 12.0351 11.9776 12.0815C11.9776 14.2295 10.236 15.9703 8.08881 15.9703C5.94161 15.9695 4.20001 14.2279 4.20001 12.0807C4.20001 9.93273 5.94161 8.19193 8.08881 8.19193C8.17041 8.19193 8.24961 8.19913 8.32881 8.20393V10.1207C8.24881 10.1111 8.17121 10.0967 8.08881 10.0967C6.99281 10.0967 6.10401 10.9855 6.10401 12.0815C6.10401 13.1775 6.99201 14.0663 8.08881 14.0663C9.18561 14.0663 10.1536 13.2023 10.1536 12.1063C10.1536 12.0623 10.1728 3.17033 10.1728 3.17033H12.004C12.176 4.80793 13.4984 6.10073 15.1512 6.21913V8.34873Z\" fill=\"currentColor\"/></svg>"
+  };
+  const storeFooter = (d) => {
+    const brand = brandName();
+    const short = brand.toLowerCase();
+    const menu = [
+      ["Help", ["FAQ", "Track My Order", "Shipping", "Return & Exchanges", "Payment", "Size Guide", "Metals Guide", "Contact Us", "Warranty"]],
+      ["About Us", [`About ${short}`, `${short} Blog`, "Why us?", "As Seen On", "Sustainability", "Accessibility Statement", "Reviews", "Terms and Conditions", "Privacy Policy"]],
+      ["More Info", ["Affiliates", "PR Inquiries & Collabs", "Jewelry Care", "Gift Card", "Promo Codes", "Bulk Orders", "Site Map"]],
+    ];
+    const social = `<div class="sf-foot__social">${Object.entries(FOOTER_SOCIAL).map(([k, svg]) => `<span class="sf-foot__icon" title="${k}">${svg}</span>`).join("")}</div>`;
+    const news = `<div class="sf-foot__box">
+        <span style="${typeCSS("text2")}">Join our world</span>
+        <span style="${typeCSS("headline2")}">Sign up &amp; Save 10% Off</span>
+        <span style="${typeCSS("paragraph1")}">Plus, be the first to know about new arrivals and exclusive sales.</span>
+        <span class="sf-foot__form"><span class="sf-foot__email" style="${typeCSS("paragraph1")}">Email *</span><span class="sf-foot__go"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3.5 10h13M11 4.5 16.5 10 11 15.5"/></svg></span></span>
+        ${social}
+      </div>`;
+    // The Trustpilot summary only shows on TGR's footer.
+    const trust = ui.theme !== "tgr" ? "" : `<div class="sf-foot__trust"><span class="sf-foot__tp">★</span><b>Trustpilot</b><span class="sf-foot__stars">${"<i>★</i>".repeat(5)}</span><span>4.6/5</span></div>`;
+    const copy = `<div class="sf-foot__copy">© ${new Date().getFullYear()} ${esc(short)}. All rights reserved</div>`;
+    if (d === "desktop") {
+      const cols = menu.map(([h, items]) => `<div class="sf-foot__col"><b style="${typeCSS("text2")}">${h}</b>${items.map((x) => `<span>${esc(x)}</span>`).join("")}</div>`).join("");
+      return `<footer class="sf-foot sf-foot--desk"><div class="sf-foot__links">${cols}</div>${news}${trust}${copy}</footer>`;
+    }
+    const rows = menu.map(([h]) => `<div class="sf-foot__row"><b style="${typeCSS("text2")}">${h}</b><span aria-hidden="true">+</span></div>`).join("");
+    return `<footer class="sf-foot sf-foot--mob${FOOTER_START.has(ui.theme) ? " sf-foot--start" : ""}">${news}<div class="sf-foot__links">${rows}</div>${trust}${copy}</footer>`;
+  };
   const storeHeader = (d) => {
     const B = THEMES.brands[ui.theme];
     const ic = (k) => B.icons[k];
@@ -2259,7 +2328,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     };
     const pageHTML = (d, scale, uiScale) => {
       const b = bodyFor(d);
-      return `<div class="page" data-theme="${ui.theme}" style="${esc(themeVars[ui.theme][d])};width:${layoutW(d)}px;${scale !== 1 ? `transform:scale(${scale});` : ""}--ui:${uiScale.toFixed(3)};--pb:${b.n ? gapFor(d) : 0}px">${storeHeader(d)}${b.html}</div>`;
+      return `<div class="page" data-theme="${ui.theme}" style="${esc(themeVars[ui.theme][d])};width:${layoutW(d)}px;${scale !== 1 ? `transform:scale(${scale});` : ""}--ui:${uiScale.toFixed(3)};--pb:${b.n ? gapFor(d) : 0}px">${storeHeader(d)}${b.html}${storeFooter(d)}</div>`;
     };
     document.querySelector(".app").classList.toggle("presenting", ui.present);
     if (ui.present) {
