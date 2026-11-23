@@ -1054,8 +1054,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .ob-welcome__steps .ico .i { width: 18px; height: 18px; }
 .ob-welcome__steps b { font-size: 13px; font-weight: 600; }
 .ob-welcome__steps span { font-size: 12px; line-height: 1.4; color: var(--muted); }
-.ob-welcome__acts { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.ob-welcome__acts small { margin-left: auto; font-size: 12px; color: #6e6e6e; }
+.ob-welcome__acts { display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
 .ob-btn { height: 40px; padding: 0 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); }
 .ob-btn--primary { border-color: #303030; background: #303030; color: #fff; }
 .ob-btn--primary:hover { background: #1a1a1a; }
@@ -4513,9 +4512,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
           <div><span class="ico"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="4" width="14" height="12" rx="2"/><circle cx="7.5" cy="8.2" r="1.4"/><path d="m3.5 14 4-3.8 3 2.8 2.2-2 3.8 3.4"/></svg></span><b>3. Photos &amp; sizes</b><span>Drop photos in, get export sizes.</span></div>
         </div>
         <div class="ob-welcome__acts">
-          <button type="button" class="ob-btn ob-btn--primary" data-act="ob-tour">Show me around</button>
           <button type="button" class="ob-btn" data-act="ob-skip">I'll explore on my own</button>
-          <small>Reopen anytime from the Guide</small>
+          <button type="button" class="ob-btn ob-btn--primary" data-act="ob-tour">Show me around</button>
         </div>
       </div>`;
     document.body.appendChild(el);
