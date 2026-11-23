@@ -703,6 +703,11 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .guide-list b { color: var(--ink); font-weight: 600; }
 /* ---------- Full-screen preview ---------- */
 .present-exit { display: none; }
+.pv-switch { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 80; display: flex; gap: 2px; padding: 3px; border-radius: 999px; background: rgba(29,29,31,0.88); box-shadow: 0 6px 20px rgba(0,0,0,0.18); }
+.pv-switch button { border: 0; border-radius: 999px; padding: 6px 14px; background: transparent; color: #d7dde5; font: inherit; font-size: 12.5px; font-weight: 500; cursor: pointer; }
+.pv-switch button[aria-pressed="true"] { background: #fff; color: #1d1d1f; font-weight: 600; }
+.present-page.is-phone { margin: 0 auto; box-shadow: 0 0 0 1px rgba(0,0,0,0.06), 0 12px 40px rgba(0,0,0,0.12); }
+.app.presenting .canvas:has(.present-page.is-phone) { background: #f1f1f1; }
 .app.presenting .topbar, .app.presenting .column, .app.presenting .rail, .app.presenting .col-toggle, .app.presenting .floatbar-wrap { display: none !important; }
 .app.presenting .workspace { grid-template-columns: minmax(0, 1fr); }
 .app.presenting .canvas { padding: 0; background: #ffffff; }
@@ -985,6 +990,13 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 @keyframes doc-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .doc-spin { animation: none; } }
 .share-btn.is-shared { background: var(--accent-soft); border-color: #b5d3fb; color: #003f94; }
+.share-pick { position: relative; }
+.share-btn > .i:last-child { width: 14px; height: 14px; margin-left: -2px; }
+.share-menu { left: auto; right: 0; min-width: 320px; }
+.share-menu__item { align-items: flex-start; gap: 10px; padding: 10px; }
+.share-menu__item > .i { width: 18px; height: 18px; flex: none; margin-top: 1px; color: var(--muted); }
+.share-menu__item b { display: block; font-size: 13px; font-weight: 600; color: var(--ink); }
+.share-menu__item small { display: block; font-size: 12px; line-height: 1.4; color: var(--muted); margin-top: 2px; white-space: normal; }
 
 /* ---------- Getting started (first-time guidance) ---------- */
 .ob { padding: 22px 22px 18px; display: flex; flex-direction: column; min-height: 100%; box-sizing: border-box; }
@@ -1023,6 +1035,11 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .ob-tip span { font-size: 12px; line-height: 1.35; color: #d7dde5; }
 .ob-pill { position: fixed; z-index: 40; height: 46px; padding: 0 10px 0 10px; border: 0; border-radius: 12px; background: #1f2a37; box-shadow: 0 8px 24px rgba(0,0,0,0.22); display: flex; align-items: center; gap: 10px; font: inherit; font-size: 13px; color: #fff; cursor: pointer; text-align: left; }
 .ob-pill:hover { background: #2b3949; }
+.ob-pill.is-inline { position: static; height: 36px; margin-left: auto; padding: 0 6px 0 8px; gap: 8px; border-radius: 10px; box-shadow: none; font-size: 12px; }
+.ob-pill.is-inline b { font-size: 12px; line-height: 15px; }
+.ob-pill.is-inline small { font-size: 11px; line-height: 14px; }
+.ob-pill.is-inline > svg:first-child { width: 22px; height: 22px; }
+.step__title:has(.ob-pill) { display: flex; align-items: center; gap: 8px; }
 .ob-pill b { display: block; font-weight: 600; line-height: 16px; }
 .ob-pill small { display: block; font-size: 12px; color: #9fcbff; line-height: 16px; }
 .ob-toast { position: fixed; z-index: 250; height: 34px; padding: 0 14px 0 10px; background: #1f2a37; color: #fff; border-radius: 999px; display: flex; align-items: center; gap: 8px; font-size: 13px; box-shadow: 0 8px 24px rgba(0,0,0,0.18); font-family: var(--font-ui); pointer-events: none; }
@@ -1352,7 +1369,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       label: "Category tiles", make: () => make({
         margin: true,
         m: { cols: 2, gap: "spacing-xs" }, d: { cols: 4, gap: "spacing-sm" }, ratio: { m: "1:1", d: "1:1", split: false },
-        slides: slidesOf("image", ["Necklaces", "Rings", "Bracelets", "Earrings", "Anklets", "Men's", "Sets", "Gift Cards"]),
+        slides: slidesOf("image", ["Necklaces", "Rings", "Bracelets", "Earrings"]),
         text: { pos: "below-center", dsplit: false, sub: "", btn: "", btnStyle: "none", headVariant: "text3" },
         header: { text: "Shop by category", align: "center" },
       }),
@@ -1685,10 +1702,12 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   const renderTop = () => {
     const specs = ui.view === "specs" && ui.tab !== "guide";
     const shared = Boolean(tpl()?.share);
+    const shareMenu = ui.menu === "share" ? `<div class="menu share-menu" role="menu">
+        <button type="button" class="menu__item share-menu__item" role="menuitem" data-act="share-edit">${SHARE_ICON}<span><b>${shared ? "Copy edit link" : "Edit link"}</b><small>Anyone with the link can open and edit this template. Changes sync for everyone.</small></span></button>
+        <button type="button" class="menu__item share-menu__item" role="menuitem" data-act="share-preview">${EYE_ICON}<span><b>Preview link</b><small>View only, with a QR code. Phone layout on phones, desktop layout on computers. Lasts 7 days.</small></span></button>
+      </div>` : "";
     $("#topRight").innerHTML = phoneOK && !previewId
-      ? (shared
-        ? `<button type="button" class="share-btn is-shared" data-act="share" title="Anyone with the link can open and edit this template. Click for the link.">${SHARED_ICON}Shared</button>`
-        : `<button type="button" class="share-btn" data-act="share" title="Get a link anyone can use to open and edit this template">${SHARE_ICON}Share</button>`)
+      ? `<div class="share-pick"><button type="button" id="shareBtn" class="share-btn${shared ? " is-shared" : ""}" data-act="menu" data-val="share" aria-haspopup="menu" aria-expanded="${ui.menu === "share"}">${shared ? SHARED_ICON : SHARE_ICON}${shared ? "Shared" : "Share"}${ICON.caret}</button>${shareMenu}</div>`
       : "";
     renderShareState();
     const build = ui.tab === "editor" && !specs;
@@ -1711,6 +1730,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   let phoneOK = false;
   const SHARE_ICON = '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M8.5 11.5a3.2 3.2 0 0 0 4.6 0l2.6-2.6a3.2 3.2 0 0 0-4.6-4.6l-1 1"/><path d="M11.5 8.5a3.2 3.2 0 0 0-4.6 0l-2.6 2.6a3.2 3.2 0 0 0 4.6 4.6l1-1"/></svg>';
   const SHARED_ICON = '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><circle cx="7.5" cy="7" r="2.6"/><path d="M2.8 16c.6-2.6 2.4-4 4.7-4s4.1 1.4 4.7 4"/><circle cx="14" cy="7.8" r="2.1"/><path d="M13.2 12.1c1.9 0 3.4 1.2 4 3.4"/></svg>';
+  const EYE_ICON = '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M2.5 10s2.8-5 7.5-5 7.5 5 7.5 5-2.8 5-7.5 5-7.5-5-7.5-5Z"/><circle cx="10" cy="10" r="2.3"/></svg>';
   const PHONE_ICON = '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><rect x="5.5" y="2.5" width="9" height="15" rx="2"/><path d="M9 15h2"/><path d="M8 6.5h1.5V8H8zM10.5 6.5H12V8h-1.5zM8 9.5h1.5V11H8zM10.8 10.2h.9v.9h-.9z"/></svg>';
   const VIEWS = [
     ["config", "Sections", ICON.layers],
@@ -2028,7 +2048,6 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       ${[["mobile", "Mobile view"], ["desktop", "Desktop view"], ["both", "Mobile & desktop view"]].map(([k, l]) => `<button type="button" class="fb-btn" data-act="device" data-val="${k}" aria-pressed="${ui.device === k}" aria-label="${l}">${ICON[k]}<span class="fb-tip" role="tooltip">${l}</span></button>`).join("")}
       <button type="button" class="fb-btn" data-act="present" aria-label="Full-screen view">${ICON.expand}<span class="fb-tip" role="tooltip">Full-screen view</span></button>
       <button type="button" class="fb-btn" data-act="labels" aria-pressed="${ui.labels !== false}" aria-label="${ui.labels !== false ? "Hide" : "Show"} section labels"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 4.5h8.2l5.3 5.5-5.3 5.5H3a.5.5 0 0 1-.5-.5V5a.5.5 0 0 1 .5-.5Z"/><circle cx="6.5" cy="10" r="1.2"/></svg><span class="fb-tip" role="tooltip">${ui.labels !== false ? "Hide" : "Show"} section labels</span></button>
-      ${phoneOK ? `<button type="button" class="fb-btn" data-act="phone-preview" aria-label="Preview on phone">${PHONE_ICON}<span class="fb-tip" role="tooltip">Preview on phone</span></button>` : ""}
       ${ui.device === "mobile" ? `<span class="fb-sep"></span><span class="mode-seg" role="group" aria-label="Mobile preview mode">
         <button type="button" data-act="mobile-mode" data-val="frame" aria-pressed="${ui.mobileMode === "frame"}" title="Fixed-size phone, page scrolls inside it">Device frame</button>
         <button type="button" data-act="mobile-mode" data-val="full" aria-pressed="${ui.mobileMode === "full"}" title="Whole page at phone width, no frame">Full height</button>
@@ -2255,10 +2274,13 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       // Just the homepage, as a shopper sees it, filling the screen it's viewed on:
       // the mobile layout on a phone-width screen, the desktop layout on anything wider.
       const screenW = Math.floor(canvas.clientWidth);
-      const d = screenW < 768 ? "mobile" : "desktop";
+      const wide = screenW >= 768;
+      // On a computer the viewer can flip to the phone layout (shown at phone width) and back.
+      const d = wide ? (ui.presentDevice || "desktop") : "mobile";
       ui.deskFullW = Math.max(768, screenW);
-      ui.mobFullW = Math.max(320, screenW);
-      stage.innerHTML = `<div class="present-page" data-device="${d}" style="width:${layoutW(d)}px">${pageHTML(d, 1, 1)}</div>`;
+      ui.mobFullW = wide ? DEVICE.width : Math.max(320, screenW);
+      const sw = wide ? `<div class="pv-switch" role="group" aria-label="Layout">${[["mobile", "Mobile"], ["desktop", "Desktop"]].map(([k, l]) => `<button type="button" data-act="pv-device" data-val="${k}" aria-pressed="${d === k}">${l}</button>`).join("")}</div>` : "";
+      stage.innerHTML = `${sw}<div class="present-page${wide && d === "mobile" ? " is-phone" : ""}" data-device="${d}" style="width:${layoutW(d)}px">${pageHTML(d, 1, 1)}</div>`;
       return;
     }
     const both = ui.device === "both";
@@ -3195,7 +3217,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const editHit = !ui.present && e.target.closest?.(".sec [data-edit]");
     if (editHit && editHit.closest(".sec[data-name]")?.dataset.name === ui.sel) { closeMenus(); startEdit(editHit, e.clientX, e.clientY); return; }
     const t = e.target.closest("[data-act]");
-    if (!e.target.closest(".tpl, .theme-pick")) closeMenus();
+    if (!e.target.closest(".tpl, .theme-pick, .share-pick")) closeMenus();
     if (!t) {
       const secEl = e.target.closest(".sec[data-name]");
       if (secEl) { ui.hl = null; choose(secEl.dataset.name); return; }
@@ -3389,7 +3411,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       const sl = r?.slides[Number(t.dataset.i)];
       if (sl?.imgs?.[ui.theme]) { delete sl.imgs[ui.theme][t.dataset.dev]; ui.imgMsg = null; changed(); }
     } else if (act === "present") {
-      ui.present = true; ui.menu = null; renderAll();
+      ui.present = true; ui.presentDevice = null; ui.menu = null; renderAll();
     } else if (act === "pad-step") {
       const keys = t.dataset.path.split(".");
       const curVal = keys.reduce((o, k) => o?.[k], r);
@@ -3416,8 +3438,14 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       if (next) setTimeout(() => obShow(next.id), 120);
     } else if (act === "ob-skip") {
       obCloseWelcome();
-    } else if (act === "share") {
+    } else if (act === "share-edit" || act === "share") {
+      ui.menu = null; renderTop();
       startShare();
+    } else if (act === "pv-device") {
+      ui.presentDevice = t.dataset.val; renderStage();
+    } else if (act === "share-preview") {
+      ui.menu = null; renderTop();
+      publishPhone();
     } else if (act === "share-close") {
       if (ui.shareModal?.state !== "working") { ui.shareModal = null; renderShareModal(); }
     } else if (act === "share-copy") {
@@ -3976,11 +4004,11 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       : p.state === "error"
       ? `<p class="phone-modal__status phone-modal__status--err">${esc(p.msg || "Something went wrong. Try again.")}</p><div class="phone-modal__acts"><button type="button" class="btn btn--primary" data-act="phone-preview">Try again</button></div>`
       : `<div class="phone-modal__qr">${p.qr ? `<img src="${p.qr}" alt="QR code for the phone preview" width="220" height="220">` : ""}</div>
-         <p class="phone-modal__status">Scan with your phone's camera to open this homepage.</p>
+         <p class="phone-modal__status">Scan with your phone's camera, or open the link on a computer to see the desktop layout.</p>
          <div class="phone-modal__link"><input type="text" readonly value="${esc(p.url)}" aria-label="Preview link"><button type="button" class="btn" data-act="phone-copy">${p.copied ? "Copied" : "Copy link"}</button></div>
-         <p class="phone-modal__note">Works for 7 days. Making a new preview replaces this one.</p>`;
-    el.innerHTML = `<div class="phone-modal__card" role="dialog" aria-modal="true" aria-label="Preview on phone">
-        <div class="phone-modal__head"><b>Preview on phone</b><button type="button" class="fb-btn" data-act="phone-close" aria-label="Close">${ICON.close}</button></div>
+         <p class="phone-modal__note">View only. Works for 7 days. Making a new preview replaces this one.</p>`;
+    el.innerHTML = `<div class="phone-modal__card" role="dialog" aria-modal="true" aria-label="Preview link">
+        <div class="phone-modal__head"><b>Preview link</b><button type="button" class="fb-btn" data-act="phone-close" aria-label="Close">${ICON.close}</button></div>
         ${body}
       </div>`;
   };
@@ -4013,6 +4041,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       let qr = "";
       try { await loadQR(); const q = window.qrcode(0, "M"); q.addData(url); q.make(); qr = q.createDataURL(6, 2); } catch (err) { /* the link still works */ }
       ui.phone = { state: "ready", url, qr };
+      obMark("share");
     } catch (err) {
       ui.phone = { state: "error", msg: "The preview couldn't be uploaded. Check your connection and try again." };
     }
@@ -4309,8 +4338,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       target: () => $("#mood") },
     { id: "sizes", title: "Get the export sizes", text: "Each section shows the size to export its images at. Specs collects them all to send on.", tip: "Every image's export size",
       target: () => $("#inspector .size-card") || $(".vrail [data-act='view'][data-val='specs']") },
-    { id: "share", title: "Share with your designer", text: "Share gives a link they can open to add the final images.", tip: "Share the template here",
-      target: () => $("[data-act='share']") },
+    { id: "share", title: "Share it", text: "Share gives an edit link for whoever adds the final images, or a view-only preview link for anyone who just needs to look.", tip: "Edit link or preview link",
+      target: () => $("#shareBtn") },
   ];
   const obSteps = () => OB_ALL.filter((st) => st.id !== "share" || phoneOK);
   const obNext = () => obSteps().find((st) => !ob.done[st.id]) || null;
@@ -4440,6 +4469,21 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const C = 62.83;
     el.innerHTML = `<svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="10" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="3"/><circle cx="13" cy="13" r="10" fill="none" stroke="#7fb9ff" stroke-width="3" stroke-linecap="round" stroke-dasharray="${(C * done / total).toFixed(1)} ${C}" transform="rotate(-90 13 13)"/></svg><span><b>${esc(title)}</b><small>${esc(sub)}</small></span><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#9fcbff" stroke-width="1.6" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg>`;
     el.setAttribute("aria-label", `${title}. ${sub}`);
+    obPlacePill();
+  };
+  // On the same line as the Layout heading in the settings panel; over the preview for sections without one.
+  const obPlacePill = () => {
+    const el = $("#obPill");
+    if (!el) return;
+    const head = [...document.querySelectorAll("#inspector .step__title")].find((x) => x.firstElementChild?.textContent.trim() === "Layout");
+    if (head) {
+      el.classList.add("is-inline");
+      el.style.left = el.style.top = "";
+      if (el.parentElement !== head) head.appendChild(el);
+      return;
+    }
+    el.classList.remove("is-inline");
+    if (el.parentElement !== document.body) document.body.appendChild(el);
     const c = $("#canvas")?.getBoundingClientRect();
     const m = $("#mood")?.getBoundingClientRect();
     if (c) {
@@ -4448,6 +4492,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     }
   };
   addEventListener("resize", () => obRenderPill());
+
   const obAfterRender = () => {
     if (previewId) return;
     obCheck();
