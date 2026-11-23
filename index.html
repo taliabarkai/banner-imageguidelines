@@ -973,6 +973,77 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .link-btn:hover { text-decoration: underline; }
 @media (max-width: 900px) { .app.v2 #column, .app.v2 #canvas, .app.v2 #mood, .app.v2 #inspector { grid-column: 1; grid-row: auto; } }
 
+/* ---------- Save status (next to the template name) ---------- */
+.doc-status { display: flex; align-items: center; }
+.doc-status .fb-btn .i { width: 18px; height: 18px; }
+.doc-status .fb-btn.is-err { color: var(--critical); }
+.doc-status .fb-btn.is-warn { color: var(--warn); }
+.doc-tip { white-space: normal; width: 230px; text-align: left; display: flex; flex-direction: column; gap: 2px; line-height: 1.4; }
+.doc-tip b { font-weight: 600; }
+.doc-tip span { font-weight: 400; color: var(--muted); }
+.doc-spin { animation: doc-spin 0.9s linear infinite; transform-origin: 50% 50%; }
+@keyframes doc-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .doc-spin { animation: none; } }
+.share-btn.is-shared { background: var(--accent-soft); border-color: #b5d3fb; color: #003f94; }
+
+/* ---------- Getting started (first-time guidance) ---------- */
+.ob { padding: 22px 22px 18px; display: flex; flex-direction: column; min-height: 100%; box-sizing: border-box; }
+.ob__head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.ob__head h2 { font-size: 16px; font-weight: 600; }
+.ob__count { font-size: 12px; color: var(--muted); }
+.ob__bar { display: grid; gap: 4px; margin: 12px 0 6px; }
+.ob__bar i { height: 4px; border-radius: 2px; background: var(--line); }
+.ob__bar i.is-done { background: #29845a; }
+.ob__bar i.is-cur { background: var(--accent); }
+.ob__step { display: grid; grid-template-columns: 22px minmax(0, 1fr); column-gap: 12px; padding: 12px 0; border-top: 1px solid #efefef; }
+.ob__step.is-cur { background: #f5f9ff; margin: 0 -12px; padding: 14px 12px; border-radius: 10px; border-top-color: transparent; }
+.ob__step.is-cur + .ob__step { border-top-color: transparent; }
+.ob__dot { width: 22px; height: 22px; border-radius: 50%; box-sizing: border-box; display: grid; place-items: center; font-size: 11px; font-weight: 700; border: 1.5px solid #c4c4c4; color: #6e6e6e; }
+.ob__dot.is-done { background: #29845a; border-color: #29845a; color: #fff; }
+.ob__dot.is-cur { border: 2px solid var(--accent); color: var(--accent); }
+.ob__dot svg { width: 12px; height: 12px; }
+.ob__body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.ob__body b { font-size: 13.5px; font-weight: 600; }
+.ob__step.is-done .ob__body b { font-weight: 500; color: var(--muted); }
+.ob__redo { border: 0; background: none; padding: 0; font: inherit; text-align: left; cursor: pointer; display: flex; align-items: baseline; justify-content: space-between; gap: 8px; width: 100%; color: inherit; }
+.ob__redo b { font-size: 13.5px; }
+.ob__redo span { font-size: 12px; color: var(--accent); opacity: 0; transition: opacity .12s; white-space: nowrap; }
+.ob__redo:hover span, .ob__redo:focus-visible span { opacity: 1; }
+.ob__redo:hover b { color: var(--ink) !important; }
+.ob__body p { font-size: 12.5px; line-height: 1.45; color: var(--muted); }
+.ob__show { align-self: flex-start; margin-top: 4px; height: 28px; padding: 0 10px; border: 1px solid var(--accent); border-radius: 7px; background: var(--surface); color: var(--accent); font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.ob__show:hover { background: var(--accent-soft); }
+.ob__show--quiet { border-color: var(--line-strong); color: var(--ink); font-weight: 500; }
+.ob__foot { margin-top: auto; padding-top: 14px; border-top: 1px solid #efefef; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.ob__link { border: 0; background: none; padding: 0; color: var(--accent); font-size: 12px; font-weight: 500; cursor: pointer; }
+.ob__link--muted { color: var(--muted); font-weight: 400; }
+.ob-hl { outline: 2px solid var(--accent) !important; outline-offset: 2px; box-shadow: 0 0 0 7px rgba(0, 91, 211, 0.16) !important; border-radius: 8px; transition: box-shadow .2s; }
+.ob-tip { position: fixed; z-index: 260; max-width: 260px; background: #1f2a37; color: #fff; border-radius: 10px; padding: 10px 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.22); display: flex; flex-direction: column; gap: 2px; font-family: var(--font-ui); pointer-events: none; }
+.ob-tip b { font-size: 13px; font-weight: 600; }
+.ob-tip span { font-size: 12px; line-height: 1.35; color: #d7dde5; }
+.ob-pill { position: fixed; z-index: 40; height: 46px; padding: 0 10px 0 10px; border: 0; border-radius: 12px; background: #1f2a37; box-shadow: 0 8px 24px rgba(0,0,0,0.22); display: flex; align-items: center; gap: 10px; font: inherit; font-size: 13px; color: #fff; cursor: pointer; text-align: left; }
+.ob-pill:hover { background: #2b3949; }
+.ob-pill b { display: block; font-weight: 600; line-height: 16px; }
+.ob-pill small { display: block; font-size: 12px; color: #9fcbff; line-height: 16px; }
+.ob-toast { position: fixed; z-index: 250; height: 34px; padding: 0 14px 0 10px; background: #1f2a37; color: #fff; border-radius: 999px; display: flex; align-items: center; gap: 8px; font-size: 13px; box-shadow: 0 8px 24px rgba(0,0,0,0.18); font-family: var(--font-ui); pointer-events: none; }
+.ob-toast i { width: 18px; height: 18px; border-radius: 50%; background: #29845a; display: grid; place-items: center; }
+.ob-welcome__card { width: min(560px, 100%); background: var(--surface); border-radius: 16px; box-shadow: 0 24px 70px rgba(0,0,0,0.28); padding: 30px; display: flex; flex-direction: column; gap: 20px; }
+.ob-welcome__eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.02em; color: var(--accent); }
+.ob-welcome__card h2 { font-size: 23px; line-height: 1.3; font-weight: 700; margin-top: 6px; }
+.ob-welcome__card p { font-size: 14px; line-height: 1.5; color: #4f4f4f; margin-top: 8px; }
+.ob-welcome__steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.ob-welcome__steps div { border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 6px; }
+.ob-welcome__steps .ico { width: 32px; height: 32px; border-radius: 8px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; }
+.ob-welcome__steps .ico .i { width: 18px; height: 18px; }
+.ob-welcome__steps b { font-size: 13px; font-weight: 600; }
+.ob-welcome__steps span { font-size: 12px; line-height: 1.4; color: var(--muted); }
+.ob-welcome__acts { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.ob-welcome__acts small { margin-left: auto; font-size: 12px; color: #6e6e6e; }
+.ob-btn { height: 40px; padding: 0 18px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); }
+.ob-btn--primary { border-color: #303030; background: #303030; color: #fff; }
+.ob-btn--primary:hover { background: #1a1a1a; }
+.guide__ob { margin-top: 14px; }
+
 /* ---------- Shared edit link ---------- */
 #topRight { display: flex; align-items: center; gap: 8px; }
 .share-btn { height: 32px; display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--surface); color: var(--ink); font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; }
@@ -1078,6 +1149,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       <div class="guide__intro">
         <h1>Guide</h1>
         <p>Turn on the homepage sections you need and set each one's layout in Sections, then make the images in Images. Specs collects everything to send on. Your work is saved in this browser. To work on a template with someone else, click Share and send them the link: anyone with it can open the template and edit it, images included.</p>
+        <button type="button" class="ob__link guide__ob" data-act="ob-reopen">Show the getting started checklist</button>
       </div>
 
       <section class="card" id="order">
@@ -1612,7 +1684,12 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 
   const renderTop = () => {
     const specs = ui.view === "specs" && ui.tab !== "guide";
-    $("#topRight").innerHTML = `<span class="save-state" id="saveState"></span><span class="share-state" id="shareState" hidden></span>${phoneOK && !previewId ? `<button type="button" class="share-btn" data-act="share" title="Get a link anyone can use to open and edit this template">${SHARE_ICON}Share</button>` : ""}`;
+    const shared = Boolean(tpl()?.share);
+    $("#topRight").innerHTML = phoneOK && !previewId
+      ? (shared
+        ? `<button type="button" class="share-btn is-shared" data-act="share" title="Anyone with the link can open and edit this template. Click for the link.">${SHARED_ICON}Shared</button>`
+        : `<button type="button" class="share-btn" data-act="share" title="Get a link anyone can use to open and edit this template">${SHARE_ICON}Share</button>`)
+      : "";
     renderShareState();
     const build = ui.tab === "editor" && !specs;
     $("#viewPick").innerHTML = "";
@@ -1633,6 +1710,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 
   let phoneOK = false;
   const SHARE_ICON = '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M8.5 11.5a3.2 3.2 0 0 0 4.6 0l2.6-2.6a3.2 3.2 0 0 0-4.6-4.6l-1 1"/><path d="M11.5 8.5a3.2 3.2 0 0 0-4.6 0l-2.6 2.6a3.2 3.2 0 0 0 4.6 4.6l1-1"/></svg>';
+  const SHARED_ICON = '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><circle cx="7.5" cy="7" r="2.6"/><path d="M2.8 16c.6-2.6 2.4-4 4.7-4s4.1 1.4 4.7 4"/><circle cx="14" cy="7.8" r="2.1"/><path d="M13.2 12.1c1.9 0 3.4 1.2 4 3.4"/></svg>';
   const PHONE_ICON = '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><rect x="5.5" y="2.5" width="9" height="15" rx="2"/><path d="M9 15h2"/><path d="M8 6.5h1.5V8H8zM10.5 6.5H12V8h-1.5zM8 9.5h1.5V11H8zM10.8 10.2h.9v.9h-.9z"/></svg>';
   const VIEWS = [
     ["config", "Sections", ICON.layers],
@@ -1848,14 +1926,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const keep = ins.scrollTop;
     const same = ins.dataset.sel === (ui.sel || "");
     if (!r) {
-      ins.innerHTML = `<div class="howto">
-          <h2>How it works</h2>
-          <ol>
-            <li><b>Turn on the sections you need</b><span>Use the switches on the left. The order is fixed.</span></li>
-            <li><b>Click a section and pick a layout</b><span>Its settings open here.</span></li>
-            <li><b>Drop in your photos</b><span>Rough shoot photos are fine. Each tile shows the size to export the final at.</span></li>
-          </ol>
-        </div>`;
+      ins.innerHTML = idlePanelHTML();
     } else {
       const head = `<div class="column__head ins-head">
           <span class="column__title"><b>${esc(ui.sel)}</b></span>
@@ -1887,15 +1958,41 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     browser: ["", "Saved on this computer"], off: ["is-saving", "Not saved: this browser blocks storage"], readonly: ["is-off", "View only"], error: ["is-saving", "Couldn't save"],
   })[ui.save] || ["is-off", ""];
 
-  const renderSave = () => {
-    const el = $("#saveState");
+  const renderSave = () => renderDocStatus();
+  // One quiet status next to the template name: where this template is saved, and whether the last
+  // change made it. Problems stay visible until fixed; the normal state says where the work lives.
+  const STATUS_ICON = {
+    local: '<svg class="i" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="m6.8 10.2 2.2 2.2 4.2-4.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    cloud: '<svg class="i" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 15.5h8.2a3.3 3.3 0 0 0 .4-6.6A4.8 4.8 0 0 0 5.4 8 3.8 3.8 0 0 0 6 15.5Z"/><path d="m7.8 11.3 1.6 1.6 3-3.2"/></svg>',
+    spin: '<svg class="i doc-spin" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M10 3a7 7 0 1 1-7 7" stroke-linecap="round"/></svg>',
+    warn: '<svg class="i" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M10 3.2 17.5 16H2.5z" stroke-linejoin="round"/><path d="M10 8v3.6M10 13.6v.1" stroke-linecap="round"/></svg>',
+  };
+  const renderDocStatus = () => {
+    const el = $("#docStatus");
     if (!el) return;
-    const problem = ["off", "readonly", "error"].includes(ui.save);
-    if (!problem) { el.className = "save-state"; el.innerHTML = ""; el.hidden = true; return; }
-    const [cls, label] = saveLabel();
-    el.hidden = false;
-    el.className = `save-state ${cls}`;
-    el.innerHTML = `<i></i>${label}`;
+    const t = tpl();
+    let icon = STATUS_ICON.local, label = "Saved on this computer", cls = "", tip = "", extra = "";
+    if (ui.shareSave === "missing" && !t?.share) {
+      icon = STATUS_ICON.warn; label = "Link not found"; cls = "is-err";
+      tip = "This shared link doesn't exist. You're seeing your own templates.";
+    } else if (ui.shareSave === "loading") {
+      icon = STATUS_ICON.spin; label = "Opening…";
+    } else if (t?.share) {
+      if (ui.shareConflict) { icon = STATUS_ICON.warn; label = "Not saved yet"; cls = "is-warn"; tip = "Someone else saved a newer version. Choose which one to keep."; }
+      else if (ui.shareSave === "saving") { icon = STATUS_ICON.spin; label = "Saving…"; }
+      else if (ui.shareSave === "error") { icon = STATUS_ICON.warn; label = "Not saved"; cls = "is-err"; tip = "Couldn't reach the shared link. Your changes are kept on this computer. Click to try again."; extra = "share-retry"; }
+      else {
+        icon = STATUS_ICON.cloud; label = "Saved to link";
+        const at = t.share.savedAt ? new Date(t.share.savedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "";
+        tip = `Saved to the shared link${at ? ` at ${at}` : ""}. Anyone with the link sees this version.`;
+      }
+    } else if (ui.save === "off") {
+      icon = STATUS_ICON.warn; label = "Not saved"; cls = "is-err"; tip = "This browser blocks storage, so changes are lost when the tab closes.";
+    } else {
+      tip = phoneOK ? "Only on this computer. Use Share to work on it with someone else." : "Only in this browser.";
+    }
+    // Icon only; the hover tooltip says where the work is saved. "Not saved" retries on click.
+    el.innerHTML = `<button type="button" class="fb-btn ${cls}" ${extra ? `data-act="${extra}"` : ""} aria-label="${esc(`${label}. ${tip}`)}">${icon}<span class="fb-tip doc-tip" role="tooltip"><b>${esc(label)}</b>${tip ? `<span>${esc(tip)}</span>` : ""}</span></button>`;
   };
 
   const renderFloat = () => {
@@ -1935,7 +2032,10 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       ${ui.device === "mobile" ? `<span class="fb-sep"></span><span class="mode-seg" role="group" aria-label="Mobile preview mode">
         <button type="button" data-act="mobile-mode" data-val="frame" aria-pressed="${ui.mobileMode === "frame"}" title="Fixed-size phone, page scrolls inside it">Device frame</button>
         <button type="button" data-act="mobile-mode" data-val="full" aria-pressed="${ui.mobileMode === "full"}" title="Whole page at phone width, no frame">Full height</button>
-      </span>` : ""}`;
+      </span>` : ""}
+      <span class="fb-sep"></span>
+      <span class="doc-status" id="docStatus" role="status"></span>`;
+    renderDocStatus();
     if (ui.renaming) { const inp = $("#tplRename"); inp.focus(); inp.select(); }
   };
 
@@ -2689,13 +2789,13 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       dirty: false,
     };
     const sh = data.share;
-    if (sh && /^[a-z0-9]{24}$/.test(sh.id || "")) t.share = { id: sh.id, ver: Number(sh.ver) || 0, images: Array.isArray(sh.images) ? sh.images.filter((r) => typeof r === "string") : [], pending: Boolean(sh.pending) };
+    if (sh && /^[a-z0-9]{24}$/.test(sh.id || "")) t.share = { id: sh.id, ver: Number(sh.ver) || 0, images: Array.isArray(sh.images) ? sh.images.filter((r) => typeof r === "string") : [], pending: Boolean(sh.pending), received: Boolean(sh.received) };
     return ensureAll(t);
   };
   const saveLocal = () => {
     syncActive();
     try {
-      localStorage.setItem(LOCAL_KEY, JSON.stringify({ active, templates: templates.map((t) => ({ id: t.id, name: t.name, createdAt: t.createdAt, page: t.page, cfg: t.cfg, ...(t.share ? { share: { id: t.share.id, ver: t.share.ver, images: t.share.images, pending: t.share.pending } } : {}) })) }));
+      localStorage.setItem(LOCAL_KEY, JSON.stringify({ active, templates: templates.map((t) => ({ id: t.id, name: t.name, createdAt: t.createdAt, page: t.page, cfg: t.cfg, ...(t.share ? { share: { id: t.share.id, ver: t.share.ver, images: t.share.images, pending: t.share.pending, received: Boolean(t.share.received) } } : {}) })) }));
       templates.forEach((t) => { t.dirty = false; });
       ui.save = "browser";
     } catch (err) {
@@ -2928,6 +3028,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   // ---------- Updates ----------
   const setTheme = (k) => {
     if (!BRAND_KEYS.includes(k)) return;
+    obMark("brand");
     ui.theme = k; ui.menu = null;
     syncOrder();
     try { localStorage.setItem("bb-theme", k); } catch (err) { /* storage unavailable */ }
@@ -2936,7 +3037,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     renderAll();
   };
   window.addEventListener("hashchange", () => { const k = themeFromHash(); if (k && k !== ui.theme) setTheme(k); });
-  const renderAll = () => { syncShareUrl(); renderTop(); renderRail(); renderColumn(); renderFloat(); renderStage(); renderMood(); };
+  const renderAll = () => { syncShareUrl(); renderTop(); renderRail(); renderColumn(); renderFloat(); renderStage(); renderMood(); obAfterRender(); };
   const changed = () => { commit(); renderAll(); };
   const setPath = (obj, path, value) => {
     const keys = path.split(".");
@@ -3133,6 +3234,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
         if (ui.tab !== "editor") { ui.tab = "editor"; ui.column = true; renderAll(); }
         return;
       }
+      if (t.dataset.val === "specs") obMark("sizes");
       ui.view = t.dataset.val; ui.menu = null; ui.tab = "editor"; ui.column = true; ui.copied = ""; ui.fallback = "";
       try { localStorage.setItem("bb-view", ui.view); } catch (err) { /* storage unavailable */ }
       renderAll();
@@ -3144,6 +3246,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     } else if (act === "layout-preset") {
       const k = t.dataset.val;
       if (!LAYOUTS[k] || !r) return;
+      obMark("layout");
       const keepImgs = r.slides.map((sl) => sl.imgs);
       const keepTitles = r.slides.map((sl) => sl.title || "");
       const keepBtn = r.text?.btn || "";
@@ -3264,6 +3367,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       r.text.pos = `below-${({ left: "start", center: "center", right: "end" })[t.dataset.val]}`;
       changed();
     } else if (act === "copy-size") {
+      obMark("sizes");
       const { m, d, split } = exportSummary(r);
       const text = split ? `Mobile ${m.ew}x${m.eh}, Desktop ${d.ew}x${d.eh}` : `${m.ew}x${m.eh}`;
       try { await navigator.clipboard.writeText(text); } catch (err) { /* clipboard blocked */ }
@@ -3293,6 +3397,25 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       const next = PAD_OPTS[Math.min(PAD_OPTS.length - 1, Math.max(0, i + Number(t.dataset.dir)))][0];
       setPath(r, t.dataset.path, next);
       changed();
+    } else if (act === "ob-show") {
+      obShow(t.dataset.val);
+    } else if (act === "ob-redo") {
+      ui.obFocus = t.dataset.val;
+      if (obAllDone()) { ui.obFocus = null; }
+      renderInspector();
+      obShow(t.dataset.val);
+    } else if (act === "ob-hide") {
+      ob.dismissed = true; obSave(); obClearHl(); renderAll();
+    } else if (act === "ob-reopen") {
+      ob.dismissed = false; obSave(); ui.tab = "editor"; ui.sel = null; renderAll();
+    } else if (act === "ob-pill") {
+      ui.sel = null; ui.hl = null; renderAll();
+    } else if (act === "ob-tour") {
+      obCloseWelcome(); ui.sel = null; ui.tab = "editor"; renderAll();
+      const next = obNext();
+      if (next) setTimeout(() => obShow(next.id), 120);
+    } else if (act === "ob-skip") {
+      obCloseWelcome();
     } else if (act === "share") {
       startShare();
     } else if (act === "share-close") {
@@ -3358,6 +3481,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     } else if (act === "dot") {
       ui.pos[t.dataset.id] = Number(t.dataset.k); ui.last[t.dataset.id] = Date.now(); applyPos(t.dataset.id);
     } else if (act === "copy-brief") {
+      obMark("sizes");
       const text = brief();
       try {
         await navigator.clipboard.writeText(text);
@@ -3812,7 +3936,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       const j = res.ok && /json/.test(res.headers.get("content-type") || "") ? await res.json() : null;
       phoneOK = Boolean(j?.ready);
     } catch (err) { phoneOK = false; }
-    if (phoneOK) { renderTop(); renderFloat(); }
+    if (phoneOK) renderAll();
   };
   const phoneId = () => {
     const key = `bb2-phone-${ui.theme}`;
@@ -3963,6 +4087,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     t.share.ver = Number(j.ver) || t.share.ver;
     t.share.images = [...have];
     t.share.sig = sig;
+    t.share.savedAt = Date.now();
   };
   const queueShare = (t) => {
     t.share.pending = true;
@@ -4014,7 +4139,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     t.page = fresh.page;
     t.cfg = fresh.cfg;
     t.dirty = false;
-    t.share = { id: t.share.id, ver: Number(st.ver) || 0, images: Array.isArray(st.images) ? st.images.filter((r) => typeof r === "string") : [], pending: false };
+    t.share = { id: t.share.id, ver: Number(st.ver) || 0, images: Array.isArray(st.images) ? st.images.filter((r) => typeof r === "string") : [], pending: false, received: Boolean(t.share.received), savedAt: Number(st.savedAt) || Date.now() };
     t.share.sig = shareSig(t);
     t.share.images.forEach((rid) => {
       if (localUrls[rid]) return;
@@ -4060,7 +4185,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       let t = templates.find((x) => x.share?.id === sid);
       if (!t) {
         t = newTemplate(String(st.name || "Shared template"));
-        t.share = { id: sid, ver: 0, images: [] };
+        t.share = { id: sid, ver: 0, images: [], received: true };
         // A first visit only has the empty starter template: the shared one takes its place.
         const starter = templates.length === 1 && !templates[0].share && !Object.values(templates[0].cfg || {}).some((c) => c?.on) ? templates[0] : null;
         templates = starter ? [t] : [...templates, t];
@@ -4162,28 +4287,197 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       </div>`;
     document.body.appendChild(el);
   };
-  const renderShareState = () => {
-    const el = $("#shareState");
-    if (!el) return;
-    const t = tpl();
-    if (ui.shareSave === "missing") {
-      el.hidden = false;
-      el.className = "share-state is-err";
-      el.innerHTML = "<i></i>This shared link doesn't exist";
-      return;
-    }
-    if (!t?.share && ui.shareSave !== "loading") { el.hidden = true; el.className = "share-state"; el.innerHTML = ""; return; }
-    el.hidden = false;
-    renderConflict();
-    if (ui.shareConflict) {
-      el.className = "share-state is-busy";
-      el.innerHTML = "<i></i>Not saved yet";
-      return;
-    }
-    const [cls, label] = ({ saving: ["is-busy", "Saving to the shared link…"], loading: ["is-busy", "Opening the shared template…"], error: ["is-err", "Couldn't save to the shared link"] })[ui.shareSave] || ["", "Shared · saved"];
-    el.className = `share-state ${cls}`;
-    el.innerHTML = `<i></i>${label}${ui.shareSave === "error" ? ` <button type="button" class="link-btn" data-act="share-retry">Try again</button>` : ""}`;
+  const renderShareState = () => { renderConflict(); renderDocStatus(); };
+
+  // ---------- Getting started (first-time guidance) ----------
+  // A checklist in the right panel that ticks itself as people use the tool, "Show me" highlights on the
+  // control each step means, a small progress pill while a section's settings fill the panel, and a
+  // one-time welcome. Progress is kept per browser.
+  const OB_KEY = "bb2-onboarding-v1";
+  const ob = (() => { try { return { done: {}, dismissed: false, welcomed: false, ...JSON.parse(localStorage.getItem(OB_KEY) || "{}") }; } catch (err) { return { done: {}, dismissed: false, welcomed: false }; } })();
+  const obSave = () => { try { localStorage.setItem(OB_KEY, JSON.stringify(ob)); } catch (err) { /* storage unavailable */ } };
+  const CHECK_SVG = '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m2.5 6.2 2.3 2.3 4.7-5"/></svg>';
+  const TARGET_SVG = '<svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="10" cy="10" r="3"/><circle cx="10" cy="10" r="7"/></svg>';
+  const OB_ALL = [
+    { id: "brand", title: "Pick your brand", text: "Theme, top right, switches the brand. Its sections, fonts and colours follow.", tip: "Pick the brand here",
+      target: () => $("#themePick .theme-btn") },
+    { id: "sections", title: "Turn on the sections you need", text: "Use the switches in the list on the left. The order is fixed.", tip: "Turn sections on and off here",
+      target: () => $("#column .srow .sw") || $("#column [data-sec-toggle]")?.closest("label") },
+    { id: "layout", title: "Choose a layout", text: "Click a section's name, then pick how it looks in the panel that opens here.", tip: "Click a section's name to open its layouts",
+      target: () => $("#inspector [data-act='layout-preset']")?.parentElement || $("#column .srow.is-on .srow__name") || $("#column .srow .srow__name") },
+    { id: "photos", title: "Add your photos", text: "Drop rough photos on the moodboard under the preview, then drag each one onto a tile. You can also drop straight onto a tile.", tip: "Drop your photos here",
+      target: () => $("#mood") },
+    { id: "sizes", title: "Get the export sizes", text: "Each section shows the size to export its images at. Specs collects them all to send on.", tip: "Every image's export size",
+      target: () => $("#inspector .size-card") || $(".vrail [data-act='view'][data-val='specs']") },
+    { id: "share", title: "Share with your designer", text: "Share gives a link they can open to add the final images.", tip: "Share the template here",
+      target: () => $("[data-act='share']") },
+  ];
+  const obSteps = () => OB_ALL.filter((st) => st.id !== "share" || phoneOK);
+  const obNext = () => obSteps().find((st) => !ob.done[st.id]) || null;
+  const obAllDone = () => !obNext();
+  const obVisible = () => !ob.dismissed && !previewId;
+  const obMark = (id) => {
+    if (ob.done[id]) return;
+    ui.obFocus = null;
+    ob.done[id] = Date.now();
+    obSave();
+    if (!cur()) renderInspector();
+    if (!obVisible()) return;
+    // Go straight to the next step: point at its control once the page has redrawn.
+    const next = obNext();
+    if (next) setTimeout(() => { if (obNext() === next) obShow(next.id); }, 150);
+    else obClearHl();
   };
+  // Steps that can be read straight off the template.
+  const obCheck = () => {
+    const t = tpl();
+    if (!t) return;
+    if (Object.values(cfg || {}).some((c) => c?.on)) obMark("sections");
+    if (refsOf({ cfg }).size) obMark("photos");
+    if (t.share && !t.share.received) obMark("share"); // opening someone else's link isn't sharing
+  };
+  let toastTimer = null;
+  const obToast = (text) => {
+    let el = $("#obToast");
+    if (!el) { el = document.createElement("div"); el.id = "obToast"; el.className = "ob-toast"; el.setAttribute("role", "status"); document.body.appendChild(el); }
+    el.innerHTML = `<i>${CHECK_SVG.replace("<svg", '<svg width="10" height="10" style="color:#fff"')}</i><span>${esc(text)}</span>`;
+    const c = $("#canvas")?.getBoundingClientRect();
+    el.style.top = `${(c?.top || 60) + 12}px`;
+    el.style.left = `${(c ? c.left + c.width / 2 : innerWidth / 2)}px`;
+    el.style.transform = "translateX(-50%)";
+    el.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { el.hidden = true; }, 2800);
+  };
+  // "Show me": outline the control and put a short note next to it.
+  let hlTimer = null;
+  const obClearHl = () => {
+    document.querySelectorAll(".ob-hl").forEach((x) => x.classList.remove("ob-hl"));
+    $("#obTip")?.remove();
+    clearTimeout(hlTimer);
+  };
+  const obPoint = (el, title, text) => {
+    obClearHl();
+    if (!el) return;
+    el.scrollIntoView({ block: "nearest", inline: "nearest" });
+    el.classList.add("ob-hl");
+    const tip = document.createElement("div");
+    tip.id = "obTip";
+    tip.className = "ob-tip";
+    tip.innerHTML = `<b>${esc(title)}</b>${text ? `<span>${esc(text)}</span>` : ""}`;
+    document.body.appendChild(tip);
+    const r = el.getBoundingClientRect();
+    const tw = tip.offsetWidth, th = tip.offsetHeight;
+    let top = r.bottom + 12;
+    if (top + th > innerHeight - 8) top = r.top - th - 12;
+    let left = r.left + r.width / 2 - tw / 2;
+    if (r.left > innerWidth * 0.6) left = r.left - tw - 14, top = r.top + Math.min(r.height / 2, 40) - th / 2;
+    tip.style.left = `${Math.max(8, Math.min(innerWidth - tw - 8, left))}px`;
+    tip.style.top = `${Math.max(8, Math.min(innerHeight - th - 8, top))}px`;
+  };
+  const obShow = (id) => {
+    const steps = obSteps();
+    const i = steps.findIndex((st) => st.id === id);
+    if (i < 0) return;
+    obPoint(steps[i].target(), `Step ${i + 1} · ${steps[i].title}`, steps[i].tip);
+  };
+  const obChecklistHTML = () => {
+    const steps = obSteps();
+    const next = obNext();
+    const done = steps.filter((st) => ob.done[st.id]).length;
+    if (!next) {
+      return `<div class="ob">
+        <div class="ob__head"><h2>You're all set</h2><span class="ob__count">${done} of ${steps.length} done</span></div>
+        <div class="ob__bar" style="grid-template-columns:repeat(${steps.length},minmax(0,1fr))">${steps.map(() => '<i class="is-done"></i>').join("")}</div>
+        <p style="font-size:13px;color:var(--muted);margin:6px 0 8px">You've been through every step. Click any step to go over it again.</p>
+        ${steps.map((st) => `<div class="ob__step is-done"><span class="ob__dot is-done">${CHECK_SVG}</span><div class="ob__body"><button type="button" class="ob__redo" data-act="ob-redo" data-val="${st.id}" title="Go back to this step"><b>${st.title}</b><span>Show again</span></button></div></div>`).join("")}
+        <div class="ob__foot"><button type="button" class="ob__link" data-act="rail-open" data-val="guide">Open the guide</button><button type="button" class="ob__link ob__link--muted" data-act="ob-hide">Hide this</button></div>
+      </div>`;
+    }
+    return `<div class="ob">
+      <div class="ob__head"><h2>Getting started</h2><span class="ob__count">${done} of ${steps.length} done</span></div>
+      <div class="ob__bar" style="grid-template-columns:repeat(${steps.length},minmax(0,1fr))">${steps.map((st) => `<i class="${ob.done[st.id] ? "is-done" : st === next ? "is-cur" : ""}"></i>`).join("")}</div>
+      ${steps.map((st, i) => {
+        const isDone = Boolean(ob.done[st.id]);
+        // A finished step someone clicked to go back to opens up again, keeping its tick.
+        const open = !isDone || ui.obFocus === st.id;
+        const isCur = ui.obFocus ? ui.obFocus === st.id : st === next;
+        const title = isDone && !open
+          ? `<button type="button" class="ob__redo" data-act="ob-redo" data-val="${st.id}" title="Go back to this step"><b>${st.title}</b><span>Show again</span></button>`
+          : `<b>${st.title}</b>`;
+        return `<div class="ob__step${isDone && !open ? " is-done" : isCur ? " is-cur" : ""}">
+          <span class="ob__dot${isDone ? " is-done" : isCur ? " is-cur" : ""}">${isDone ? CHECK_SVG : i + 1}</span>
+          <div class="ob__body">${title}${open ? `<p>${st.text}</p><button type="button" class="ob__show${isCur ? "" : " ob__show--quiet"}" data-act="ob-show" data-val="${st.id}">${TARGET_SVG}Show me</button>` : ""}</div>
+        </div>`;
+      }).join("")}
+      <div class="ob__foot"><button type="button" class="ob__link" data-act="rail-open" data-val="guide">Open the full guide</button><button type="button" class="ob__link ob__link--muted" data-act="ob-hide">Hide checklist</button></div>
+    </div>`;
+  };
+  // What the right panel shows when no section is selected.
+  const idlePanelHTML = () => {
+    if (obVisible()) return obChecklistHTML();
+    return `<div class="howto">
+        <h2>How it works</h2>
+        <ol>
+          <li><b>Turn on the sections you need</b><span>Use the switches on the left. The order is fixed.</span></li>
+          <li><b>Click a section and pick a layout</b><span>Its settings open here.</span></li>
+          <li><b>Drop in your photos</b><span>Rough shoot photos are fine. Each tile shows the size to export the final at.</span></li>
+        </ol>
+        <button type="button" class="ob__link" style="margin-top:20px" data-act="ob-reopen">Show the getting started checklist</button>
+      </div>`;
+  };
+  // While a section's settings fill the panel, progress shrinks to a pill over the preview.
+  const obRenderPill = () => {
+    let el = $("#obPill");
+    const show = ui.tab === "editor" && !ui.present && ui.view !== "specs" && cur() && obVisible() && !obAllDone();
+    if (!show) { el?.remove(); return; }
+    if (!el) { el = document.createElement("button"); el.type = "button"; el.id = "obPill"; el.className = "ob-pill"; el.dataset.act = "ob-pill"; document.body.appendChild(el); }
+    const steps = obSteps();
+    const done = steps.filter((st) => ob.done[st.id]).length;
+    const total = steps.length;
+    const title = `Getting started · ${done} of ${total}`;
+    const sub = `Next: ${obNext().title.toLowerCase()}`;
+    const C = 62.83;
+    el.innerHTML = `<svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="10" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="3"/><circle cx="13" cy="13" r="10" fill="none" stroke="#7fb9ff" stroke-width="3" stroke-linecap="round" stroke-dasharray="${(C * done / total).toFixed(1)} ${C}" transform="rotate(-90 13 13)"/></svg><span><b>${esc(title)}</b><small>${esc(sub)}</small></span><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#9fcbff" stroke-width="1.6" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg>`;
+    el.setAttribute("aria-label", `${title}. ${sub}`);
+    const c = $("#canvas")?.getBoundingClientRect();
+    const m = $("#mood")?.getBoundingClientRect();
+    if (c) {
+      el.style.left = `${Math.max(c.left + 8, c.right - el.offsetWidth - 16)}px`;
+      el.style.top = `${(m && m.top > c.top ? m.top : c.bottom) - el.offsetHeight - 14}px`;
+    }
+  };
+  addEventListener("resize", () => obRenderPill());
+  const obAfterRender = () => {
+    if (previewId) return;
+    obCheck();
+    obRenderPill();
+  };
+  const obWelcome = () => {
+    if (ob.welcomed || previewId || shareOpenId) return;
+    const el = document.createElement("div");
+    el.id = "obWelcome";
+    el.className = "phone-modal";
+    el.innerHTML = `<div class="ob-welcome__card" role="dialog" aria-modal="true" aria-labelledby="obWelcomeTitle">
+        <div><span class="ob-welcome__eyebrow">WELCOME</span>
+          <h2 id="obWelcomeTitle">Plan a homepage and get every image size</h2>
+          <p>Pick the sections a brand's homepage needs, choose how each one looks, and drop in rough photos. You'll get the exact size to export for every image. It takes about 5 minutes.</p></div>
+        <div class="ob-welcome__steps">
+          <div><span class="ico">${ICON.layers}</span><b>1. Sections</b><span>Turn on what the homepage needs.</span></div>
+          <div><span class="ico"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="4" width="6" height="12" rx="1"/><rect x="11" y="4" width="6" height="5" rx="1"/><rect x="11" y="11" width="6" height="5" rx="1"/></svg></span><b>2. Layouts</b><span>Choose how each section looks.</span></div>
+          <div><span class="ico"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><rect x="3" y="4" width="14" height="12" rx="2"/><circle cx="7.5" cy="8.2" r="1.4"/><path d="m3.5 14 4-3.8 3 2.8 2.2-2 3.8 3.4"/></svg></span><b>3. Photos &amp; sizes</b><span>Drop photos in, get export sizes.</span></div>
+        </div>
+        <div class="ob-welcome__acts">
+          <button type="button" class="ob-btn ob-btn--primary" data-act="ob-tour">Show me around</button>
+          <button type="button" class="ob-btn" data-act="ob-skip">I'll explore on my own</button>
+          <small>Reopen anytime from the Guide</small>
+        </div>
+      </div>`;
+    document.body.appendChild(el);
+    el.querySelector("[data-act='ob-tour']").focus();
+  };
+  const obCloseWelcome = () => { ob.welcomed = true; obSave(); $("#obWelcome")?.remove(); };
+  addEventListener("click", (e) => { if ($("#obTip") && !e.target.closest?.("[data-act='ob-show'], [data-act='ob-redo'], [data-act='ob-tour']")) obClearHl(); }, true);
 
   // Opened from a phone preview link: show that homepage full screen, nothing else.
   const bootPreview = async () => {
@@ -4241,7 +4535,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   $("#workspace").appendChild($("#specs"));
   renderOrderTable();
   if (previewId) bootPreview();
-  else { renderAll(); initDb(); checkPhone(); if (shareOpenId) openShare(shareOpenId); else setTimeout(pollShare, 1500); }
+  else { renderAll(); initDb(); checkPhone(); if (shareOpenId) openShare(shareOpenId); else { setTimeout(pollShare, 1500); obWelcome(); } }
 })();
 </script>
 </body>
