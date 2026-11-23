@@ -1,8 +1,11 @@
-// Phone previews kept in Vercel Blob.
+// Phone previews and shared edit links kept in Vercel Blob.
 // Each preview lives under previews/<id>/: state.json (the layout) plus one file per image.
 // The id is random and lives in the designer's browser, so a new preview from the same
 // browser and brand replaces the last one. Anything not touched for KEEP_DAYS is deleted
 // by the daily cleanup job.
+// Shared edit links live under shares/<id>/ the same way, but are never cleaned up, keep every
+// image they were given, and carry a version number so two people can't silently overwrite
+// each other (see saveVersioned).
 
 export const KEEP_DAYS = 7;
 const ID = /^[a-z0-9]{24}$/;
@@ -10,17 +13,21 @@ const REF = /^[A-Za-z0-9_-]{1,64}$/;
 const IMG_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const MAX_IMG = 4 * 1024 * 1024;
 const MAX_STATE = 1024 * 1024;
-const ROOT = "previews/";
+const PREVIEWS = "previews/";
+export const SHARES = "shares/";
 
 export class InputError extends Error {}
-
-const dir = (id) => `${ROOT}${id}/`;
-const imgPath = (id, ref) => `${dir(id)}img-${ref}`;
-const statePath = (id) => `${dir(id)}state.json`;
+// A save based on an older version than the one stored. `ver` is the stored version.
+export class ConflictError extends Error {
+  constructor(ver) { super("conflict"); this.ver = ver; }
+}
 
 export const checkId = (id) => {
   if (!ID.test(id || "")) throw new InputError("bad id");
   return id;
+};
+const checkLayout = (state) => {
+  if (!state || typeof state !== "object" || !Array.isArray(state.page) || typeof state.cfg !== "object" || !state.cfg) throw new InputError("bad layout");
 };
 export const checkRef = (ref) => {
   if (!REF.test(ref || "")) throw new InputError("bad image ref");
@@ -41,7 +48,13 @@ export const findStoreId = () => process.env.BLOB_STORE_ID
   || null;
 
 // oidcToken: the per-request OIDC token (the x-vercel-oidc-token header), when Vercel sends one.
-export function makeStore(blob, { oidcToken } = {}) {
+// root: "previews/" (default) or SHARES.
+export function makeStore(blob, { oidcToken, root = PREVIEWS } = {}) {
+  const ROOT = root;
+  const dir = (id) => `${ROOT}${id}/`;
+  const imgPath = (id, ref) => `${dir(id)}img-${ref}`;
+  const statePath = (id) => `${dir(id)}state.json`;
+
   const auth = () => {
     const token = findToken();
     if (token) return { token };
@@ -101,7 +114,7 @@ export function makeStore(blob, { oidcToken } = {}) {
 
     async saveState(id, state) {
       checkId(id);
-      if (!state || typeof state !== "object" || !Array.isArray(state.page) || typeof state.cfg !== "object" || !state.cfg) throw new InputError("bad layout");
+      checkLayout(state);
       const images = Array.isArray(state.images) ? state.images.filter((r) => REF.test(r)) : [];
       const json = JSON.stringify({ ...state, images, savedAt: Date.now() });
       if (json.length > MAX_STATE) throw new InputError("layout too large");
@@ -110,6 +123,23 @@ export function makeStore(blob, { oidcToken } = {}) {
       const keep = new Set([statePath(id), ...images.map((r) => imgPath(id, r))]);
       const stale = (await listAll(dir(id))).filter((b) => !keep.has(b.pathname)).map((b) => b.url);
       if (stale.length) await blob.del(stale, auth());
+    },
+
+    // Save a shared layout. base: the version the editor started from (null = overwrite whatever
+    // is stored). Throws ConflictError when someone saved a newer version first. Images are kept,
+    // since another editor's next save may still use them. Returns the new version number.
+    async saveVersioned(id, state, base) {
+      checkId(id);
+      checkLayout(state);
+      const current = await this.getState(id);
+      const curVer = Number(current?.ver) || 0;
+      if (current && base !== null && base !== undefined && Number(base) !== curVer) throw new ConflictError(curVer);
+      const ver = curVer + 1;
+      const images = Array.isArray(state.images) ? [...new Set(state.images.filter((r) => REF.test(r)))] : [];
+      const json = JSON.stringify({ ...state, images, ver, savedAt: Date.now() });
+      if (json.length > MAX_STATE) throw new InputError("layout too large");
+      await put(statePath(id), json, "application/json");
+      return ver;
     },
 
     async getState(id) {

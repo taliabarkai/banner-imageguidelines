@@ -1,10 +1,15 @@
 {
+  "redirects": [
+    { "source": "/v2", "destination": "/", "permanent": false },
+    { "source": "/v2/:path*", "destination": "/:path*", "permanent": false }
+  ],
   "rewrites": [
     { "source": "/:brand(tgr|oal|lal|ib|mnn)", "destination": "/index.html" },
     { "source": "/p/:id", "destination": "/index.html" },
-    { "source": "/v2", "destination": "/v2.html" },
-    { "source": "/v2/:brand(tgr|oal|lal|ib|mnn)", "destination": "/v2.html" },
-    { "source": "/v2/p/:id", "destination": "/v2.html" }
+    { "source": "/s/:id", "destination": "/index.html" },
+    { "source": "/v1", "destination": "/v1.html" },
+    { "source": "/v1/:brand(tgr|oal|lal|ib|mnn)", "destination": "/v1.html" },
+    { "source": "/v1/p/:id", "destination": "/v1.html" }
   ],
   "crons": [
     { "path": "/api/cleanup", "schedule": "0 4 * * *" }

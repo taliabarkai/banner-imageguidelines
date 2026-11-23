@@ -839,6 +839,152 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .column__head .head-edit .row-tip { top: calc(100% + 6px); bottom: auto; }
 .column__head .head-eye .row-tip { top: calc(100% + 6px); bottom: auto; }
 
+/* ---------- v2 layout: sections left, preview middle, editor right ---------- */
+.app.v2 .col-toggle { left: 300px; }
+.app.v2 .workspace.no-col .col-toggle { left: 0; }
+/* Folded list + phone view: keep the phone centred in the window (the right panel is wider than the icon rail). */
+.app.v2 .workspace.no-col .canvas:has([data-device="mobile"]):not(:has([data-device="desktop"])) { padding-left: calc(24px + 380px - 56px); }
+.app.v2:not(.is-specs):not(.is-guide):not(.presenting) .workspace.no-col { grid-template-columns: 0 minmax(0, 1fr) 380px; }
+.app.v2:not(.is-specs):not(.is-guide):not(.presenting) .workspace { grid-template-columns: 300px minmax(0, 1fr) 380px; }
+.app.v2.is-specs .inspector, .app.v2.is-guide .inspector, .app.v2.presenting .inspector { display: none !important; }
+.app.v2 .column { width: auto; }
+.app.v2 .inspector { border-right: 0; border-left: 1px solid var(--line); }
+.app.v2 .topbar__left { gap: 16px; }
+.app.v2 #viewPick .view-seg { margin-left: 0; }
+.srows-head { justify-content: space-between; }
+.srows-head b { font-size: 14px; font-weight: 600; }
+.srows-head span { font-size: 12.5px; color: var(--subtle); }
+.srows { list-style: none; margin: 0; padding: 8px; display: flex; flex-direction: column; gap: 2px; }
+.srow { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; align-items: center; gap: 10px; min-height: 44px; padding: 4px 10px; border-radius: 9px; cursor: pointer; }
+.srow:hover { background: var(--hover); }
+.srow.is-sel { background: var(--accent-soft); color: #003a8c; box-shadow: inset 0 0 0 1px #c7dbf7; }
+.srow.is-sel .srow__name { font-weight: 600; }
+.srow.is-sel .srow__n { color: #4f7fc4; }
+.srow__n { font-size: 12px; color: var(--subtle); text-align: center; font-variant-numeric: tabular-nums; }
+.srow__name { font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.srow:not(.is-on):not(.is-sel) .srow__name { color: var(--muted); }
+.sw { display: inline-flex; align-items: center; cursor: pointer; }
+.sw input { appearance: none; -webkit-appearance: none; width: 36px; height: 20px; border-radius: 999px; background: #d4d4d4; position: relative; cursor: pointer; margin: 0; transition: background .15s; }
+.sw input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.25); transition: transform .15s; }
+.sw input:checked { background: #1d1d1f; }
+.sw input:checked::after { transform: translateX(16px); }
+.srow.is-sel .sw input:not(:checked) { background: #c9d6ea; }
+.ins-head { gap: 10px; }
+.ins-head .column__title b { font-size: 15px; }
+.howto { padding: 28px 24px; }
+.howto h2 { font-size: 17px; font-weight: 700; margin-bottom: 20px; }
+.howto ol { list-style: none; counter-reset: step; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 18px; }
+.howto li { counter-increment: step; display: grid; grid-template-columns: 26px minmax(0, 1fr); column-gap: 12px; row-gap: 2px; }
+.howto li::before { content: counter(step); grid-row: span 2; width: 24px; height: 24px; border-radius: 50%; background: #1d1d1f; color: #fff; font-size: 12px; font-weight: 600; display: grid; place-items: center; }
+.howto b { font-size: 14px; font-weight: 600; }
+.howto span { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.ins-off { gap: 10px; }
+@media (max-width: 900px) { .app.v2:not(.is-specs):not(.is-guide):not(.presenting) .workspace { grid-template-columns: minmax(0, 1fr); } }
+
+/* Image-size overview at the top of the right panel */
+.size-card { margin: 16px 24px 0; padding: 14px 16px; border: 1px solid #c7dbf7; border-radius: 12px; background: var(--accent-soft); display: flex; flex-direction: column; gap: 10px; }
+.size-card__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.size-card__head b { font-size: 13.5px; font-weight: 600; color: #003a8c; }
+.size-card__copy { border: 0; background: none; padding: 0; color: var(--accent); font-size: 13px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.size-card__row { display: flex; align-items: center; gap: 12px; }
+.size-card__shape { width: 34px; height: 34px; display: grid; place-items: center; flex: none; }
+.size-card__shape span { display: block; background: #dbe8fb; border: 1.5px solid var(--accent); border-radius: 3px; box-sizing: border-box; }
+.size-card__row b { display: block; font-size: 19px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.size-card__row small { display: block; font-size: 12px; color: var(--muted); }
+.size-card p { font-size: 12.5px; color: var(--muted); }
+
+/* Section labels on the preview can be switched off from the toolbar. */
+.app.no-labels .sec__tag { display: none !important; }
+
+/* ---------- Layout cards ---------- */
+.layout-cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.layout-card { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 6px; padding: 10px 4px 8px; border: 1px solid var(--line-strong); border-radius: 10px; background: var(--surface); cursor: pointer; color: var(--muted); text-align: center; }
+.layout-card:hover { border-color: #9e9e9e; color: var(--ink); }
+.layout-card[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); background: var(--accent-soft); color: #003a8c; }
+.layout-card[aria-pressed="true"] rect[fill="#8a8a8a"] { fill: #5b8bd6; }
+.layout-card__art { width: 100%; max-width: 64px; }
+.layout-card__art svg { width: 100%; height: auto; display: block; }
+.layout-card__label { font-size: 11.5px; line-height: 1.25; }
+
+/* ---------- Moodboard + tile placement ---------- */
+.app.v2:not(.is-specs):not(.is-guide):not(.presenting) .workspace { grid-template-rows: minmax(0, 1fr) auto; }
+.app.v2 #column { grid-column: 1; grid-row: 1 / 3; }
+.app.v2 #canvas { grid-column: 2; grid-row: 1; }
+.app.v2 #mood { grid-column: 2; grid-row: 2; }
+.app.v2 #inspector { grid-column: 3; grid-row: 1 / 3; }
+.app.is-specs #mood, .app.is-guide #mood, .app.presenting #mood { display: none; }
+/* Full-screen preview: the page takes the whole window. */
+.app.v2.presenting .workspace { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
+.app.v2.presenting #canvas { grid-column: 1 / -1; grid-row: 1 / -1; }
+.mood { background: var(--surface); border-top: 1px solid var(--line); padding: 10px 16px; min-width: 0; }
+.mood.is-drop { background: var(--accent-soft); box-shadow: inset 0 0 0 2px var(--accent); }
+.mood__bar { display: flex; align-items: center; gap: 16px; min-width: 0; }
+.mood__head { flex: none; display: flex; flex-direction: column; justify-content: center; gap: 2px; min-width: 104px; }
+.mood__title { font-size: 14px; font-weight: 600; }
+.mood__count { font-size: 12.5px; color: var(--subtle); }
+/* With photos: the strip is as wide as its photos, the "Add more photos" slot sits right after the last one, and once
+   the photos outgrow the space the strip scrolls sideways with the slot pinned on the right. */
+.mood__list { display: flex; align-items: center; gap: 8px; overflow-x: auto; min-width: 0; flex: 0 1 auto; padding: 4px 2px; scrollbar-width: thin; }
+/* Empty: a dashed drop area fills the space. */
+.mood__list--empty { flex: 1 1 auto; padding: 0; overflow: visible; }
+/* Empty: the whole dashed area is the upload button (click, or drop files anywhere on the moodboard). */
+.mood__drop { flex: 1 1 auto; width: 100%; min-height: 76px; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 10px 16px; border: 1px dashed var(--line-strong); border-radius: 10px; background: none; font: inherit; color: var(--muted); cursor: pointer; text-align: left; transition: background .12s, border-color .12s; }
+.mood__drop:hover, .mood__drop:focus-visible { border-color: var(--accent); background: var(--accent-soft); outline: none; }
+.mood__drop .i { width: 20px; height: 20px; flex: none; color: var(--ink); }
+.mood__drop b { display: block; font-size: 13.5px; font-weight: 600; color: var(--ink); }
+.mood__drop b u { color: var(--accent); text-underline-offset: 3px; }
+.mood__drop small { display: block; font-size: 12.5px; color: var(--muted); line-height: 1.4; margin-top: 2px; }
+/* With photos: a square slot after the last photo adds more. */
+.mood__more { position: sticky; right: 0; flex: none; width: 64px; height: 64px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 0 4px; border: 1px dashed var(--line-strong); border-radius: 8px; background: var(--surface); box-shadow: 8px 0 0 var(--surface), -8px 0 0 var(--surface); font: inherit; font-size: 10.5px; font-weight: 500; line-height: 1.2; color: var(--ink); text-align: center; cursor: pointer; transition: background .12s, border-color .12s; }
+.mood__more:hover, .mood__more:focus-visible { border-color: var(--accent); background: var(--accent-soft); outline: none; }
+.mood__more .i { width: 16px; height: 16px; }
+.mood__clear { flex: none; color: var(--muted); font-weight: 500; }
+.mood__clear:hover:not(:disabled) { background: #fdeceb; color: var(--critical); }
+.mood__item { position: relative; flex: none; width: 64px; height: 64px; border-radius: 8px; overflow: hidden; background: var(--tile); cursor: grab; box-shadow: 0 0 0 1px var(--line); }
+.mood__item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.mood__item:hover { box-shadow: 0 0 0 2px var(--accent); }
+.mood__rm { position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; border-radius: 50%; border: 0; padding: 0; background: rgba(29,29,31,0.85); color: #fff; display: grid; place-items: center; cursor: pointer; opacity: 0; transition: opacity .12s; }
+.mood__rm .i { width: 12px; height: 12px; }
+.mood__check { position: absolute; top: 4px; left: 4px; width: 18px; height: 18px; border-radius: 50%; background: #1d1d1f; display: grid; place-items: center; box-shadow: 0 0 0 1.5px #fff; pointer-events: none; }
+.mood__check svg { width: 11px; height: 11px; fill: none; stroke: #fff; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.mood__item:hover .mood__rm, .mood__rm:focus-visible { opacity: 1; }
+.mood__msg { font-size: 12.5px; color: var(--critical); margin-top: 6px; }
+.pic[data-tile] { cursor: pointer; }
+.pic.has-img[data-crop] { cursor: grab; }
+.pic__empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(4px * var(--ui)); color: rgba(0,0,0,0.55); font-family: var(--font-ui); text-align: center; line-height: 1.2; }
+.pic__empty span { font-size: calc(12px * var(--ui)); font-weight: 400; font-variant-numeric: tabular-nums; }
+.pic__empty .i { stroke-width: 1.4; }
+.pic.is-tile-sel::after, .pic.is-drop::after { content: ""; position: absolute; inset: 0; z-index: 5; pointer-events: none; border: calc(2px * var(--ui)) solid #005bd3; }
+.pic.is-drop::after { border-style: dashed; background: rgba(0,91,211,0.12); }
+.sec.is-drop::after { border-color: #005bd3; border-style: dashed; }
+.srow.is-drop { background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent); }
+.upl[data-tile] { cursor: pointer; }
+.upl.is-tile-sel { border-style: solid; border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.upl.is-drop { border-style: dashed; border-color: var(--accent); background: var(--accent-soft); }
+.upl--empty .upl__meta { align-items: flex-start; text-align: left; padding-right: 0; }
+.upl--empty .upl__meta span { font-size: 11.5px; color: var(--subtle); }
+.upl--filled { grid-template-columns: 64px minmax(0, 1fr); align-items: start; }
+.upl--filled .upl__thumb { width: 64px; height: 64px; }
+.upl__note { font-size: 11.5px; color: var(--muted); line-height: 1.35; }
+.upl__zoom { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+.upl__zoom input { flex: 1; min-width: 0; accent-color: #1d1d1f; }
+.upl__links { display: flex; gap: 12px; margin-top: 2px; }
+.link-btn { border: 0; background: none; padding: 0; color: var(--accent); font-size: 12px; font-weight: 500; cursor: pointer; }
+.link-btn:hover { text-decoration: underline; }
+@media (max-width: 900px) { .app.v2 #column, .app.v2 #canvas, .app.v2 #mood, .app.v2 #inspector { grid-column: 1; grid-row: auto; } }
+
+/* ---------- Shared edit link ---------- */
+#topRight { display: flex; align-items: center; gap: 8px; }
+.share-btn { height: 32px; display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--surface); color: var(--ink); font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; }
+.share-btn:hover { background: var(--hover); }
+.share-btn .i { width: 16px; height: 16px; }
+.share-state { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--subtle); white-space: nowrap; }
+.share-state[hidden] { display: none; }
+.share-state i { width: 7px; height: 7px; border-radius: 50%; background: #29845a; }
+.share-state.is-busy i { background: #e8a33d; }
+.share-state.is-err { color: var(--critical); }
+.share-state.is-err i { background: var(--critical); }
+
 /* ---------- Preview on phone ---------- */
 .phone-modal { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.35); display: grid; place-items: center; padding: 16px; }
 .phone-modal__card { width: min(380px, 100%); background: var(--surface); border-radius: 14px; box-shadow: 0 20px 60px rgba(0,0,0,0.25); padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 14px; }
@@ -898,14 +1044,15 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .column .b-help, .column .step .hint { color: var(--subtle); font-size: 12.5px; }
 </style>
 
-<div class="app">
+<div class="app v2">
   <header class="topbar">
     <div class="topbar__left">
       <div class="brand">
         <span class="brand__text"><span class="brand__name">Homepage Site Dressing</span></span>
       </div>
+      <div id="viewPick"></div>
     </div>
-    <div class="top-center" id="topCenter"><div id="viewPick" hidden></div><div class="floatbar floatbar--top" id="floatbar" role="toolbar" aria-label="Template and preview"></div></div>
+    <div class="top-center" id="topCenter"><div class="floatbar floatbar--top" id="floatbar" role="toolbar" aria-label="Template and preview"></div></div>
     <div class="topbar__right"><span id="topRight"></span><div class="theme-pick" id="themePick"></div></div>
   </header>
 
@@ -920,6 +1067,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       <div class="stagearea" id="stage"></div>
       <button type="button" class="present-exit" data-act="present-exit" title="Exit full-screen preview (Esc)">Exit preview</button>
     </main>
+    <section class="mood" id="mood" aria-label="Moodboard"></section>
+    <aside class="column inspector" id="inspector" aria-label="Section settings"></aside>
   </div>
   </div>
 
@@ -928,12 +1077,12 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     <div class="guide__inner">
       <div class="guide__intro">
         <h1>Guide</h1>
-        <p>Turn on the homepage sections you need and set each one's layout in Sections, then make the images in Images. Specs collects everything to send on. Your work is saved in this browser only.</p>
+        <p>Turn on the homepage sections you need and set each one's layout in Sections, then make the images in Images. Specs collects everything to send on. Your work is saved in this browser. To work on a template with someone else, click Share and send them the link: anyone with it can open the template and edit it, images included.</p>
       </div>
 
       <section class="card" id="order">
         <h2>Homepage order</h2>
-        <p>Sections always appear in this order on every brand. You can't move them, only turn them on or off.</p>
+        <p id="orderNote">Sections always appear in this order. You can't move them, only turn them on or off.</p>
         <div class="tablewrap"><table id="orderTable"></table></div>
       </section>
 
@@ -1037,7 +1186,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   ];
 
   // ---------- The fixed homepage order ----------
-  const ORDER = [
+  const ALL_SECTIONS = [
     { name: "Topline", topline: true, note: "A slim promo strip right under the header." },
     { name: "Highlights Bar", note: "A row of small tiles under the header. Swipes sideways." },
     { name: "Hero Banner", note: "The main banner." },
@@ -1049,10 +1198,22 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     { name: "Featured Categories", note: "Key category entry points." },
     { name: "Secondary Carousel - HP", products: true, note: "A second product carousel." },
     { name: "Featured Articles", note: "Editorial and blog content." },
+    { name: "USP Banner", note: "Reasons to shop with the brand." },
     { name: "Bottom Banner", note: "Closing banner at the bottom." },
+    { name: "Trustpilot Reviews", note: "Customer reviews." },
   ];
-  const isProducts = (name) => !!ORDER.find((s) => s.name === name)?.products;
-  const isTopline = (name) => !!ORDER.find((s) => s.name === name)?.topline;
+  // Each brand's homepage has its own set of sections, in this order.
+  const BRAND_SECTIONS = {
+    oal: ["Highlights Bar", "Hero Banner", "Category Blocks", "Primary Carousel - HP", "Box Banners", "Middle Banner", "Featured Categories", "Secondary Carousel - HP", "Featured Articles"],
+    lal: ["Highlights Bar", "Hero Banner", "Category Blocks", "Primary Carousel - HP", "Featured Collections", "Middle Banner", "Featured Categories", "Secondary Carousel - HP", "Featured Articles", "USP Banner", "Trustpilot Reviews"],
+  };
+  BRAND_SECTIONS.tgr = BRAND_SECTIONS.mnn = BRAND_SECTIONS.ib = ["Highlights Bar", "Hero Banner", "Category Blocks", "Primary Carousel - HP", "Featured Collections", "Middle Banner", "Featured Categories", "Secondary Carousel - HP", "Featured Articles", "USP Banner", "Bottom Banner", "Trustpilot Reviews"];
+  const sectionsFor = (k) => (BRAND_SECTIONS[k] || ALL_SECTIONS.map((s) => s.name)).map((n) => ALL_SECTIONS.find((s) => s.name === n));
+  // The sections listed and shown for the selected brand. Templates keep settings for every section.
+  let ORDER = sectionsFor("tgr");
+  const syncOrder = () => { ORDER = sectionsFor(ui.theme); if (ui.sel && !ORDER.some((s) => s.name === ui.sel)) ui.sel = null; };
+  const isProducts = (name) => !!ALL_SECTIONS.find((s) => s.name === name)?.products;
+  const isTopline = (name) => !!ALL_SECTIONS.find((s) => s.name === name)?.topline;
   const sectionNo = (name) => ORDER.findIndex((s) => s.name === name) + 1;
   // Fixed layout the storefront gives both homepage product carousels (frontend-next migrationHelper.ts).
   const PRODUCT_LAYOUT = {
@@ -1167,13 +1328,34 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     }),
     "Featured Articles": () => LAYOUTS.peek.make(),
     "Bottom Banner": () => make({ ratio: { m: "4:5", d: "21:9", split: true }, slides: [{ kind: "image", title: "Made to Be Yours" }], text: { pos: "middle-left", dsplit: false, sub: "Handcrafted to order", btn: "Start designing" } }),
+    "USP Banner": () => make({
+      margin: true,
+      m: { cols: 2, gap: "spacing-xs" }, d: { cols: 4, gap: "spacing-sm" }, ratio: { m: "1:1", d: "1:1", split: false },
+      slides: slidesOf("image", ["Free Shipping", "Free Engraving", "30-Day Returns", "Lifetime Warranty"]),
+      text: { pos: "below-center", dsplit: false, sub: "", btn: "", btnStyle: "none", headVariant: "text3" },
+    }),
+    "Trustpilot Reviews": () => make({
+      display: "carousel", margin: true,
+      m: { cols: 1, peek: 0.25, arrows: "none", dots: "none" }, d: { cols: 4, peek: 0, arrows: "block", dots: "none" },
+      ratio: { m: "1:1", d: "1:1", split: false },
+      slides: slidesOf("text", ["Beautiful necklace, my mom loved it", "Fast shipping and lovely packaging", "Exactly as pictured", "My go-to gift every year"]),
+      text: { pos: "center", dsplit: false, color: "dark", bg: "#f3e9dc", sub: "", btn: "", btnStyle: "none", headVariant: "text2" },
+      header: { text: "What our customers say" },
+    }),
   };
   const toplineDefaults = () => ({
     id: newId(), on: true, kind: "topline",
     text: "Save 20% off with code FALL20",
     bg: "brand", fg: "brand", bgCustom: "#000000", fgCustom: "#ffffff",
   });
-  const starter = (name) => ({ ...(isTopline(name) ? toplineDefaults() : isProducts(name) ? productDefaults(name) : STARTERS[name]()), on: false });
+  const noTileText = (c) => {
+    if (!c || c.kind || !Array.isArray(c.slides)) return c;
+    c.slides.forEach((sl) => { sl.title = ""; });
+    if (c.text) { c.text.btn = ""; c.text.sub = ""; }
+    if (c.header) { c.header.text = ""; c.header.cta = ""; }
+    return c;
+  };
+  const starter = (name) => ({ ...(isTopline(name) ? toplineDefaults() : isProducts(name) ? { ...productDefaults(name), heading: "" } : noTileText(STARTERS[name]())), on: false });
   // Settings that were removed from the editor: fold old values into what remains.
   const normaliseBanner = (c) => {
     if (!c || c.kind || !c.m || !c.d || !c.text) return;
@@ -1194,11 +1376,11 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   const ensureAll = (t) => {
     const had = new Set(t.page || []);
     t.cfg = t.cfg && typeof t.cfg === "object" ? t.cfg : {};
-    ORDER.forEach((o) => {
+    ALL_SECTIONS.forEach((o) => {
       if (!t.cfg[o.name] || typeof t.cfg[o.name] !== "object") t.cfg[o.name] = starter(o.name);
       else if (!had.has(o.name)) t.cfg[o.name].on = false;
     });
-    t.page = ORDER.map((o) => o.name);
+    t.page = ALL_SECTIONS.map((o) => o.name);
     Object.values(t.cfg).forEach(normaliseBanner);
     return t;
   };
@@ -1236,12 +1418,28 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   const BRAND_KEYS = ["tgr", "oal", "lal", "ib", "mnn"];
   const themeFromHash = () => { const h = (location.hash || "").replace("#", "").toLowerCase(); return BRAND_KEYS.includes(h) ? h : null; };
   // On the hosted site each brand has its own path (/tgr, /oal, ...). Inside claude.ai or a local file the hash is used instead.
-  const BRAND_PATH = new RegExp(`^/(?:(${BRAND_KEYS.join("|")})/?)?$`, "i");
+  // On the hosted site this version owns the root paths (/tgr, /p/<id>, /s/<id>); old /v2 links redirect there
+  // and the original version lives under /v1.
+  const BASE = /^\/v2(\/|$)/i.test(location.pathname) ? "/v2" : "";
+  // Shared edit links: /s/<id> opens a template that anyone with the link can edit (hosted site only).
+  const SHARE_PATH = /^(?:\/v2)?\/s\/([a-z0-9]{24})\/?$/;
+  const shareOpenId = window.self === window.top ? ((location.pathname.match(SHARE_PATH) || [])[1] || null) : null;
+  const BRAND_PATH = new RegExp(`^(?:/v2)?/?(?:(${BRAND_KEYS.join("|")})/?)?$`, "i");
   const pathRouting = window.self === window.top && BRAND_PATH.test(location.pathname);
   const themeFromPath = () => (pathRouting ? (location.pathname.match(BRAND_PATH)[1] || "").toLowerCase() || null : null);
   const showThemeInUrl = (k) => {
+    // A shared template keeps its edit link in the address bar, so copying the URL shares it.
+    const sid = window.self === window.top && /^https?:$/.test(location.protocol) ? tpl()?.share?.id : null;
+    const url = sid ? `/s/${sid}#${k}` : (pathRouting || shareOpenId) ? `${BASE}/${k}` : `#${k}`;
     // window.history: the page's own `history` is the undo history.
-    try { window.history.replaceState(null, "", pathRouting ? `/${k}` : `#${k}`); } catch (err) { /* not allowed in this frame */ }
+    try { window.history.replaceState(null, "", url); } catch (err) { /* not allowed in this frame */ }
+  };
+  // Keep the address bar on /s/<id> exactly while a shared template is open.
+  const syncShareUrl = () => {
+    if (window.self !== window.top || !/^https?:$/.test(location.protocol)) return;
+    const sid = tpl()?.share?.id || null;
+    const onLink = (location.pathname.match(SHARE_PATH) || [])[1] || null;
+    if (sid !== onLink && (pathRouting || shareOpenId || sid)) showThemeInUrl(ui.theme);
   };
   const themeVars = {};
   BRAND_KEYS.forEach((k) => {
@@ -1288,9 +1486,11 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   const titleAt = (r, i) => { const t = copyOf(r).titles; return (t && t[i] != null ? t[i] : r.slides[i]?.title) || ""; };
 
   try { if (localStorage.getItem("bb-mobile-mode") === "full") ui.mobileMode = "full"; } catch (err) { /* storage unavailable */ }
-  try { if (localStorage.getItem("bb-view") === "designer") ui.view = "designer"; } catch (err) { /* storage unavailable */ }
+  // v2 has no separate Images view: image settings live in the right-hand editor.
+  try { if (localStorage.getItem("bb-labels") === "off") { ui.labels = false; document.querySelector(".app").classList.add("no-labels"); } } catch (err) { /* storage unavailable */ }
   try { ui.theme = themeFromPath() || themeFromHash() || (BRAND_KEYS.includes(localStorage.getItem("bb-theme")) ? localStorage.getItem("bb-theme") : "tgr"); } catch (err) { ui.theme = themeFromPath() || themeFromHash() || "tgr"; }
-  if (pathRouting && location.pathname.replace(/\/$/, "").toLowerCase() !== `/${ui.theme}`) showThemeInUrl(ui.theme);
+  syncOrder();
+  if (pathRouting && location.pathname.replace(/\/$/, "").toLowerCase() !== `${BASE}/${ui.theme}`) showThemeInUrl(ui.theme);
 
   // ---------- Helpers ----------
   const $ = (s) => document.querySelector(s);
@@ -1412,8 +1612,10 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 
   const renderTop = () => {
     const specs = ui.view === "specs" && ui.tab !== "guide";
-    $("#topRight").innerHTML = `<span class="save-state" id="saveState"></span>`;
-    // Views are switched from the icon rail on the left (renderRail).
+    $("#topRight").innerHTML = `<span class="save-state" id="saveState"></span><span class="share-state" id="shareState" hidden></span>${phoneOK && !previewId ? `<button type="button" class="share-btn" data-act="share" title="Get a link anyone can use to open and edit this template">${SHARE_ICON}Share</button>` : ""}`;
+    renderShareState();
+    const build = ui.tab === "editor" && !specs;
+    $("#viewPick").innerHTML = "";
     document.querySelector(".app").classList.toggle("is-specs", specs);
     document.querySelector(".app").classList.toggle("is-guide", ui.tab === "guide");
     $("#canvas").hidden = specs || ui.tab !== "editor";
@@ -1430,6 +1632,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   };
 
   let phoneOK = false;
+  const SHARE_ICON = '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M8.5 11.5a3.2 3.2 0 0 0 4.6 0l2.6-2.6a3.2 3.2 0 0 0-4.6-4.6l-1 1"/><path d="M11.5 8.5a3.2 3.2 0 0 0-4.6 0l-2.6 2.6a3.2 3.2 0 0 0 4.6 4.6l1-1"/></svg>';
   const PHONE_ICON = '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><rect x="5.5" y="2.5" width="9" height="15" rx="2"/><path d="M9 15h2"/><path d="M8 6.5h1.5V8H8zM10.5 6.5H12V8h-1.5zM8 9.5h1.5V11H8zM10.8 10.2h.9v.9h-.9z"/></svg>';
   const VIEWS = [
     ["config", "Sections", ICON.layers],
@@ -1438,7 +1641,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   ];
   const renderRail = () => {
     const guideOn = ui.tab === "guide";
-    $("#vrail").innerHTML = VIEWS.map(([k, label, icon]) => `<button type="button" class="vrail__btn" data-act="view" data-val="${k}" aria-pressed="${!guideOn && ui.view === k}" aria-label="${label}">${icon}<span class="vrail__tip" role="tooltip">${label}</span></button>`).join("")
+    $("#vrail").innerHTML = VIEWS.filter(([k]) => k !== "designer").map(([k, label, icon]) => `<button type="button" class="vrail__btn" data-act="view" data-val="${k}" aria-pressed="${!guideOn && ui.view === k}" aria-label="${label}">${icon}<span class="vrail__tip" role="tooltip">${label}</span></button>`).join("")
       + `<button type="button" class="vrail__btn" data-act="rail-open" data-val="guide" aria-pressed="${guideOn}" aria-label="Guide">${ICON.guide}<span class="vrail__tip" role="tooltip">Guide</span></button>`;
     const rail = $("#rail");
     rail.hidden = true;
@@ -1480,24 +1683,17 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     : '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2.5v7M2.5 6h7"/></svg>');
 
   const listHTML = () => {
-    const rows = ORDER.map((s) => {
+    const rows = ORDER.map((s, i) => {
       const c = cfg[s.name];
-      const icon = isTopline(s.name) ? ICON.header : isProducts(s.name) ? ICON.products : ICON.banner;
-      return `<li class="row ${c.on ? "" : "is-off"}" data-act="select" data-name="${esc(s.name)}" tabindex="0">
-        ${icon}
-        <span class="row__name">${esc(s.name)}</span>
-        <span class="row__tools">
-          <button type="button" class="eye" data-act="toggle" data-name="${esc(s.name)}" aria-pressed="${c.on}" aria-label="${c.on ? "Hide" : "Show"} ${esc(s.name)}">${c.on ? ICON.eye : ICON.eyeOff}<span class="row-tip" role="tooltip">${c.on ? "Hide section" : "Show section"}</span></button>
-          ${c.on ? `<button type="button" class="pen" data-act="edit" data-name="${esc(s.name)}" aria-label="Edit ${esc(s.name)}">${ICON.pencil}<span class="row-tip" role="tooltip">Edit section</span></button>` : `<span class="pen" aria-hidden="true"></span>`}
-        </span>
+      return `<li class="srow ${c.on ? "is-on" : ""} ${ui.sel === s.name ? "is-sel" : ""}" data-act="pick" data-name="${esc(s.name)}" tabindex="0">
+        <span class="srow__n">${i + 1}</span>
+        <span class="srow__name">${esc(s.name)}</span>
+        <label class="sw" title="${c.on ? "Turn off" : "Turn on"}"><input type="checkbox" data-sec-toggle="${esc(s.name)}" ${c.on ? "checked" : ""} aria-label="Show ${esc(s.name)} on the homepage"></label>
       </li>`;
     }).join("");
     return `
-      <div class="column__head">
-        <span class="column__title-row">${ICON.layers}<span class="column__title"><b>Sections</b><span>${esc(tpl().name)}</span></span></span>
-      </div>
-      <div class="list-head"><b>Template<span>${shownCount()} of ${ORDER.length} shown</span></b></div>
-      <div class="list-body"><ul class="rows">${rows}</ul></div>`;
+      <div class="column__head srows-head"><b>Homepage sections</b><span>${shownCount()} of ${ORDER.length}</span></div>
+      <ul class="srows">${rows}</ul>`;
   };
 
   // What a section needs from the designer: files, sizes and how many are uploaded for this brand.
@@ -1549,6 +1745,28 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const on = !!cfg[name]?.on;
     return `<button type="button" class="eye head-eye" data-act="toggle" data-name="${esc(name)}" aria-pressed="${on}" aria-label="${on ? "Hide" : "Show"} ${esc(name)}">${on ? ICON.eye : ICON.eyeOff}<span class="row-tip" role="tooltip">${on ? "Hide section" : "Show section"}</span></button>`;
   };
+  const imageSteps = (r) => {
+    if (r.kind || !usesArt(r)) return "";
+    const { art } = imageNeeds(r);
+    const anyImages = art.some(([sl]) => Object.values(sl.imgs?.[ui.theme] || {}).some(Boolean));
+    const textOnly = r.slides.length - art.length;
+    return `
+      <div class="step">
+        <div class="step__title"><span>Images</span></div>
+        <div class="img-slots">${art.map(([sl, i]) => `<div><div class="img-slot__label">Tile ${i + 1}<span>${esc(titleAt(r, i).trim() || KIND_OPTS.find(([v]) => v === sl.kind)?.[1] || "")}</span></div>${uploadSlots(r, sl, i)}</div>`).join("")}</div>
+        ${textOnly ? `<p class="b-help">${textOnly} Text only tile${textOnly === 1 ? "" : "s"} need${textOnly === 1 ? "s" : ""} no image.</p>` : ""}
+        ${anyImages ? `<div class="shoot"><button type="button" class="shoot__clear" data-act="clear-images">Clear images</button></div>` : ""}
+      </div>
+      <div class="step">
+        <div class="step__title"><span>Aspect ratio</span></div>
+        <div class="ratio-pair">
+          <label class="ratio-pair__cell"><span>Mobile</span><select id="f-ratio-m" data-ratio="m">${ratioOptions(r.ratio.m)}</select></label>
+          <label class="ratio-pair__cell"><span>Desktop</span><select id="f-ratio-d" data-ratio="d">${ratioOptions(ratioKey(r, "desktop"))}</select></label>
+        </div>
+        <p class="b-help">${r.ratio.split ? "Different ratios, so each tile needs two files: one for mobile, one for desktop." : "Same ratio on both devices, so one file covers both."}</p>
+      </div>
+      <div class="step">${exportGuideHTML(r)}</div>`;
+  };
   const designerEditorHTML = () => {
     const r = cur();
     const head = `
@@ -1596,6 +1814,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   };
 
   const renderColumn = () => {
+    renderInspector();
     const col = $("#column");
     col.hidden = !ui.column;
     $("#workspace").classList.toggle("no-col", !ui.column);
@@ -1610,8 +1829,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const guideNav = `
       <div class="column__head"><span class="column__title-row">${ICON.guide}<span class="column__title"><b>Guide</b><span>How it works</span></span></span></div>
       <ul class="guide-nav">${[["order", "Homepage order"], ["sizes", "Image sizes"], ["rules", "Three rules"]].map(([id, l]) => `<li><button type="button" data-act="guide-jump" data-val="${id}">${l}</button></li>`).join("")}</ul>`;
-    const designer = ui.view === "designer";
-    const inner = ui.tab === "guide" ? guideNav : editing ? (designer ? designerEditorHTML() : editorHTML()) : designer ? designerListHTML() : listHTML();
+    const designer = false;
+    const inner = listHTML();
     const guide = "";
     const info = ui.tab === "editor" ? `<div class="col-info view-info" id="viewInfo">${ui.viewInfo || ""}</div>` : "";
     col.innerHTML = `<div class="col-main">${inner}</div><div class="col-bottom">${guide}${info}</div>`;
@@ -1619,10 +1838,48 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const chipText = ui.tab === "editor" && editing && designer ? exportChipText(cur()) : "";
     chip.hidden = !chipText;
     chip.textContent = chipText;
-    col.dataset.mode = editing ? "edit" : "list";
-    if (!editing && focusedCard) col.querySelector(`.crow[data-name="${CSS.escape(focusedCard)}"]`)?.focus({ preventScroll: true });
-    col.dataset.sel = ui.sel || "";
-    col.scrollTop = editing && wasEditing === ui.sel ? keep : (editing ? 0 : keep);
+    col.scrollTop = keep;
+  };
+  // Right-hand editor: everything for the selected section, images included.
+  const renderInspector = () => {
+    const ins = $("#inspector");
+    if (!ins) return;
+    const r = cur();
+    const keep = ins.scrollTop;
+    const same = ins.dataset.sel === (ui.sel || "");
+    if (!r) {
+      ins.innerHTML = `<div class="howto">
+          <h2>How it works</h2>
+          <ol>
+            <li><b>Turn on the sections you need</b><span>Use the switches on the left. The order is fixed.</span></li>
+            <li><b>Click a section and pick a layout</b><span>Its settings open here.</span></li>
+            <li><b>Drop in your photos</b><span>Rough shoot photos are fine. Each tile shows the size to export the final at.</span></li>
+          </ol>
+        </div>`;
+    } else {
+      const head = `<div class="column__head ins-head">
+          <span class="column__title"><b>${esc(ui.sel)}</b></span>
+          <label class="sw" title="${r.on ? "Turn off" : "Turn on"}"><input type="checkbox" data-sec-toggle="${esc(ui.sel)}" ${r.on ? "checked" : ""} aria-label="Show ${esc(ui.sel)} on the homepage"></label>
+          <button type="button" class="fb-btn" data-act="back" aria-label="Close">${ICON.close}</button>
+        </div>`;
+      const off = r.on ? "" : `<div class="step ins-off"><p class="b-help">This section is off, so the storefront skips it.</p></div>`;
+      // Overview of the image sizes this section needs, above its settings.
+      const sizeCard = (() => {
+        if (!r.on || r.kind || !usesArt(r)) return "";
+        const { m, d, files, split } = exportSummary(r);
+        const fl = `${files} file${files === 1 ? "" : "s"}`;
+        const row = (label, z) => `<div class="size-card__row"><span class="size-card__shape">${ratioBox(z.key, 30)}</span><span><b>${z.ew} × ${z.eh} px</b><small>${label ? `${label} · ` : ""}${z.key}, ${fl}</small></span></div>`;
+        return `<div class="size-card">
+            <div class="size-card__head"><b>Export each image at</b><button type="button" class="size-card__copy" data-act="copy-size">${ui.sizeCopied ? "Copied" : "Copy"}</button></div>
+            ${split ? row("Mobile", m) + row("Desktop", d) : row("", m)}
+            <p>${split ? "Different shapes, so each tile needs a mobile and a desktop file." : "One file covers mobile and desktop."}</p>
+          </div>`;
+      })();
+      // Off: just the note. The settings come back when the switch is turned on.
+      ins.innerHTML = head + sizeCard + (r.on ? (r.kind === "topline" ? toplineInspector(r) : r.kind === "products" ? productsInspector(r) : bannerInspector(r)) : off);
+    }
+    ins.dataset.sel = ui.sel || "";
+    ins.scrollTop = same ? keep : 0;
   };
 
   const saveLabel = () => ({
@@ -1673,6 +1930,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       <span class="fb-sep"></span>
       ${[["mobile", "Mobile view"], ["desktop", "Desktop view"], ["both", "Mobile & desktop view"]].map(([k, l]) => `<button type="button" class="fb-btn" data-act="device" data-val="${k}" aria-pressed="${ui.device === k}" aria-label="${l}">${ICON[k]}<span class="fb-tip" role="tooltip">${l}</span></button>`).join("")}
       <button type="button" class="fb-btn" data-act="present" aria-label="Full-screen view">${ICON.expand}<span class="fb-tip" role="tooltip">Full-screen view</span></button>
+      <button type="button" class="fb-btn" data-act="labels" aria-pressed="${ui.labels !== false}" aria-label="${ui.labels !== false ? "Hide" : "Show"} section labels"><svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 4.5h8.2l5.3 5.5-5.3 5.5H3a.5.5 0 0 1-.5-.5V5a.5.5 0 0 1 .5-.5Z"/><circle cx="6.5" cy="10" r="1.2"/></svg><span class="fb-tip" role="tooltip">${ui.labels !== false ? "Hide" : "Show"} section labels</span></button>
       ${phoneOK ? `<button type="button" class="fb-btn" data-act="phone-preview" aria-label="Preview on phone">${PHONE_ICON}<span class="fb-tip" role="tooltip">Preview on phone</span></button>` : ""}
       ${ui.device === "mobile" ? `<span class="fb-sep"></span><span class="mode-seg" role="group" aria-label="Mobile preview mode">
         <button type="button" data-act="mobile-mode" data-val="frame" aria-pressed="${ui.mobileMode === "frame"}" title="Fixed-size phone, page scrolls inside it">Device frame</button>
@@ -1689,8 +1947,9 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const logo = `<img class="sf-logo-img" src="${B.logo.src}" alt="${esc(B.name)}" style="max-width:${d === "mobile" ? 160 : 200}px">`;
     const links = ["New In", "Best Sellers", "Shop By", "Sale"];
     if (d === "desktop") {
-      return `<header class="sf-shell">
-        <div class="sf-top sf-top--desk"><span>Subscribe &amp; Get 10% Off</span><span class="sf-top__center" data-ann-msg>${esc(ANNOUNCEMENTS[(ui.annPos || 0) % ANNOUNCEMENTS.length])}</span><span class="sf-top__util"><span>Need help?</span><i></i><span>Track My Order</span><i></i><span>Contact Us</span></span></div>
+      // Desktop: same as mobile, the announcement strip scrolls away and the header bar sticks.
+      return `<div class="sf-top sf-top--desk"><span>Subscribe &amp; Get 10% Off</span><span class="sf-top__center" data-ann-msg>${esc(ANNOUNCEMENTS[(ui.annPos || 0) % ANNOUNCEMENTS.length])}</span><span class="sf-top__util"><span>Need help?</span><i></i><span>Track My Order</span><i></i><span>Contact Us</span></span></div>
+      <header class="sf-shell sf-shell--sticky">
         <div class="sf-bar sf-bar--desk">${logo}<nav class="sf-nav2">${links.map((l) => `<span>${l}</span>`).join("")}</nav><span class="sf-actions">${ic("search")}${ic("account")}${ic("bag")}</span></div>
       </header>`;
     }
@@ -1712,7 +1971,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 
   // The blue label on a section in the preview. On the selected section it also has an eye to hide it.
   const secTag = (n, name) => {
-    const eye = !ui.present && ui.sel === name && cfg[name]?.on
+    // v2: no eye in the label; sections are switched on/off from the list and the right panel.
+    const eye = false
       ? `<button type="button" class="sec__tag-eye" data-act="toggle" data-name="${esc(name)}" aria-label="Hide ${esc(name)}">${ICON.eye}<span class="sec__tag-tip" role="tooltip">Hide section</span></button>`
       : "";
     return `<span class="sec__tag${eye ? " sec__tag--tools" : ""}">${n} · ${esc(name)}${eye}</span>`;
@@ -1779,9 +2039,9 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const src = imgSrc(ref);
     const editing = !ui.present && ui.sel && cfg[ui.sel] === r;
     const slot = `data-i="${i}" data-dev="${imgKey(r, d)}"`;
-    const drop = !editing ? "" : src
-      ? ` data-drop data-crop ${slot} title="Drag to reposition"`
-      : ` data-act="tile-upload" data-drop ${slot} title="Drop an image here or click to upload"`;
+    const secName = nameOf(r);
+    const tileSel = ui.tileSel && ui.tileSel.name === secName && ui.tileSel.i === i && ui.tileSel.dev === imgKey(r, d);
+    const drop = ui.present ? "" : ` data-tile data-sec="${esc(secName || "")}" ${slot}${editing && src ? " data-crop" : ""}`;
     const devName = d === "mobile" ? "Mobile" : "Desktop";
     const ratioPick = `<select class="crop-ctl__ratio" data-ratio="${d === "mobile" ? "m" : "d"}" aria-label="${devName} image aspect ratio" title="${devName} image aspect ratio">${ratioOptions(ratioKey(r, d))}</select>`;
     const cropCtl = !editing ? "" : src ? `<div class="crop-ctl">
@@ -1790,7 +2050,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
         ${ratioPick}
         <button type="button" class="crop-ctl__icon" data-act="tile-upload" ${slot} aria-label="Replace image">${ICON.replace}<span class="ctl-tip" role="tooltip">Replace image</span></button>
       </div>` : `<div class="crop-ctl">${ratioPick}</div>`;
-    const picture = `<div class="pic ${src ? "has-img" : ""}"${drop}><div class="pic__art" style="aspect-ratio:${sz.key.replace(":", " / ")}">${src ? `<img class="pic__img" src="${esc(src)}" alt="" loading="lazy" draggable="false" style="${cropCSS(ref)}">` : `<span class="pic__empty">${ICON.upload}</span>`}</div>${pins}${play}${overlay}${cropCtl}</div>`;
+    const picture = `<div class="pic ${src ? "has-img" : ""}${tileSel ? " is-tile-sel" : ""}"${drop}><div class="pic__art" style="aspect-ratio:${sz.key.replace(":", " / ")}">${src ? `<img class="pic__img" src="${esc(src)}" alt="" loading="lazy" draggable="false" style="${cropCSS(ref)}">` : `<span class="pic__empty">${ICON.upload}<span>${sz.key}</span></span>`}</div>${pins}${play}${overlay}${cropCtl}</div>`;
     const s = block ? side(p) : null;
     // Text above/below the image: 8px (mobile) / 16px (desktop) from the image, no side padding, except a full-width image,
     // where the text lines up with the page margins.
@@ -1879,7 +2139,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
         const mobile = d === "mobile";
         return { n: 0, html: `<div style="padding:${mobile ? 16 : 40}px">
           <div class="store-empty" style="padding:${mobile ? "56px 20px" : "140px 40px"};font-size:${mobile ? 13 : 17}px">
-            <b style="font-size:${mobile ? 18 : 28}px">Select a section to start</b>
+            <b style="font-size:${mobile ? 18 : 28}px">Turn on a section to start</b>
+            <span>Use the switches in the list on the left.</span>
           </div></div>` };
       }
       // Sections sit flush against each other; spacing comes from each banner's own outer padding setting.
@@ -2086,28 +2347,29 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     : `<div class="field field--tog"><span class="field__label">${esc(label)}${hint ? `<small>${esc(hint)}</small>` : ""}</span>${togSeg(path, !!val, label, words)}</div>`;
   const txt = (path, val, label, ph = "") => `<div class="field"><label for="${fid(path)}">${esc(label)}</label><input type="text" id="${fid(path)}" data-path="${path}" value="${esc(val)}" placeholder="${esc(ph)}"></div>`;
   const ratioSelect = (path, val, label) => `<select id="${fid(path)}" data-path="${path}" aria-label="${esc(label)}">${RATIO_GROUPS.map(([g, l]) => `<optgroup label="${g}">${opt(l, val)}</optgroup>`).join("")}</select>`;
+  // A tile's slot in the settings panel: select / drop / click like the tile on the page.
   const uploadSlot = (r, s, i, dev, label) => {
+    const name = ui.sel;
     const ref = s.imgs?.[ui.theme]?.[dev] || null;
     const src = imgSrc(ref);
-    const key = `${i}-${dev}`;
-    const busy = ui.uploading === key;
-    const msg = ui.imgMsg?.key === key ? ui.imgMsg.text : "";
-    const input = `<input type="file" accept="${IMG_TYPES.join(",")}" data-upload data-i="${i}" data-dev="${dev}" hidden>`;
-    let meta, acts = "";
-    if (busy) meta = `<b>Uploading…</b>`;
-    else if (ref) {
-      meta = `<b>${label ? `${label} · ` : ""}${ref.w} × ${ref.h}</b>`;
-      if (canUpload()) acts = `<span class="upl__acts"><label class="upl__icon" title="Replace image" aria-label="Replace image">${ICON.replace}${input}</label><button type="button" class="upl__icon upl__icon--rm" data-act="img-remove" data-i="${i}" data-dev="${dev}" title="Remove image" aria-label="Remove image">${ICON.trash}</button></span>`;
-    } else meta = `<b>${canUpload() ? `Upload ${label ? `${label.toLowerCase()} ` : ""}image` : "No image yet"}</b>`;
-    if (msg) meta += `<span class="upl__warn">${esc(msg)}</span>`;
-    const thumb = canUpload() && !busy
-      ? `<label class="upl__thumb" title="${ref ? "Replace image" : "Upload image"}">${src ? `<img src="${esc(src)}" alt="">` : ICON.upload}${input}</label>`
-      : `<span class="upl__thumb">${src ? `<img src="${esc(src)}" alt="">` : ICON.upload}</span>`;
-    // An empty slot is one big click target: the whole row opens the file picker.
-    if (!ref && !busy && canUpload()) {
-      return `<label class="upl upl--empty" data-drop data-i="${i}" data-dev="${dev}" title="Upload image"><span class="upl__empty-ico">${ICON.upload}</span><div class="upl__meta">${meta}</div>${input}</label>`;
+    const ex = exportSummary(r);
+    const size = r.ratio.split && dev === "d" ? ex.d : ex.m;
+    const sel = ui.tileSel && ui.tileSel.name === name && ui.tileSel.i === i && ui.tileSel.dev === dev;
+    const attrs = `data-tile data-sec="${esc(name)}" data-i="${i}" data-dev="${dev}"`;
+    const lbl = label ? `${label} · ` : "";
+    if (!ref) {
+      return `<div class="upl upl--empty${sel ? " is-tile-sel" : ""}" ${attrs} tabindex="0" title="Click to select, click again to upload. Or drop a photo here."><span class="upl__empty-ico">${ICON.upload}</span><div class="upl__meta"><b>${lbl}Drop a photo</b><span>${size.ew} × ${size.eh} px · ${size.key}</span></div></div>`;
     }
-    return `<div class="upl" ${canUpload() ? `data-drop data-i="${i}" data-dev="${dev}"` : ""}>${thumb}<div class="upl__meta">${meta}</div>${acts}</div>`;
+    const small = ref.w < size.ew ? `<span class="upl__note">Placed photo is ${ref.w} × ${ref.h}. Export the final at ${size.ew} × ${size.eh}.</span>` : "";
+    return `<div class="upl upl--filled${sel ? " is-tile-sel" : ""}" ${attrs}>
+      <span class="upl__thumb">${src ? `<img src="${esc(src)}" alt="">` : ""}</span>
+      <div class="upl__meta">
+        <b>${lbl}Export ${size.ew} × ${size.eh} px</b>
+        ${small}
+        <label class="upl__zoom"><span>Zoom</span><input type="range" min="1" max="3" step="0.05" value="${cropOf(ref).z}" data-zoom data-i="${i}" data-dev="${dev}" aria-label="Zoom tile ${i + 1}"></label>
+        <span class="upl__links"><button type="button" class="link-btn" data-act="tile-upload" data-i="${i}" data-dev="${dev}">Replace</button><button type="button" class="link-btn" data-act="img-remove" data-i="${i}" data-dev="${dev}">Remove</button></span>
+      </div>
+    </div>`;
   };
   const uploadSlots = (r, s, i) => (r.ratio.split
     ? `<div class="upl-row upl-row--two">${uploadSlot(r, s, i, "m", "Mobile")}${uploadSlot(r, s, i, "d", "Desktop")}</div>`
@@ -2187,6 +2449,27 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   };
 
   const ratioOptions = (val) => RATIO_GROUPS.map(([g, l]) => `<optgroup label="${g}">${l.map(([v, t]) => `<option value="${v}" ${v === val ? "selected" : ""}>${esc(t)}</option>`).join("")}</optgroup>`).join("");
+  // Little pictures for the layout cards (64 × 32).
+  const LAYOUT_ART = (() => {
+    const box = (x, y, w, h, light) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="1.5" fill="${light ? "#cfcfcf" : "#8a8a8a"}"/>`;
+    const svg = (inner) => `<svg viewBox="0 0 64 32" aria-hidden="true">${inner}</svg>`;
+    return {
+      hero: svg(box(2, 6, 60, 20)),
+      heroCarousel: svg(box(2, 6, 52, 20) + box(57, 6, 5, 20, true)),
+      split: svg(box(2, 4, 29, 24) + box(33, 4, 29, 24)),
+      three: svg(box(2, 4, 19, 24) + box(23, 4, 19, 24) + box(44, 4, 18, 24)),
+      tiles: svg([0, 1].map((rw) => [0, 1, 2, 3].map((c) => box(2 + c * 15.5, 3 + rw * 13.5, 13.5, 12)).join("")).join("")),
+      peek: svg(box(2, 6, 22, 20) + box(26, 6, 22, 20) + box(50, 6, 12, 20, true)),
+      shop: svg(box(2, 6, 60, 20) + [[18, 13], [33, 19], [46, 11]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="2" fill="#ffffff"/>`).join("")),
+    };
+  })();
+  // Which ready-made layout the section currently looks like (so the right card is highlighted).
+  const presetOf = (r) => {
+    if (r.display === "carousel") return Number(r.m.peek) > 0 || Number(r.d.peek) > 0 ? "peek" : "heroCarousel";
+    if (r.slides.some((sl) => sl.kind === "hotspot")) return "shop";
+    const c = Number(r.d.cols);
+    return c <= 1 ? "hero" : c === 2 ? "split" : c === 3 ? "three" : "tiles";
+  };
   const bannerInspector = (r) => {
     const car = r.display === "carousel";
     const colOpts = (n) => Array.from({ length: Math.max(6, n) }, (_, i) => [i + 1, String(i + 1)]);
@@ -2198,11 +2481,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 
       <div class="step">
         <div class="step__title"><span>Layout</span></div>
-        <select id="f-layout-pick" aria-label="Layout">
-          <option value="grid" ${layoutValue === "grid" ? "selected" : ""}>Grid</option>
-          <option value="carousel" ${layoutValue === "carousel" ? "selected" : ""}>Carousel</option>
-          <optgroup label="Ready-made layouts">${Object.entries(LAYOUTS).map(([k, l]) => `<option value="preset:${k}">${l.label}</option>`).join("")}</optgroup>
-        </select>
+        <div class="layout-cards" role="group" aria-label="Layout">${Object.entries(LAYOUTS).map(([k, l]) => `<button type="button" class="layout-card" data-act="layout-preset" data-val="${k}" aria-pressed="${presetOf(r) === k}"><span class="layout-card__art">${LAYOUT_ART[k] || ""}</span><span class="layout-card__label">${l.label}</span></button>`).join("")}</div>
         <div class="field"><label for="f-tile-count">Number of tiles</label><select id="f-tile-count" aria-label="Number of tiles">${Array.from({ length: 12 }, (_, k) => k + 1).map((n) => `<option value="${n}" ${n === r.slides.length ? "selected" : ""}>${n}</option>`).join("")}</select></div>
         ${car ? "" : `<div class="field"><span class="field__label">Width</span>${seg("margin", [["false", "Full width"], ["true", "Page margin"]], String(!!r.margin), "Banner width")}</div>`}
         <div class="dtable">
@@ -2221,8 +2500,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
         <div class="shoot">
           <button type="button" class="btn" data-act="add-slide" ${r.slides.length >= 12 ? "disabled" : ""}>Add tile</button>
         </div>
-        ${usesArt(r) ? `<div class="ctx-line ctx-line--inline"><span>Set image shapes and sizes in <button type="button" data-act="view" data-val="designer">Images</button></span></div>` : ""}
       </div>
+      ${imageSteps(r)}
 
       <div class="step">
         <div class="step__title"><span>Tile text</span></div>
@@ -2298,6 +2577,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 
   // ---------- Reference tables ----------
   const renderOrderTable = () => {
+    $("#orderNote").textContent = `${brandName()} (${ui.theme.toUpperCase()}) uses these ${ORDER.length} sections, always in this order. You can't move them, only turn them on or off. Switch the theme to see another brand's list.`;
     $("#orderTable").innerHTML = `<thead><tr><th>#</th><th>Section</th></tr></thead><tbody>${ORDER.map((s, i) => `
       <tr><td class="num">${i + 1}</td><td><b>${esc(s.name)}</b></td></tr>`).join("")}</tbody>`;
   };
@@ -2392,7 +2672,11 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   };
 
   // ---------- Saving in this browser (when the shared store isn't available, e.g. on Vercel) ----------
-  const LOCAL_KEY = "bb-templates-v1";
+  const LOCAL_KEY = "bb2-templates-v1";
+  // First run of v2 in this browser: start from a copy of the original tool's templates (once).
+  try {
+    if (!localStorage.getItem(LOCAL_KEY) && localStorage.getItem("bb-templates-v1")) localStorage.setItem(LOCAL_KEY, localStorage.getItem("bb-templates-v1"));
+  } catch (err) { /* storage unavailable */ }
   let browserMode = false;
   let localTimer = null;
   const cleanTemplate = (data, id) => {
@@ -2400,16 +2684,18 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       id: id || data.id || newTemplate("x").id,
       name: String(data.name || "Untitled").slice(0, 60),
       createdAt: Number(data.createdAt) || Date.now(),
-      page: Array.isArray(data.page) ? data.page.filter((n) => ORDER.some((o) => o.name === n)) : [],
+      page: Array.isArray(data.page) ? data.page.filter((n) => ALL_SECTIONS.some((o) => o.name === n)) : [],
       cfg: data.cfg && typeof data.cfg === "object" ? JSON.parse(JSON.stringify(data.cfg)) : {},
       dirty: false,
     };
+    const sh = data.share;
+    if (sh && /^[a-z0-9]{24}$/.test(sh.id || "")) t.share = { id: sh.id, ver: Number(sh.ver) || 0, images: Array.isArray(sh.images) ? sh.images.filter((r) => typeof r === "string") : [], pending: Boolean(sh.pending) };
     return ensureAll(t);
   };
   const saveLocal = () => {
     syncActive();
     try {
-      localStorage.setItem(LOCAL_KEY, JSON.stringify({ active, templates: templates.map((t) => ({ id: t.id, name: t.name, createdAt: t.createdAt, page: t.page, cfg: t.cfg })) }));
+      localStorage.setItem(LOCAL_KEY, JSON.stringify({ active, templates: templates.map((t) => ({ id: t.id, name: t.name, createdAt: t.createdAt, page: t.page, cfg: t.cfg, ...(t.share ? { share: { id: t.share.id, ver: t.share.ver, images: t.share.images, pending: t.share.pending } } : {}) })) }));
       templates.forEach((t) => { t.dirty = false; });
       ui.save = "browser";
     } catch (err) {
@@ -2422,6 +2708,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       const raw = JSON.parse(localStorage.getItem(LOCAL_KEY) || "null");
       if (!raw || !Array.isArray(raw.templates) || !raw.templates.length) return false;
       templates = raw.templates.map((t) => cleanTemplate(t));
+      templates.forEach((t) => { if (t.share && !t.share.pending) t.share.sig = shareSig(t); });
       loadTemplate(templates.some((t) => t.id === raw.active) ? raw.active : templates[0].id);
       return true;
     } catch (err) {
@@ -2459,7 +2746,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       idbGet(ref.id).then((blob) => {
         if (!blob) return;
         localUrls[ref.id] = URL.createObjectURL(blob);
-        renderStage(); renderColumn();
+        renderStage(); renderColumn(); renderMood();
       }).catch(() => { /* not on this computer */ });
     }
     return null;
@@ -2533,6 +2820,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   const syncActive = () => { const t = tpl(); t.page = [...page]; t.cfg = cfg; };
   const scheduleSave = (t = tpl()) => {
     t.dirty = true;
+    if (t.share) queueShare(t);
     if (!db) {
       if (browserMode) { clearTimeout(localTimer); localTimer = setTimeout(saveLocal, 300); }
       else if (ui.save !== "off") ui.save = "local";
@@ -2576,7 +2864,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       if (local && (local.dirty || saveTimers[id] || inflight[id])) { next.push(local); return; }
       if (local && lastSaved[id] === sig) { next.push(local); return; }
       lastSaved[id] = sig;
-      const t = { id, name: String(data.name || "Untitled"), createdAt: Number(data.createdAt) || 0, page: Array.isArray(data.page) ? data.page.filter((n) => ORDER.some((o) => o.name === n)) : [], cfg: (data.cfg && typeof data.cfg === "object") ? JSON.parse(JSON.stringify(data.cfg)) : {}, dirty: false };
+      const t = { id, name: String(data.name || "Untitled"), createdAt: Number(data.createdAt) || 0, page: Array.isArray(data.page) ? data.page.filter((n) => ALL_SECTIONS.some((o) => o.name === n)) : [], cfg: (data.cfg && typeof data.cfg === "object") ? JSON.parse(JSON.stringify(data.cfg)) : {}, dirty: false };
       ensureAll(t);
       if (id === active) touchedActive = true;
       next.push(t);
@@ -2604,25 +2892,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     browserMode = true;
     const hadLocalWork = templates.some((t) => t.dirty);
     if (!hadLocalWork && loadLocal()) { ui.save = "browser"; renderAll(); return; }
-    // First visit in this browser: copy the templates the owner saved back when they were shared, once.
-    let imported = false;
-    try {
-      if (!hadLocalWork && window.claude?.use && localStorage.getItem("bb-migrated") !== "1") {
-        localStorage.setItem("bb-migrated", "1");
-        const user = await window.claude.use("user").catch(() => null);
-        const owner = user ? await Promise.resolve(user.isOwner?.()).catch(() => false) : false;
-        const store = owner ? await window.claude.use("db").catch(() => null) : null;
-        if (store) {
-          const snap = await store.collection("templates").get();
-          const docs = snap.docs.filter((d) => d.exists);
-          if (docs.length) {
-            templates = docs.map((d) => cleanTemplate({ ...d.data(), id: d.id })).sort((a, b) => a.createdAt - b.createdAt);
-            loadTemplate(templates[0].id);
-            imported = true;
-          }
-        }
-      }
-    } catch (err) { /* nothing to copy */ }
+    const imported = false;
     if (imported || hadLocalWork) saveLocal();
     else { try { localStorage.setItem("bb-probe", "1"); localStorage.removeItem("bb-probe"); ui.save = "browser"; } catch (err) { ui.save = "off"; } }
     renderAll();
@@ -2659,12 +2929,14 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   const setTheme = (k) => {
     if (!BRAND_KEYS.includes(k)) return;
     ui.theme = k; ui.menu = null;
+    syncOrder();
     try { localStorage.setItem("bb-theme", k); } catch (err) { /* storage unavailable */ }
     showThemeInUrl(k);
+    renderOrderTable();
     renderAll();
   };
   window.addEventListener("hashchange", () => { const k = themeFromHash(); if (k && k !== ui.theme) setTheme(k); });
-  const renderAll = () => { renderTop(); renderRail(); renderColumn(); renderFloat(); renderStage(); };
+  const renderAll = () => { syncShareUrl(); renderTop(); renderRail(); renderColumn(); renderFloat(); renderStage(); renderMood(); };
   const changed = () => { commit(); renderAll(); };
   const setPath = (obj, path, value) => {
     const keys = path.split(".");
@@ -2768,7 +3040,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   }, { passive: false });
 
   const choose = (name, reveal = false) => {
-    ui.sel = name; ui.copied = ""; ui.fallback = ""; ui.picking = false; ui.column = true; ui.panel = "sections"; ui.choosing = false;
+    // v2: selecting a section never reopens a collapsed left list; its settings are on the right.
+    ui.sel = name; ui.copied = ""; ui.fallback = ""; ui.picking = false; ui.panel = "sections"; ui.choosing = false;
     renderAll();
     if (reveal) revealSelected();
   };
@@ -2779,7 +3052,13 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     while (used.has(n)) n += 1;
     return `Template ${n}`;
   };
-  const switchTo = (id) => { syncActive(); loadTemplate(id); ui.menu = null; if (browserMode) scheduleSave(); renderAll(); };
+  const switchTo = (id) => {
+    syncActive(); loadTemplate(id); ui.menu = null;
+    ui.shareConflict = null; ui.shareSave = tpl().share?.pending ? "saving" : "saved";
+    if (browserMode) scheduleSave();
+    showThemeInUrl(ui.theme);
+    renderAll();
+  };
   const finishRename = (save) => {
     const inp = $("#tplRename");
     if (!inp || !ui.renaming) return;
@@ -2790,19 +3069,27 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   };
 
   document.addEventListener("click", async (e) => {
-    if (e.target.closest?.("[contenteditable], .crop-ctl select")) return;
-    // First click on a section selects it (staying in Sections). Clicking an image in the section
-    // that's already selected opens it in Images.
-    const picHit = !ui.present && ui.view !== "designer" && e.target.closest?.(".sec .pic:not(.pic--text)");
-    if (picHit && !e.target.closest(".crop-ctl, [data-edit]")) {
-      const name = picHit.closest(".sec[data-name]")?.dataset.name;
-      if (name && name === ui.sel && cfg[name] && !cfg[name].kind) {
-        ui.view = "designer"; ui.tab = "editor"; ui.hl = null;
-        try { localStorage.setItem("bb-view", ui.view); } catch (err) { /* storage unavailable */ }
-        closeMenus();
-        choose(name);
+    if (e.target.closest?.("[contenteditable], .crop-ctl select, .sw")) return;
+    if (e.target.closest?.("[data-mood-add]")) { pickFiles((files) => addFiles(files)); return; }
+    if (e.target.closest?.("[data-mood-clear]")) {
+      if (!ui.moodClearConfirm) {
+        ui.moodClearConfirm = true; renderMood();
+        clearTimeout(window.__moodClearT);
+        window.__moodClearT = setTimeout(() => { ui.moodClearConfirm = false; renderMood(); }, 3000);
         return;
       }
+      // Clears the moodboard only; photos already placed on tiles stay.
+      ui.moodClearConfirm = false; mood = []; saveMood(); renderMood();
+      return;
+    }
+    const rmMood = e.target.closest?.("[data-mood-rm]");
+    if (rmMood) { mood = mood.filter((p) => p.id !== rmMood.dataset.moodRm); saveMood(); renderMood(); return; }
+    const moodItem = e.target.closest?.(".mood__item");
+    if (moodItem) { moodClick(moodItem.dataset.moodId); return; }
+    const tileHit = !ui.present && e.target.closest?.("[data-tile]");
+    if (tileHit && !e.target.closest(".crop-ctl, [data-edit], button, input, select, a, .link-btn")) {
+      tileClick(tileHit.dataset.sec, Number(tileHit.dataset.i), tileHit.dataset.dev);
+      return;
     }
     const editHit = !ui.present && e.target.closest?.(".sec [data-edit]");
     if (editHit && editHit.closest(".sec[data-name]")?.dataset.name === ui.sel) { closeMenus(); startEdit(editHit, e.clientX, e.clientY); return; }
@@ -2844,12 +3131,35 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     } else if (act === "view") {
       if (ui.view === t.dataset.val) {
         if (ui.tab !== "editor") { ui.tab = "editor"; ui.column = true; renderAll(); }
-        else if (ui.view !== "specs") { ui.column = !ui.column; renderAll(); }
         return;
       }
       ui.view = t.dataset.val; ui.menu = null; ui.tab = "editor"; ui.column = true; ui.copied = ""; ui.fallback = "";
       try { localStorage.setItem("bb-view", ui.view); } catch (err) { /* storage unavailable */ }
       renderAll();
+    } else if (act === "labels") {
+      ui.labels = ui.labels === false;
+      try { localStorage.setItem("bb-labels", ui.labels ? "on" : "off"); } catch (err) { /* storage unavailable */ }
+      document.querySelector(".app").classList.toggle("no-labels", !ui.labels);
+      renderFloat();
+    } else if (act === "layout-preset") {
+      const k = t.dataset.val;
+      if (!LAYOUTS[k] || !r) return;
+      const keepImgs = r.slides.map((sl) => sl.imgs);
+      const keepTitles = r.slides.map((sl) => sl.title || "");
+      const keepBtn = r.text?.btn || "";
+      const keepHeader = { text: r.header?.text || "", cta: r.header?.cta || "" };
+      cfg[ui.sel] = { ...noTileText(LAYOUTS[k].make()), on: r.on, copy: r.copy, copyOrigin: r.copyOrigin };
+      normaliseBanner(cfg[ui.sel]);
+      cfg[ui.sel].slides.forEach((sl, i) => { if (keepImgs[i]) sl.imgs = keepImgs[i]; sl.title = keepTitles[i] || ""; });
+      cfg[ui.sel].text.btn = keepBtn;
+      cfg[ui.sel].header = { ...cfg[ui.sel].header, ...keepHeader };
+      ui.tileSel = null;
+      changed();
+    } else if (act === "pick") {
+      const name = t.dataset.name;
+      if (!cfg[name].on) { cfg[name].on = true; commit(); }
+      ui.hl = null;
+      choose(name, true);
     } else if (act === "select") {
       if (e.target.closest(".eye")) return;
       choose(t.dataset.name, true);
@@ -2865,7 +3175,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       ui.tab = t.dataset.val; ui.sel = null; ui.column = true; renderAll();
     } else if (act === "rail-open") {
       if (ui.tab === t.dataset.val) return;
-      ui.tab = t.dataset.val; ui.column = true;
+      ui.tab = t.dataset.val; ui.column = true; ui.menu = null;
       renderAll();
     } else if (act === "guide-jump") {
       const target = document.getElementById(t.dataset.val);
@@ -2963,11 +3273,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       r.slides.forEach((sl) => { if (sl.imgs) delete sl.imgs[ui.theme]; });
       changed();
     } else if (act === "tile-upload") {
-      const picker = document.createElement("input");
-      picker.type = "file";
-      picker.accept = IMG_TYPES.join(",");
-      picker.onchange = () => { if (picker.files?.[0]) uploadImage(picker.files[0], Number(t.dataset.i), t.dataset.dev); };
-      picker.click();
+      const name = ui.sel, i = Number(t.dataset.i), dev = t.dataset.dev;
+      pickFiles(async (files) => { const photos = await addFiles(files); if (photos.length) fillFrom(name, i, dev, photos); });
     } else if (act === "crop-zoom" || act === "crop-reset") {
       const ref = r?.slides[Number(t.dataset.i)]?.imgs?.[ui.theme]?.[t.dataset.dev];
       if (!ref) return;
@@ -2986,6 +3293,21 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       const next = PAD_OPTS[Math.min(PAD_OPTS.length - 1, Math.max(0, i + Number(t.dataset.dir)))][0];
       setPath(r, t.dataset.path, next);
       changed();
+    } else if (act === "share") {
+      startShare();
+    } else if (act === "share-close") {
+      if (ui.shareModal?.state !== "working") { ui.shareModal = null; renderShareModal(); }
+    } else if (act === "share-copy") {
+      try { await navigator.clipboard.writeText(ui.shareModal.url); ui.shareModal.copied = true; }
+      catch (err) { $("#shareModal input")?.select(); }
+      renderShareModal();
+    } else if (act === "share-load") {
+      loadSharedVersion();
+    } else if (act === "share-keep") {
+      ui.shareConflict = null;
+      syncShare(tpl(), { force: true });
+    } else if (act === "share-retry") {
+      syncShare(tpl());
     } else if (act === "phone-preview") {
       publishPhone();
     } else if (act === "phone-close") {
@@ -3024,7 +3346,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       }
       changed();
     } else if (act === "add-slide") {
-      const title = `Tile ${r.slides.length + 1}`;
+      const title = "";
       Object.values(r.copy || {}).forEach((c) => { c.titles = [...(c.titles || []), title]; });
       r.slides.push({ kind: r.slides.at(-1)?.kind || "image", title }); changed();
     } else if (act === "del-slide") {
@@ -3072,12 +3394,17 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   document.addEventListener("focusout", (e) => { if (e.target.id === "tplRename") finishRename(true); });
   document.addEventListener("change", (e) => {
     const el = e.target;
+    if (el.dataset?.secToggle) {
+      const c = cfg[el.dataset.secToggle];
+      if (c) { c.on = el.checked; changed(); }
+      return;
+    }
     if (el.id === "f-tile-count" && cur()) {
       // Add tiles at the end (same kind as the last one) or remove from the end.
       const r = cur();
       const n = Math.max(1, Math.min(12, Number(el.value) || 1));
       while (r.slides.length < n) {
-        const title = `Tile ${r.slides.length + 1}`;
+        const title = "";
         Object.values(r.copy || {}).forEach((c) => { c.titles = [...(c.titles || []), title]; });
         r.slides.push({ kind: r.slides.at(-1)?.kind || "image", title });
       }
@@ -3157,6 +3484,11 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       else if (hex) hex.textContent = el.value.toUpperCase();
       renderStage();
       commitSoon();
+      return;
+    }
+    if (el.dataset?.zoom !== undefined && cur()) {
+      const ref = cur().slides[Number(el.dataset.i)]?.imgs?.[ui.theme]?.[el.dataset.dev];
+      if (ref) { ref.z = Math.round(Number(el.value) * 100) / 100; renderStage(); commitSoon(); }
       return;
     }
     if (el.dataset?.hex && cur()) {
@@ -3286,32 +3618,191 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     pic.addEventListener("pointercancel", up);
   });
 
-  // Drag an image file onto an upload slot.
+  // ---------- Moodboard: rough photos you drop in, then place on tiles ----------
+  // Photos live in this browser (IndexedDB blobs + a list in localStorage). Placing a photo puts a
+  // reference to it on the tile, per brand. Removing a photo from the moodboard leaves placed tiles alone.
+  const MOOD_KEY = "bb-mood-v1";
+  let mood = [];
+  try { mood = (JSON.parse(localStorage.getItem(MOOD_KEY) || "[]") || []).filter((p) => p && p.id); } catch (err) { mood = []; }
+  const saveMood = () => { try { localStorage.setItem(MOOD_KEY, JSON.stringify(mood)); } catch (err) { /* storage unavailable */ } };
+  let moodTimer = null;
+  const moodMsg = (text) => {
+    ui.moodMsg = text;
+    renderMood();
+    clearTimeout(moodTimer);
+    moodTimer = setTimeout(() => { ui.moodMsg = ""; renderMood(); }, 5000);
+  };
+  const renderMood = () => {
+    const el = $("#mood");
+    if (!el) return;
+    // Photos already placed on a tile (this template, this brand) get a checkmark.
+    const used = new Set();
+    Object.values(cfg).forEach((c) => (c?.slides || []).forEach((sl) => Object.values(sl.imgs?.[ui.theme] || {}).forEach((ref) => { if (ref?.id) used.add(ref.id); })));
+    const items = mood.map((p) => {
+      const src = imgSrc(p);
+      const placed = used.has(p.id);
+      return `<div class="mood__item${placed ? " is-used" : ""}" draggable="true" data-mood-id="${esc(p.id)}" title="${esc(p.name || "Photo")} · ${p.w} × ${p.h}${placed ? " · placed" : ""}">
+        ${src ? `<img src="${esc(src)}" alt="" draggable="false">` : ""}
+        ${placed ? `<span class="mood__check" aria-label="Placed on the page"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.2 5 8.6l4.5-5"/></svg></span>` : ""}
+        <button type="button" class="mood__rm" data-mood-rm="${esc(p.id)}" aria-label="Remove from moodboard">${ICON.close}</button>
+      </div>`;
+    }).join("");
+    el.innerHTML = `<div class="mood__bar">
+        <div class="mood__head"><b class="mood__title">Moodboard</b><span class="mood__count">${mood.length ? `${mood.length} photo${mood.length === 1 ? "" : "s"}` : "No photos yet"}</span></div>
+        <div class="mood__list${items ? "" : " mood__list--empty"}">${items
+          ? `${items}<button type="button" class="mood__more" data-mood-add aria-label="Add more photos">${ICON.upload}<span>Add more photos</span></button>`
+          : `<button type="button" class="mood__drop" data-mood-add>${ICON.upload}<span><b>Drop photos here or <u>browse</u></b><small>Then drag them onto any tile. Rough crops are fine. PNG, JPG, WebP or GIF.</small></span></button>`}</div>
+        ${mood.length ? `<button type="button" class="btn btn--plain mood__clear" data-mood-clear>${ui.moodClearConfirm ? "Click again to clear" : "Clear all"}</button>` : ""}
+      </div>
+      ${ui.moodMsg ? `<p class="mood__msg" role="status">${esc(ui.moodMsg)}</p>` : ""}`;
+  };
+  // Add files to the moodboard (newest first). Returns the accepted photos in the order given.
+  const addFiles = async (files) => {
+    const ok = [], bad = [];
+    for (const f of files) {
+      if (!IMG_TYPES.includes(f.type)) { bad.push(`${f.name} isn't a PNG, JPG, WebP or GIF`); continue; }
+      if (f.size > MAX_IMG) { bad.push(`${f.name} is over 20MB`); continue; }
+      const dims = await readDims(f);
+      if (!dims) { bad.push(`${f.name} couldn't be read as an image`); continue; }
+      const id = `img${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`;
+      try { await idbPut(id, f); } catch (err) { bad.push(`${f.name} couldn't be saved in this browser`); URL.revokeObjectURL(dims.url); continue; }
+      localUrls[id] = dims.url;
+      ok.push({ id, w: dims.w, h: dims.h, name: f.name });
+    }
+    if (ok.length) { mood = [...ok, ...mood]; saveMood(); }
+    if (bad.length) moodMsg(`${bad.join(". ")}.`);
+    else renderMood();
+    return ok;
+  };
+  const pickFiles = (cb) => {
+    const picker = document.createElement("input");
+    picker.type = "file";
+    picker.multiple = true;
+    picker.accept = IMG_TYPES.join(",");
+    picker.onchange = () => { if (picker.files?.length) cb([...picker.files]); };
+    picker.click();
+  };
+  const nameOf = (r) => ALL_SECTIONS.find((o) => cfg[o.name] === r)?.name || null;
+  const artTiles = (r) => r.slides.map((sl, i) => [sl, i]).filter(([sl]) => hasArtKind(sl.kind)).map(([, i]) => i);
+  const refAt = (name, i, dev) => cfg[name]?.slides[i]?.imgs?.[ui.theme]?.[dev] || null;
+  const placePhoto = (name, i, dev, p) => {
+    const r = cfg[name];
+    const sl = r?.slides[i];
+    if (!sl || !hasArtKind(sl.kind)) return false;
+    sl.imgs ||= {};
+    sl.imgs[ui.theme] ||= {};
+    const ref = { id: p.id, src: "local", w: p.w, h: p.h, name: p.name };
+    sl.imgs[ui.theme][dev] = ref;
+    // Different shapes on mobile and desktop: fill the other slot too while it's empty.
+    if (r.ratio.split) { const o = dev === "m" ? "d" : "m"; if (!sl.imgs[ui.theme][o]) sl.imgs[ui.theme][o] = { ...ref }; }
+    return true;
+  };
+  const afterPlace = (name, nextSel) => {
+    if (!cfg[name].on) cfg[name].on = true;
+    ui.tileSel = nextSel;
+    if (ui.sel !== name) { ui.hl = null; ui.sel = name; }
+    changed();
+  };
+  // Several photos dropped on one tile: the first lands there, the rest fill the following tiles.
+  const fillFrom = (name, i, dev, photos) => {
+    const r = cfg[name];
+    if (!r || !photos.length) return;
+    const order = artTiles(r).filter((k) => k >= i);
+    photos.slice(0, order.length).forEach((p, k) => placePhoto(name, order[k], dev, p));
+    if (photos.length > order.length) moodMsg(`${photos.length - order.length} photo${photos.length - order.length === 1 ? "" : "s"} didn't fit, so ${photos.length - order.length === 1 ? "it stays" : "they stay"} on the moodboard.`);
+    afterPlace(name, { name, i, dev });
+  };
+  // Dropped on a section (not a tile): fill its empty tiles in order, leave filled ones alone.
+  const fillEmpty = (name, dev, photos) => {
+    const r = cfg[name];
+    if (!r || r.kind || !usesArt(r)) { moodMsg(`${name} has no image tiles.`); return; }
+    const empties = artTiles(r).filter((k) => !refAt(name, k, dev));
+    if (!empties.length) { moodMsg(`Every tile in ${name} already has a photo. Drop on a tile to replace one.`); return; }
+    photos.slice(0, empties.length).forEach((p, k) => placePhoto(name, empties[k], dev, p));
+    afterPlace(name, { name, i: empties[0], dev });
+  };
+  const nextEmpty = (name, i, dev) => {
+    const tiles = artTiles(cfg[name]);
+    return tiles.find((k) => k > i && !refAt(name, k, dev)) ?? tiles.find((k) => !refAt(name, k, dev)) ?? null;
+  };
+  // Click a tile: select it; click a selected empty tile again to upload.
+  const tileClick = (name, i, dev) => {
+    const same = ui.tileSel && ui.tileSel.name === name && ui.tileSel.i === i && ui.tileSel.dev === dev;
+    if (same && !refAt(name, i, dev)) {
+      pickFiles(async (files) => { const photos = await addFiles(files); if (photos.length) fillFrom(name, i, dev, photos); });
+      return;
+    }
+    ui.tileSel = { name, i, dev };
+    if (ui.sel !== name) { ui.hl = null; choose(name); } else renderAll();
+  };
+  // Click a moodboard photo: place it on the selected tile, then move to the next empty tile.
+  const moodClick = (id) => {
+    const p = mood.find((x) => x.id === id);
+    const t = ui.tileSel;
+    if (!p) return;
+    if (!t || t.name !== ui.sel || !cfg[t.name]) {
+      const r = ui.sel && cfg[ui.sel];
+      if (!r || r.kind || !usesArt(r)) return;
+      const first = artTiles(r).find((k) => !refAt(ui.sel, k, "m"));
+      if (first == null) return;
+      placePhoto(ui.sel, first, "m", p);
+      const n = nextEmpty(ui.sel, first, "m");
+      afterPlace(ui.sel, { name: ui.sel, i: n == null ? first : n, dev: "m" });
+      return;
+    }
+    if (!placePhoto(t.name, t.i, t.dev, p)) return;
+    const n = nextEmpty(t.name, t.i, t.dev);
+    afterPlace(t.name, n == null ? t : { name: t.name, i: n, dev: t.dev });
+  };
+
+  // Drag and drop: moodboard photos or desktop files, onto tiles, sections, the section list or the strip.
+  const DROP_SEL = "[data-tile], .sec[data-name], .srow, #mood";
+  const dragKind = (e) => { const t = [...(e.dataTransfer?.types || [])]; return t.includes("Files") ? "files" : t.includes("text/x-mood") ? "mood" : null; };
+  let dropEl = null;
+  const setDrop = (el) => { if (dropEl === el) return; dropEl?.classList.remove("is-drop"); dropEl = el; el?.classList.add("is-drop"); };
+  document.addEventListener("dragstart", (e) => {
+    const it = e.target.closest?.(".mood__item");
+    if (!it) return;
+    e.dataTransfer.setData("text/x-mood", it.dataset.moodId);
+    e.dataTransfer.effectAllowed = "copy";
+  });
   document.addEventListener("dragover", (e) => {
-    const slot = e.target.closest?.("[data-drop]");
-    if (!slot) return;
-    e.preventDefault();
-    document.querySelectorAll(".upl.is-drag").forEach((x) => { if (x !== slot) x.classList.remove("is-drag"); });
-    slot.classList.add("is-drag");
+    const k = dragKind(e);
+    if (!k) return;
+    e.preventDefault(); // never let the browser open a dropped file
+    let el = ui.present ? null : e.target.closest?.(DROP_SEL);
+    if (el?.id === "mood" && k !== "files") el = null;
+    e.dataTransfer.dropEffect = el ? "copy" : "none";
+    setDrop(el);
   });
-  document.addEventListener("dragleave", (e) => {
-    const slot = e.target.closest?.("[data-drop]");
-    if (slot && !slot.contains(e.relatedTarget)) slot.classList.remove("is-drag");
-  });
-  document.addEventListener("drop", (e) => {
-    const slot = e.target.closest?.("[data-drop]");
-    if (!slot) return;
+  document.addEventListener("dragleave", (e) => { if (dropEl && !dropEl.contains(e.relatedTarget)) setDrop(null); });
+  document.addEventListener("dragend", () => setDrop(null));
+  document.addEventListener("drop", async (e) => {
+    const k = dragKind(e);
+    if (!k) return;
     e.preventDefault();
-    slot.classList.remove("is-drag");
-    const file = e.dataTransfer?.files?.[0];
-    if (file) uploadImage(file, Number(slot.dataset.i), slot.dataset.dev);
+    const el = ui.present ? null : e.target.closest?.(DROP_SEL);
+    setDrop(null);
+    if (!el) return;
+    let photos = [];
+    if (k === "files") photos = await addFiles([...(e.dataTransfer.files || [])]);
+    else { const p = mood.find((x) => x.id === e.dataTransfer.getData("text/x-mood")); if (p) photos = [p]; }
+    if (!photos.length || el.id === "mood") return;
+    if (el.dataset.tile !== undefined) fillFrom(el.dataset.sec, Number(el.dataset.i), el.dataset.dev, photos);
+    else {
+      const name = el.dataset.name;
+      const r = cfg[name];
+      if (!r) return;
+      const dvc = el.closest("[data-device]")?.dataset.device || "mobile";
+      fillEmpty(name, r.kind ? "m" : imgKey(r, dvc), photos);
+    }
   });
 
   // ---------- Preview on phone (hosted site only) ----------
   // The layout and shrunken copies of its images go to the site's Vercel Blob storage under a random id
   // kept in this browser (one per brand), so a new preview replaces the last one. Previews older than
   // 7 days are deleted by a daily job. Opening /p/<id> shows that homepage full screen.
-  const PREVIEW_PATH = /^\/p\/([a-z0-9]{24})\/?$/;
+  const PREVIEW_PATH = /^(?:\/v2)?\/p\/([a-z0-9]{24})\/?$/;
   const previewId = window.self === window.top ? ((location.pathname.match(PREVIEW_PATH) || [])[1] || null) : null;
   const QR_SRC = "https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js";
   const checkPhone = async () => {
@@ -3321,10 +3812,10 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       const j = res.ok && /json/.test(res.headers.get("content-type") || "") ? await res.json() : null;
       phoneOK = Boolean(j?.ready);
     } catch (err) { phoneOK = false; }
-    if (phoneOK) renderFloat();
+    if (phoneOK) { renderTop(); renderFloat(); }
   };
   const phoneId = () => {
-    const key = `bb-phone-${ui.theme}`;
+    const key = `bb2-phone-${ui.theme}`;
     let id = null;
     try { id = localStorage.getItem(key); } catch (err) { /* storage unavailable */ }
     if (!/^[a-z0-9]{24}$/.test(id || "")) {
@@ -3394,7 +3885,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       const state = { v: 1, theme: ui.theme, name: t.name, page: t.page, cfg: t.cfg, images: sent };
       const res = await fetch(`/api/preview?id=${id}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(state) });
       if (!res.ok) throw new Error("save");
-      const url = `${location.origin}/p/${id}`;
+      const url = `${location.origin}${BASE}/p/${id}`;
       let qr = "";
       try { await loadQR(); const q = window.qrcode(0, "M"); q.addData(url); q.make(); qr = q.createDataURL(6, 2); } catch (err) { /* the link still works */ }
       ui.phone = { state: "ready", url, qr };
@@ -3403,6 +3894,297 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     }
     renderPhone();
   };
+  // ---------- Shared edit links (hosted site only) ----------
+  // Share puts the template and its images on the site's Vercel Blob storage under a random id, and
+  // /s/<id> opens it for anyone with the link. Every change saves back to the link a moment later, and
+  // the page looks for other people's saves every 15 seconds. Each save says which version it started
+  // from, so a save on top of someone else's newer one is refused and the person chooses what to keep.
+  const SHARE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+  const SHARE_MAX = 3.8 * 1024 * 1024;
+  const shareTimers = {};
+  let shareBusy = false;
+  const shareImg = (sid, rid) => `/api/share?id=${sid}&img=${encodeURIComponent(rid)}`;
+  const newShareId = () => Array.from(crypto.getRandomValues(new Uint8Array(12)), (b) => b.toString(16).padStart(2, "0")).join("");
+  const shareUrl = (t) => `${location.origin}/s/${t.share.id}`;
+  const shareSig = (t) => JSON.stringify({ name: t.name, page: t.page, cfg: t.cfg });
+  const refsOf = (t) => {
+    const out = new Set();
+    Object.values(t.cfg || {}).forEach((r) => (r?.slides || []).forEach((sl) => Object.values(sl.imgs || {}).forEach((byDev) => Object.values(byDev || {}).forEach((ref) => { if (ref?.id) out.add(ref.id); }))));
+    return out;
+  };
+  // Images go up untouched when they fit the 4MB upload limit; bigger ones are re-encoded as JPEG.
+  const shareFile = async (file) => {
+    if (SHARE_TYPES.includes(file.type) && file.size <= SHARE_MAX) return file;
+    const bmp = await createImageBitmap(file);
+    let k = Math.min(1, 4000 / Math.max(bmp.width, bmp.height));
+    let q = 0.92;
+    let out = null;
+    for (let i = 0; i < 10; i += 1) {
+      const c = document.createElement("canvas");
+      c.width = Math.max(1, Math.round(bmp.width * k));
+      c.height = Math.max(1, Math.round(bmp.height * k));
+      const x = c.getContext("2d");
+      x.fillStyle = "#ffffff";
+      x.fillRect(0, 0, c.width, c.height);
+      x.drawImage(bmp, 0, 0, c.width, c.height);
+      out = await new Promise((ok) => c.toBlob(ok, "image/jpeg", q));
+      if (out && out.size <= SHARE_MAX) break;
+      if (q > 0.75) q -= 0.07; else k *= 0.85;
+    }
+    bmp.close?.();
+    return out;
+  };
+  const shareError = (msg, extra = {}) => Object.assign(new Error(msg), extra);
+  // Upload the images the link doesn't have yet, then the template.
+  const pushShare = async (t, { force = false, onProgress } = {}) => {
+    const sid = t.share.id;
+    const have = new Set(t.share.images || []);
+    const missing = [...refsOf(t)].filter((rid) => !have.has(rid));
+    let done = 0;
+    onProgress?.(done, missing.length);
+    for (const rid of missing) {
+      const file = await idbGet(rid).catch(() => null);
+      if (file) {
+        const body = await shareFile(file);
+        if (!body) throw shareError("image");
+        const res = await fetch(`/api/share?id=${sid}&ref=${encodeURIComponent(rid)}`, { method: "POST", headers: { "content-type": body.type || "image/jpeg" }, body });
+        if (!res.ok) throw shareError("upload");
+        have.add(rid);
+      }
+      done += 1;
+      onProgress?.(done, missing.length);
+    }
+    const sig = shareSig(t);
+    const state = { v: 1, theme: ui.theme, name: t.name, page: t.page, cfg: t.cfg, images: [...have] };
+    const res = await fetch(`/api/share?id=${sid}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ state, base: force ? null : t.share.ver }) });
+    if (res.status === 409) throw shareError("conflict", { conflict: true });
+    if (!res.ok) throw shareError("save");
+    const j = await res.json();
+    t.share.ver = Number(j.ver) || t.share.ver;
+    t.share.images = [...have];
+    t.share.sig = sig;
+  };
+  const queueShare = (t) => {
+    t.share.pending = true;
+    clearTimeout(shareTimers[t.id]);
+    shareTimers[t.id] = null;
+    if (t.id === active && ui.shareConflict) return; // waiting for the person to choose a version
+    shareTimers[t.id] = setTimeout(() => syncShare(t), 1500);
+    if (t.id === active && ui.shareSave !== "saving") { ui.shareSave = "saving"; renderShareState(); }
+  };
+  const syncShare = async (t, opts = {}) => {
+    if (!t?.share) return;
+    if (shareBusy) { clearTimeout(shareTimers[t.id]); shareTimers[t.id] = setTimeout(() => syncShare(t, opts), 500); return; }
+    clearTimeout(shareTimers[t.id]);
+    shareTimers[t.id] = null;
+    if (t.id === active) syncActive();
+    if (!opts.force && t.share.sig === shareSig(t)) {
+      t.share.pending = false;
+      if (t.id === active) { ui.shareSave = "saved"; renderShareState(); }
+      return;
+    }
+    shareBusy = true;
+    t.share.pending = false;
+    if (t.id === active) { ui.shareSave = "saving"; renderShareState(); }
+    try {
+      await pushShare(t, opts);
+      if (t.id === active) { ui.shareSave = t.share.pending ? "saving" : "saved"; ui.shareConflict = null; }
+    } catch (err) {
+      t.share.pending = true;
+      if (t.id === active) {
+        if (err.conflict) ui.shareConflict = true;
+        else ui.shareSave = "error";
+      }
+    } finally {
+      shareBusy = false;
+      if (browserMode) saveLocal();
+      if (t.id === active) renderShareState();
+    }
+  };
+  const fetchShare = async (sid) => {
+    const res = await fetch(`/api/share?id=${sid}`, { cache: "no-store" });
+    if (res.status === 404) return null;
+    if (!res.ok) throw shareError(String(res.status));
+    return res.json();
+  };
+  // Put a saved version from the link into a template (replacing what it had).
+  const applyShare = (t, st) => {
+    const fresh = cleanTemplate({ name: st.name, page: st.page, cfg: st.cfg }, t.id);
+    t.name = fresh.name;
+    t.page = fresh.page;
+    t.cfg = fresh.cfg;
+    t.dirty = false;
+    t.share = { id: t.share.id, ver: Number(st.ver) || 0, images: Array.isArray(st.images) ? st.images.filter((r) => typeof r === "string") : [], pending: false };
+    t.share.sig = shareSig(t);
+    t.share.images.forEach((rid) => {
+      if (localUrls[rid]) return;
+      localUrls[rid] = shareImg(t.share.id, rid);
+      // Keep a copy on this computer too, so phone previews and duplicates work like any other upload.
+      idbGet(rid)
+        .then((have) => have || fetch(shareImg(t.share.id, rid)).then((r) => (r.ok ? r.blob() : null)).then((b) => (b ? idbPut(rid, b) : null)))
+        .catch(() => { /* the link still shows it */ });
+    });
+    if (t.id === active) {
+      const sel = ui.sel;
+      page = new Set(t.page);
+      cfg = t.cfg;
+      history[active] = { undo: [], redo: [], cur: snapshotOf() };
+      ui.sel = sel && page.has(sel) ? sel : null;
+    }
+  };
+  const loadSharedVersion = async () => {
+    const t = tpl();
+    if (!t?.share) return;
+    clearTimeout(shareTimers[t.id]);
+    shareTimers[t.id] = null;
+    try {
+      const st = await fetchShare(t.share.id);
+      if (!st) throw shareError("missing");
+      applyShare(t, st);
+      ui.shareConflict = null;
+      ui.shareSave = "saved";
+      if (browserMode) saveLocal();
+      renderAll();
+    } catch (err) {
+      ui.shareSave = "error";
+      renderShareState();
+    }
+  };
+  // Opened from /s/<id>: add the shared template to this browser's list (or refresh it) and show it.
+  const openShare = async (sid) => {
+    ui.shareSave = "loading";
+    renderShareState();
+    try {
+      const st = await fetchShare(sid);
+      if (!st) { ui.shareSave = "missing"; renderShareState(); return; }
+      let t = templates.find((x) => x.share?.id === sid);
+      if (!t) {
+        t = newTemplate(String(st.name || "Shared template"));
+        t.share = { id: sid, ver: 0, images: [] };
+        // A first visit only has the empty starter template: the shared one takes its place.
+        const starter = templates.length === 1 && !templates[0].share && !Object.values(templates[0].cfg || {}).some((c) => c?.on) ? templates[0] : null;
+        templates = starter ? [t] : [...templates, t];
+      }
+      if (t.share.pending && Number(st.ver) === t.share.ver) {
+        // Changes made here that never reached the link: send them now.
+        loadTemplate(t.id);
+        syncShare(t);
+      } else if (t.share.pending) {
+        loadTemplate(t.id);
+        ui.shareConflict = true;
+      } else {
+        applyShare(t, st);
+        loadTemplate(t.id);
+      }
+      if (!themeFromHash() && BRAND_KEYS.includes(st.theme) && st.theme !== ui.theme) { ui.theme = st.theme; syncOrder(); }
+      if (ui.shareSave === "loading") ui.shareSave = "saved";
+      if (browserMode) saveLocal();
+      showThemeInUrl(ui.theme);
+      renderAll();
+    } catch (err) {
+      ui.shareSave = "error";
+      renderShareState();
+    }
+  };
+  const pollShare = async () => {
+    const t = tpl();
+    if (!t?.share || document.hidden || shareBusy || shareTimers[t.id] || ui.shareConflict) return;
+    try {
+      const st = await fetchShare(t.share.id);
+      if (!st || tpl() !== t || shareBusy || shareTimers[t.id] || Number(st.ver) <= (t.share.ver || 0)) return;
+      if (t.share.pending) { ui.shareConflict = true; renderShareState(); return; }
+      applyShare(t, st);
+      if (browserMode) saveLocal();
+      renderAll();
+    } catch (err) { /* try again on the next check */ }
+  };
+  setInterval(pollShare, 15000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) pollShare(); });
+  const startShare = async () => {
+    if (ui.shareModal?.state === "working") return;
+    syncActive();
+    const t = tpl();
+    if (t.share) {
+      ui.shareModal = { state: "ready", url: shareUrl(t) };
+      renderShareModal();
+      if (t.share.pending) syncShare(t);
+      return;
+    }
+    t.share = { id: newShareId(), ver: 0, images: [], pending: false };
+    ui.shareModal = { state: "working", done: 0, total: 0 };
+    renderShareModal();
+    shareBusy = true;
+    try {
+      await pushShare(t, { onProgress: (d, n) => { ui.shareModal.done = d; ui.shareModal.total = n; renderShareModal(); } });
+      ui.shareModal = { state: "ready", url: shareUrl(t) };
+      ui.shareSave = "saved";
+      ui.shareConflict = null;
+      showThemeInUrl(ui.theme);
+    } catch (err) {
+      delete t.share;
+      ui.shareModal = { state: "error" };
+    } finally {
+      shareBusy = false;
+      if (browserMode) saveLocal();
+    }
+    renderShareModal();
+    renderTop();
+  };
+  const renderShareModal = () => {
+    let el = $("#shareModal");
+    if (!ui.shareModal) { el?.remove(); return; }
+    if (!el) { el = document.createElement("div"); el.id = "shareModal"; el.className = "phone-modal"; document.body.appendChild(el); }
+    const m = ui.shareModal;
+    const body = m.state === "working"
+      ? `<p class="phone-modal__status">${m.total ? `Uploading images ${m.done} of ${m.total}…` : "Saving the template…"}</p><div class="phone-modal__bar"><i style="width:${m.total ? Math.round((m.done / m.total) * 100) : 15}%"></i></div>`
+      : m.state === "error"
+      ? `<p class="phone-modal__status phone-modal__status--err">The template couldn't be shared. Check your connection and try again.</p><div class="phone-modal__acts"><button type="button" class="btn btn--primary" data-act="share">Try again</button></div>`
+      : `<p class="phone-modal__status">Anyone with this link can open this template and edit it, images included. Changes save to the link automatically.</p>
+         <div class="phone-modal__link"><input type="text" readonly value="${esc(m.url)}" aria-label="Edit link"><button type="button" class="btn" data-act="share-copy">${m.copied ? "Copied" : "Copy link"}</button></div>
+         <p class="phone-modal__note">Your moodboard stays on this computer.</p>`;
+    el.innerHTML = `<div class="phone-modal__card" role="dialog" aria-modal="true" aria-label="Share this template">
+        <div class="phone-modal__head"><b>Share this template</b><button type="button" class="fb-btn" data-act="share-close" aria-label="Close">${ICON.close}</button></div>
+        ${body}
+      </div>`;
+  };
+  // Someone saved to the link while this person had unsaved changes: they choose which version stays.
+  const renderConflict = () => {
+    let el = $("#shareConflict");
+    if (!ui.shareConflict || !tpl()?.share) { el?.remove(); return; }
+    if (el) return;
+    el = document.createElement("div");
+    el.id = "shareConflict";
+    el.className = "phone-modal";
+    el.innerHTML = `<div class="phone-modal__card" role="alertdialog" aria-modal="true" aria-labelledby="shareConflictTitle" aria-describedby="shareConflictText">
+        <div class="phone-modal__head"><b id="shareConflictTitle">Someone else changed this template</b></div>
+        <p class="phone-modal__status" id="shareConflictText" style="text-align:left">They saved to the shared link while you were editing, so your latest changes weren't saved. Load their version to continue from it, or keep yours to replace theirs.</p>
+        <div class="phone-modal__acts" style="gap:8px"><button type="button" class="btn" data-act="share-keep">Keep mine</button><button type="button" class="btn btn--primary" data-act="share-load">Load their version</button></div>
+      </div>`;
+    document.body.appendChild(el);
+  };
+  const renderShareState = () => {
+    const el = $("#shareState");
+    if (!el) return;
+    const t = tpl();
+    if (ui.shareSave === "missing") {
+      el.hidden = false;
+      el.className = "share-state is-err";
+      el.innerHTML = "<i></i>This shared link doesn't exist";
+      return;
+    }
+    if (!t?.share && ui.shareSave !== "loading") { el.hidden = true; el.className = "share-state"; el.innerHTML = ""; return; }
+    el.hidden = false;
+    renderConflict();
+    if (ui.shareConflict) {
+      el.className = "share-state is-busy";
+      el.innerHTML = "<i></i>Not saved yet";
+      return;
+    }
+    const [cls, label] = ({ saving: ["is-busy", "Saving to the shared link…"], loading: ["is-busy", "Opening the shared template…"], error: ["is-err", "Couldn't save to the shared link"] })[ui.shareSave] || ["", "Shared · saved"];
+    el.className = `share-state ${cls}`;
+    el.innerHTML = `<i></i>${label}${ui.shareSave === "error" ? ` <button type="button" class="link-btn" data-act="share-retry">Try again</button>` : ""}`;
+  };
+
   // Opened from a phone preview link: show that homepage full screen, nothing else.
   const bootPreview = async () => {
     document.querySelector(".app").classList.add("phone-view");
@@ -3412,7 +4194,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       const st = await res.json();
       templates = [cleanTemplate({ name: st.name, page: st.page, cfg: st.cfg })];
       loadTemplate(templates[0].id);
-      if (BRAND_KEYS.includes(st.theme)) ui.theme = st.theme;
+      if (BRAND_KEYS.includes(st.theme)) { ui.theme = st.theme; syncOrder(); }
       (st.images || []).forEach((rid) => { localUrls[rid] = `/api/preview?id=${previewId}&img=${encodeURIComponent(rid)}`; });
       document.title = `${st.name || "Homepage"} · ${brandName()}`;
       ui.present = true; ui.device = "mobile";
@@ -3459,7 +4241,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   $("#workspace").appendChild($("#specs"));
   renderOrderTable();
   if (previewId) bootPreview();
-  else { renderAll(); initDb(); checkPhone(); }
+  else { renderAll(); initDb(); checkPhone(); if (shareOpenId) openShare(shareOpenId); else setTimeout(pollShare, 1500); }
 })();
 </script>
 </body>
