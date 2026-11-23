@@ -3422,9 +3422,9 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       renderInspector();
       obShow(t.dataset.val);
     } else if (act === "ob-hide") {
-      ob.dismissed = true; obSave(); obClearHl(); renderAll();
+      ob.dismissed = true; ui.obList = false; obSave(); obClearHl(); renderAll();
     } else if (act === "ob-reopen") {
-      ob.dismissed = false; obSave(); ui.tab = "editor"; ui.sel = null; renderAll();
+      ob.dismissed = false; obSave(); ui.obList = true; ui.tab = "editor"; ui.sel = null; renderAll();
     } else if (act === "ob-tour") {
       obCloseWelcome(); ui.sel = null; ui.tab = "editor"; renderAll();
       const next = obNext();
@@ -4444,7 +4444,8 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   };
   // What the right panel shows when no section is selected.
   const idlePanelHTML = () => {
-    if (obVisible()) return obChecklistHTML();
+    // Once every step is done, the panel goes back to How it works; the checklist stays one click away.
+    if (obVisible() && (!obAllDone() || ui.obList)) return obChecklistHTML();
     return `<div class="howto">
         <h2>How it works</h2>
         <ol>
