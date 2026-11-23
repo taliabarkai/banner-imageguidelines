@@ -1467,8 +1467,19 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   };
   const starter = (name) => ({ ...(isTopline(name) ? toplineDefaults() : isProducts(name) ? { ...productDefaults(name), heading: "" } : noTileText(STARTERS[name]())), on: false });
   // Settings that were removed from the editor: fold old values into what remains.
+  // Mobile and desktop with different shapes keep an image each. Whichever one is still empty
+  // shows the other's photo (its own copy, so each can be cropped separately).
+  function fillOtherSize(c) {
+    if (!c?.ratio?.split || !Array.isArray(c.slides)) return;
+    c.slides.forEach((sl) => Object.values(sl?.imgs || {}).forEach((byDev) => {
+      if (!byDev) return;
+      if (byDev.m && !byDev.d) byDev.d = { ...byDev.m };
+      else if (byDev.d && !byDev.m) byDev.m = { ...byDev.d };
+    }));
+  }
   const normaliseBanner = (c) => {
     if (!c || c.kind || !c.m || !c.d || !c.text) return;
+    fillOtherSize(c);
     c.devices = "both";
     c.autoplay = false;
     c.m.dots = "none"; c.d.dots = "none";
@@ -2989,6 +3000,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     slide.imgs ||= {};
     slide.imgs[ui.theme] ||= {};
     slide.imgs[ui.theme][dev] = ref;
+    fillOtherSize(r);
     ui.uploading = null;
     changed();
   };
@@ -3652,6 +3664,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       if (!r.ratio.split) r.ratio.d = r.ratio.m;
       r.ratio[el.dataset.ratio] = el.value;
       r.ratio.split = r.ratio.d !== r.ratio.m;
+      fillOtherSize(r);
       changed();
       return;
     }
