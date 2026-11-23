@@ -922,16 +922,24 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 .mood__head { flex: none; display: flex; flex-direction: column; justify-content: center; gap: 2px; min-width: 104px; }
 .mood__title { font-size: 14px; font-weight: 600; }
 .mood__count { font-size: 12.5px; color: var(--subtle); }
-/* With photos: the strip is as wide as its photos, the button sits right after the last one, and once
-   the photos outgrow the space the strip scrolls sideways with the button pinned on the right. */
+/* With photos: the strip is as wide as its photos, the "Add more photos" slot sits right after the last one, and once
+   the photos outgrow the space the strip scrolls sideways with the slot pinned on the right. */
 .mood__list { display: flex; align-items: center; gap: 8px; overflow-x: auto; min-width: 0; flex: 0 1 auto; padding: 4px 2px; scrollbar-width: thin; }
 /* Empty: a dashed drop area fills the space. */
-.mood__list--empty { flex: 1 1 auto; justify-content: center; min-height: 76px; padding: 6px; border: 1px dashed var(--line-strong); border-radius: 10px; }
-.mood__empty { font-size: 13px; color: var(--muted); line-height: 1.45; text-align: center; padding: 0 16px; }
-.mood__add { flex: none; display: inline-flex; align-items: center; gap: 6px; }
+.mood__list--empty { flex: 1 1 auto; padding: 0; overflow: visible; }
+/* Empty: the whole dashed area is the upload button (click, or drop files anywhere on the moodboard). */
+.mood__drop { flex: 1 1 auto; width: 100%; min-height: 76px; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 10px 16px; border: 1px dashed var(--line-strong); border-radius: 10px; background: none; font: inherit; color: var(--muted); cursor: pointer; text-align: left; transition: background .12s, border-color .12s; }
+.mood__drop:hover, .mood__drop:focus-visible { border-color: var(--accent); background: var(--accent-soft); outline: none; }
+.mood__drop .i { width: 20px; height: 20px; flex: none; color: var(--ink); }
+.mood__drop b { display: block; font-size: 13.5px; font-weight: 600; color: var(--ink); }
+.mood__drop b u { color: var(--accent); text-underline-offset: 3px; }
+.mood__drop small { display: block; font-size: 12.5px; color: var(--muted); line-height: 1.4; margin-top: 2px; }
+/* With photos: a square slot after the last photo adds more. */
+.mood__more { position: sticky; right: 0; flex: none; width: 64px; height: 64px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 0 4px; border: 1px dashed var(--line-strong); border-radius: 8px; background: var(--surface); box-shadow: 8px 0 0 var(--surface), -8px 0 0 var(--surface); font: inherit; font-size: 10.5px; font-weight: 500; line-height: 1.2; color: var(--ink); text-align: center; cursor: pointer; transition: background .12s, border-color .12s; }
+.mood__more:hover, .mood__more:focus-visible { border-color: var(--accent); background: var(--accent-soft); outline: none; }
+.mood__more .i { width: 16px; height: 16px; }
 .mood__clear { flex: none; color: var(--muted); font-weight: 500; }
 .mood__clear:hover:not(:disabled) { background: #fdeceb; color: var(--critical); }
-.mood__add .i { width: 16px; height: 16px; }
 .mood__item { position: relative; flex: none; width: 64px; height: 64px; border-radius: 8px; overflow: hidden; background: var(--tile); cursor: grab; box-shadow: 0 0 0 1px var(--line); }
 .mood__item img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .mood__item:hover { box-shadow: 0 0 0 2px var(--accent); }
@@ -1062,7 +1070,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 
       <section class="card" id="order">
         <h2>Homepage order</h2>
-        <p>Sections always appear in this order on every brand. You can't move them, only turn them on or off.</p>
+        <p id="orderNote">Sections always appear in this order. You can't move them, only turn them on or off.</p>
         <div class="tablewrap"><table id="orderTable"></table></div>
       </section>
 
@@ -1166,7 +1174,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   ];
 
   // ---------- The fixed homepage order ----------
-  const ORDER = [
+  const ALL_SECTIONS = [
     { name: "Topline", topline: true, note: "A slim promo strip right under the header." },
     { name: "Highlights Bar", note: "A row of small tiles under the header. Swipes sideways." },
     { name: "Hero Banner", note: "The main banner." },
@@ -1178,10 +1186,22 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     { name: "Featured Categories", note: "Key category entry points." },
     { name: "Secondary Carousel - HP", products: true, note: "A second product carousel." },
     { name: "Featured Articles", note: "Editorial and blog content." },
+    { name: "USP Banner", note: "Reasons to shop with the brand." },
     { name: "Bottom Banner", note: "Closing banner at the bottom." },
+    { name: "Trustpilot Reviews", note: "Customer reviews." },
   ];
-  const isProducts = (name) => !!ORDER.find((s) => s.name === name)?.products;
-  const isTopline = (name) => !!ORDER.find((s) => s.name === name)?.topline;
+  // Each brand's homepage has its own set of sections, in this order.
+  const BRAND_SECTIONS = {
+    oal: ["Highlights Bar", "Hero Banner", "Category Blocks", "Primary Carousel - HP", "Box Banners", "Middle Banner", "Featured Categories", "Secondary Carousel - HP", "Featured Articles"],
+    lal: ["Highlights Bar", "Hero Banner", "Category Blocks", "Primary Carousel - HP", "Featured Collections", "Middle Banner", "Featured Categories", "Secondary Carousel - HP", "Featured Articles", "USP Banner", "Trustpilot Reviews"],
+  };
+  BRAND_SECTIONS.tgr = BRAND_SECTIONS.mnn = BRAND_SECTIONS.ib = ["Highlights Bar", "Hero Banner", "Category Blocks", "Primary Carousel - HP", "Featured Collections", "Middle Banner", "Featured Categories", "Secondary Carousel - HP", "Featured Articles", "USP Banner", "Bottom Banner", "Trustpilot Reviews"];
+  const sectionsFor = (k) => (BRAND_SECTIONS[k] || ALL_SECTIONS.map((s) => s.name)).map((n) => ALL_SECTIONS.find((s) => s.name === n));
+  // The sections listed and shown for the selected brand. Templates keep settings for every section.
+  let ORDER = sectionsFor("tgr");
+  const syncOrder = () => { ORDER = sectionsFor(ui.theme); if (ui.sel && !ORDER.some((s) => s.name === ui.sel)) ui.sel = null; };
+  const isProducts = (name) => !!ALL_SECTIONS.find((s) => s.name === name)?.products;
+  const isTopline = (name) => !!ALL_SECTIONS.find((s) => s.name === name)?.topline;
   const sectionNo = (name) => ORDER.findIndex((s) => s.name === name) + 1;
   // Fixed layout the storefront gives both homepage product carousels (frontend-next migrationHelper.ts).
   const PRODUCT_LAYOUT = {
@@ -1296,6 +1316,20 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     }),
     "Featured Articles": () => LAYOUTS.peek.make(),
     "Bottom Banner": () => make({ ratio: { m: "4:5", d: "21:9", split: true }, slides: [{ kind: "image", title: "Made to Be Yours" }], text: { pos: "middle-left", dsplit: false, sub: "Handcrafted to order", btn: "Start designing" } }),
+    "USP Banner": () => make({
+      margin: true,
+      m: { cols: 2, gap: "spacing-xs" }, d: { cols: 4, gap: "spacing-sm" }, ratio: { m: "1:1", d: "1:1", split: false },
+      slides: slidesOf("image", ["Free Shipping", "Free Engraving", "30-Day Returns", "Lifetime Warranty"]),
+      text: { pos: "below-center", dsplit: false, sub: "", btn: "", btnStyle: "none", headVariant: "text3" },
+    }),
+    "Trustpilot Reviews": () => make({
+      display: "carousel", margin: true,
+      m: { cols: 1, peek: 0.25, arrows: "none", dots: "none" }, d: { cols: 4, peek: 0, arrows: "block", dots: "none" },
+      ratio: { m: "1:1", d: "1:1", split: false },
+      slides: slidesOf("text", ["Beautiful necklace, my mom loved it", "Fast shipping and lovely packaging", "Exactly as pictured", "My go-to gift every year"]),
+      text: { pos: "center", dsplit: false, color: "dark", bg: "#f3e9dc", sub: "", btn: "", btnStyle: "none", headVariant: "text2" },
+      header: { text: "What our customers say" },
+    }),
   };
   const toplineDefaults = () => ({
     id: newId(), on: true, kind: "topline",
@@ -1330,11 +1364,11 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   const ensureAll = (t) => {
     const had = new Set(t.page || []);
     t.cfg = t.cfg && typeof t.cfg === "object" ? t.cfg : {};
-    ORDER.forEach((o) => {
+    ALL_SECTIONS.forEach((o) => {
       if (!t.cfg[o.name] || typeof t.cfg[o.name] !== "object") t.cfg[o.name] = starter(o.name);
       else if (!had.has(o.name)) t.cfg[o.name].on = false;
     });
-    t.page = ORDER.map((o) => o.name);
+    t.page = ALL_SECTIONS.map((o) => o.name);
     Object.values(t.cfg).forEach(normaliseBanner);
     return t;
   };
@@ -1429,6 +1463,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   // v2 has no separate Images view: image settings live in the right-hand editor.
   try { if (localStorage.getItem("bb-labels") === "off") { ui.labels = false; document.querySelector(".app").classList.add("no-labels"); } } catch (err) { /* storage unavailable */ }
   try { ui.theme = themeFromPath() || themeFromHash() || (BRAND_KEYS.includes(localStorage.getItem("bb-theme")) ? localStorage.getItem("bb-theme") : "tgr"); } catch (err) { ui.theme = themeFromPath() || themeFromHash() || "tgr"; }
+  syncOrder();
   if (pathRouting && location.pathname.replace(/\/$/, "").toLowerCase() !== `${BASE}/${ui.theme}`) showThemeInUrl(ui.theme);
 
   // ---------- Helpers ----------
@@ -1884,8 +1919,9 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     const logo = `<img class="sf-logo-img" src="${B.logo.src}" alt="${esc(B.name)}" style="max-width:${d === "mobile" ? 160 : 200}px">`;
     const links = ["New In", "Best Sellers", "Shop By", "Sale"];
     if (d === "desktop") {
-      return `<header class="sf-shell">
-        <div class="sf-top sf-top--desk"><span>Subscribe &amp; Get 10% Off</span><span class="sf-top__center" data-ann-msg>${esc(ANNOUNCEMENTS[(ui.annPos || 0) % ANNOUNCEMENTS.length])}</span><span class="sf-top__util"><span>Need help?</span><i></i><span>Track My Order</span><i></i><span>Contact Us</span></span></div>
+      // Desktop: same as mobile, the announcement strip scrolls away and the header bar sticks.
+      return `<div class="sf-top sf-top--desk"><span>Subscribe &amp; Get 10% Off</span><span class="sf-top__center" data-ann-msg>${esc(ANNOUNCEMENTS[(ui.annPos || 0) % ANNOUNCEMENTS.length])}</span><span class="sf-top__util"><span>Need help?</span><i></i><span>Track My Order</span><i></i><span>Contact Us</span></span></div>
+      <header class="sf-shell sf-shell--sticky">
         <div class="sf-bar sf-bar--desk">${logo}<nav class="sf-nav2">${links.map((l) => `<span>${l}</span>`).join("")}</nav><span class="sf-actions">${ic("search")}${ic("account")}${ic("bag")}</span></div>
       </header>`;
     }
@@ -2513,6 +2549,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 
   // ---------- Reference tables ----------
   const renderOrderTable = () => {
+    $("#orderNote").textContent = `${brandName()} (${ui.theme.toUpperCase()}) uses these ${ORDER.length} sections, always in this order. You can't move them, only turn them on or off. Switch the theme to see another brand's list.`;
     $("#orderTable").innerHTML = `<thead><tr><th>#</th><th>Section</th></tr></thead><tbody>${ORDER.map((s, i) => `
       <tr><td class="num">${i + 1}</td><td><b>${esc(s.name)}</b></td></tr>`).join("")}</tbody>`;
   };
@@ -2619,7 +2656,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       id: id || data.id || newTemplate("x").id,
       name: String(data.name || "Untitled").slice(0, 60),
       createdAt: Number(data.createdAt) || Date.now(),
-      page: Array.isArray(data.page) ? data.page.filter((n) => ORDER.some((o) => o.name === n)) : [],
+      page: Array.isArray(data.page) ? data.page.filter((n) => ALL_SECTIONS.some((o) => o.name === n)) : [],
       cfg: data.cfg && typeof data.cfg === "object" ? JSON.parse(JSON.stringify(data.cfg)) : {},
       dirty: false,
     };
@@ -2795,7 +2832,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       if (local && (local.dirty || saveTimers[id] || inflight[id])) { next.push(local); return; }
       if (local && lastSaved[id] === sig) { next.push(local); return; }
       lastSaved[id] = sig;
-      const t = { id, name: String(data.name || "Untitled"), createdAt: Number(data.createdAt) || 0, page: Array.isArray(data.page) ? data.page.filter((n) => ORDER.some((o) => o.name === n)) : [], cfg: (data.cfg && typeof data.cfg === "object") ? JSON.parse(JSON.stringify(data.cfg)) : {}, dirty: false };
+      const t = { id, name: String(data.name || "Untitled"), createdAt: Number(data.createdAt) || 0, page: Array.isArray(data.page) ? data.page.filter((n) => ALL_SECTIONS.some((o) => o.name === n)) : [], cfg: (data.cfg && typeof data.cfg === "object") ? JSON.parse(JSON.stringify(data.cfg)) : {}, dirty: false };
       ensureAll(t);
       if (id === active) touchedActive = true;
       next.push(t);
@@ -2860,8 +2897,10 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   const setTheme = (k) => {
     if (!BRAND_KEYS.includes(k)) return;
     ui.theme = k; ui.menu = null;
+    syncOrder();
     try { localStorage.setItem("bb-theme", k); } catch (err) { /* storage unavailable */ }
     showThemeInUrl(k);
+    renderOrderTable();
     renderAll();
   };
   window.addEventListener("hashchange", () => { const k = themeFromHash(); if (k && k !== ui.theme) setTheme(k); });
@@ -3557,8 +3596,9 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     }).join("");
     el.innerHTML = `<div class="mood__bar">
         <div class="mood__head"><b class="mood__title">Moodboard</b><span class="mood__count">${mood.length ? `${mood.length} photo${mood.length === 1 ? "" : "s"}` : "No photos yet"}</span></div>
-        <div class="mood__list${items ? "" : " mood__list--empty"}">${items || `<p class="mood__empty">Drop shoot photos or reference images here, then drag them onto any tile. Rough crops are fine. Every tile shows the size to export the final at.</p>`}</div>
-        <button type="button" class="btn mood__add" data-mood-add>${ICON.upload}<span>Add photos</span></button>
+        <div class="mood__list${items ? "" : " mood__list--empty"}">${items
+          ? `${items}<button type="button" class="mood__more" data-mood-add aria-label="Add more photos">${ICON.upload}<span>Add more photos</span></button>`
+          : `<button type="button" class="mood__drop" data-mood-add>${ICON.upload}<span><b>Drop photos here or <u>browse</u></b><small>Then drag them onto any tile. Rough crops are fine. PNG, JPG, WebP or GIF.</small></span></button>`}</div>
         ${mood.length ? `<button type="button" class="btn btn--plain mood__clear" data-mood-clear>${ui.moodClearConfirm ? "Click again to clear" : "Clear all"}</button>` : ""}
       </div>
       ${ui.moodMsg ? `<p class="mood__msg" role="status">${esc(ui.moodMsg)}</p>` : ""}`;
@@ -3589,7 +3629,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
     picker.onchange = () => { if (picker.files?.length) cb([...picker.files]); };
     picker.click();
   };
-  const nameOf = (r) => ORDER.find((o) => cfg[o.name] === r)?.name || null;
+  const nameOf = (r) => ALL_SECTIONS.find((o) => cfg[o.name] === r)?.name || null;
   const artTiles = (r) => r.slides.map((sl, i) => [sl, i]).filter(([sl]) => hasArtKind(sl.kind)).map(([, i]) => i);
   const refAt = (name, i, dev) => cfg[name]?.slides[i]?.imgs?.[ui.theme]?.[dev] || null;
   const placePhoto = (name, i, dev, p) => {
@@ -3810,7 +3850,7 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
       const st = await res.json();
       templates = [cleanTemplate({ name: st.name, page: st.page, cfg: st.cfg })];
       loadTemplate(templates[0].id);
-      if (BRAND_KEYS.includes(st.theme)) ui.theme = st.theme;
+      if (BRAND_KEYS.includes(st.theme)) { ui.theme = st.theme; syncOrder(); }
       (st.images || []).forEach((rid) => { localUrls[rid] = `/api/preview?id=${previewId}&img=${encodeURIComponent(rid)}`; });
       document.title = `${st.name || "Homepage"} · ${brandName()}`;
       ui.present = true; ui.device = "mobile";
